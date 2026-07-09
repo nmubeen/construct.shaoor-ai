@@ -4,6 +4,7 @@ import "./globals.css";
 
 
 import { siteConfig } from "@/lib/site";
+import Navbar from "@/Components/Layout/Navbar";
 
 const geist = Geist({
   subsets: ["latin"],
@@ -36,8 +37,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={geist.className}>
-        {children}
-      </body>
+  <Navbar />
+  {children}
+</body>
     </html>
   );
 }
