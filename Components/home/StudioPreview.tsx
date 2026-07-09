@@ -1,7 +1,7 @@
-import Container from "@/Components/UI/Container";
-import SectionTitle from "@/Components/UI/SectionTitle";
+import Container from "@/components/ui/Container";
+import SectionTitle from "@/components/ui/SectionTitle";
 import Image from "next/image";
-import Button from "@/Components/UI/Button";
+import Button from "@/components/ui/Button";
 
 export default function StudioPreview() {
   return (

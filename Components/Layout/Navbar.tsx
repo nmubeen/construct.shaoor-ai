@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import Container from "@/Components/UI/Container";
+import Container from "@/components/ui/Container";
 
 const menuItems = [
   { label: "Home", href: "/" },
