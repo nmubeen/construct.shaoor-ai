@@ -4,7 +4,8 @@ import "./globals.css";
 
 
 import { siteConfig } from "@/lib/site";
-import Navbar from "@/Components/Layout/Navbar";
+import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
 
 const geist = Geist({
   subsets: ["latin"],
@@ -35,11 +36,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" data-scroll-behavior="smooth">
       <body className={geist.className}>
-  <Navbar />
-  {children}
-</body>
+        <Navbar />
+        {children}
+        <Footer />
+      </body>
     </html>
   );
 }

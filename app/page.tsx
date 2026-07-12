@@ -10,6 +10,10 @@ export default function HomePage() {
     <>
       <Hero />
       <StudioPreview />
+      <ServicesPreview />
+      <FeaturedProjects />
+      <WhyChooseUs />
+      <CTA />
     </>
   );
 }
