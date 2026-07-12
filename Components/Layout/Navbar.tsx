@@ -21,7 +21,7 @@ export default function Navbar() {
         <Link href="/">
           <Image
   src="/images/logo/logo.png"
-  alt="2 Yards Studios"
+  alt="SAM Constructions"
   width={170}
   height={60}
   priority

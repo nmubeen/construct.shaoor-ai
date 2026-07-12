@@ -1,3 +1,18 @@
+import PageBanner from "@/components/shared/PageBanner";
+import ProcessTimeline from "@/components/process/ProcessTimeLine";
+import CTA from "@/components/home/CTA";
+
 export default function ProcessPage() {
-  return <div className="container py-20">Our Process</div>;
+  return (
+    <>
+      <PageBanner
+        title="Our Process"
+        subtitle="From Vision to Reality"
+      />
+
+      <ProcessTimeline />
+
+      <CTA />
+    </>
+  );
 }

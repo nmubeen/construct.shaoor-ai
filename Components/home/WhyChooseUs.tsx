@@ -42,7 +42,7 @@ export default function WhyChooseUs() {
 
         <SectionTitle
           subtitle="Why Choose Us"
-          title="Why 2 Yards Studios"
+          title="Why SAM Constructions"
         />
 
         <div className="grid gap-8 md:grid-cols-2">

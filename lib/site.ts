@@ -1,5 +1,5 @@
 export const siteConfig = {
-  name: "2 Yards Studios",
+  name: "SAM Constructions",
   shortName: "2YS",
 
   tagline: "Design • Build • Deliver",

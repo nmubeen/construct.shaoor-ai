@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Project {
+
+  id          Int      @id @default(autoincrement())
+
+  slug        String   @unique
+
+  title       String
+
+  category    String
+
+  status      String
+
+  client      String
+
+  location    String
+
+  year        Int
+
+  duration    String
+
+  budget      String
+
+  area        String
+
+  coverImage  String
+
+  description String
+
+  featured    Boolean  @default(false)
+
+  createdAt   DateTime @default(now())
+
+  updatedAt   DateTime @updatedAt
+
+  highlights Highlight[]
+
+  gallery    Gallery[]
+
+}
+
+model Highlight {
+
+  id        Int @id @default(autoincrement())
+
+  text      String
+
+  projectId Int
+
+  project   Project @relation(fields:[projectId], references:[id])
+
+}
+
+model Gallery {
+
+  id        Int @id @default(autoincrement())
+
+  image     String
+
+  projectId Int
+
+  project   Project @relation(fields:[projectId], references:[id])
+
+}

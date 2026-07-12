@@ -18,7 +18,7 @@ export default function StudioPreview() {
           <div>
             <Image
               src="/images/hero/hero.jpg"
-              alt="2 Yards Studios"
+              alt="SAM Constructions"
               width={700}
               height={500}
               className="rounded-2xl object-cover shadow-xl"
@@ -28,7 +28,7 @@ export default function StudioPreview() {
           <div>
 
             <p className="mb-6 text-lg leading-8 text-slate-600">
-              At <strong>2 Yards Studios</strong>, we believe every
+              At <strong>SAM Constructions</strong>, we believe every
               project starts with a vision. We specialize in
               architecture, construction, and interior solutions that
               blend creativity with precision to deliver spaces that are

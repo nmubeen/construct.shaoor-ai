@@ -14,7 +14,7 @@ export default function Footer() {
           <div>
 
             <h3 className="mb-5 text-2xl font-bold text-white">
-              2 Yards Studios
+              SAM Constructions
             </h3>
 
             <p className="leading-7">
@@ -71,7 +71,7 @@ export default function Footer() {
 
         <div className="border-t border-slate-700 py-6 text-center text-sm">
 
-          © {new Date().getFullYear()} 2 Yards Studios.
+          © {new Date().getFullYear()} SAM Constructions.
           All Rights Reserved.
 
         </div>

@@ -5,7 +5,7 @@ export default function StudioPage() {
     <>
       <PageBanner
         title="Our Studio"
-        subtitle="About 2 Yards Studios"
+        subtitle="About SAM Constructions"
       />
 
       <section className="py-24">
@@ -17,7 +17,7 @@ export default function StudioPage() {
 
           <p className="max-w-4xl text-lg leading-9 text-slate-600">
 
-            At 2 Yards Studios we combine architecture,
+            At SAM Constructions we combine architecture,
             construction and interior design to create
             exceptional spaces that reflect our clients'
             aspirations while maintaining functionality,
