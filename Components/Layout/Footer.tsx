@@ -61,7 +61,7 @@ export default function Footer() {
 
               <p>+91 XXXXX XXXXX</p>
 
-              <p>info@2yardsstudios.com</p>
+              <p>nmubeen@gmail.com</p>
 
             </div>
 

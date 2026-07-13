@@ -1,50 +1,49 @@
 import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
 
 async function main() {
-  await prisma.project.deleteMany();
+  console.log("🌱 Seeding database...");
 
-  await prisma.project.create({
-    data: {
-      slug: "luxury-villa",
-      title: "Luxury Villa",
-      category: "Residential",
-      status: "Completed",
-      client: "Private Client",
-      location: "Hyderabad",
-      year: 2025,
-      duration: "14 Months",
-      budget: "₹2.4 Cr",
-      area: "5800 sq ft",
-      coverImage: "/images/projects/project1.jpg",
-      description:
-        "A contemporary luxury villa designed with open spaces and premium finishes.",
-      featured: true,
+  const adminEmail = "admin@2yards.com";
+  const adminPassword = "Admin@123";
 
-      highlights: {
-        create: [
-          { text: "Smart Home" },
-          { text: "Solar Powered" },
-          { text: "Landscape Garden" },
-        ],
-      },
-
-      gallery: {
-        create: [
-          { image: "/images/projects/project1.jpg" },
-          { image: "/images/projects/project1.jpg" },
-          { image: "/images/projects/project1.jpg" },
-        ],
-      },
+  const existingUser = await prisma.user.findUnique({
+    where: {
+      email: adminEmail,
     },
   });
 
-  console.log("✅ Database seeded successfully.");
+  if (!existingUser) {
+    const passwordHash = await bcrypt.hash(adminPassword, 10);
+
+    await prisma.user.create({
+      data: {
+        name: "Administrator",
+        email: adminEmail,
+        passwordHash,
+        role: "ADMIN",
+      },
+    });
+
+    console.log("✅ Admin user created");
+    console.log("--------------------------------");
+    console.log(`Email    : ${adminEmail}`);
+    console.log(`Password : ${adminPassword}`);
+    console.log("--------------------------------");
+  } else {
+    console.log("ℹ️ Admin user already exists");
+  }
+
+  console.log("✅ Database seeded successfully");
 }
 
 main()
-  .catch(console.error)
+  .catch((error) => {
+    console.error(error);
+    process.exit(1);
+  })
   .finally(async () => {
     await prisma.$disconnect();
   });

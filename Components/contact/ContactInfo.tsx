@@ -50,7 +50,7 @@ export default function ContactInfo() {
               Email
             </h3>
 
-            <p>info@2yardsstudios.com</p>
+            <p>nmubeen@gmail.com</p>
           </div>
         </div>
 
