@@ -7,9 +7,9 @@ export const siteConfig = {
   description:
     "Architecture, Construction and Interior Design Studio based in Hyderabad.",
 
-  url: "https://www.2yardsstudios.com",
+  url: "https://www.samconstructions.com",
 
-  email: "info@2yardsstudios.com",
+  email: "samconstructions@gmail.com",
 
   phone: "+91 XXXXX XXXXX",
 

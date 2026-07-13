@@ -8,65 +8,72 @@ datasource db {
 }
 
 model Project {
+  id            Int       @id @default(autoincrement())
+  slug          String    @unique
+  title         String
+  category      String
+  status        String
 
-  id          Int      @id @default(autoincrement())
+  client        String
+  location      String
 
-  slug        String   @unique
+  year          Int
+  duration      String
+  budget        String
+  area          String
 
-  title       String
+  description   String
 
-  category    String
+  coverImage    String
 
-  status      String
+  featured      Boolean   @default(false)
+  displayOrder  Int       @default(0)
 
-  client      String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
-  location    String
-
-  year        Int
-
-  duration    String
-
-  budget      String
-
-  area        String
-
-  coverImage  String
-
-  description String
-
-  featured    Boolean  @default(false)
-
-  createdAt   DateTime @default(now())
-
-  updatedAt   DateTime @updatedAt
-
-  highlights Highlight[]
-
-  gallery    Gallery[]
-
+  highlights    Highlight[]
+  gallery       GalleryImage[]
+  documents     ProjectDocument[]
+  updates       ProjectUpdate[]
 }
 
 model Highlight {
+  id         Int      @id @default(autoincrement())
+  text       String
 
-  id        Int @id @default(autoincrement())
-
-  text      String
-
-  projectId Int
-
-  project   Project @relation(fields:[projectId], references:[id])
-
+  projectId  Int
+  project    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
 }
 
-model Gallery {
+model GalleryImage {
+  id         Int      @id @default(autoincrement())
+  image      String
+  caption    String?
 
-  id        Int @id @default(autoincrement())
+  projectId  Int
+  project    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
 
-  image     String
+model ProjectDocument {
+  id         Int      @id @default(autoincrement())
+  title      String
+  file       String
 
-  projectId Int
+  projectId  Int
+  project    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
 
-  project   Project @relation(fields:[projectId], references:[id])
+model ProjectUpdate {
+  id         Int       @id @default(autoincrement())
 
+  title      String
+  description String
+
+  image      String?
+
+  createdAt  DateTime @default(now())
+
+  projectId  Int
+  project    Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 }
