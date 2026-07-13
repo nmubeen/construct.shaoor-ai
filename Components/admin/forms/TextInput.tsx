@@ -1,13 +1,13 @@
 "use client";
 
 import { InputHTMLAttributes } from "react";
-import { FieldError, UseFormRegister } from "react-hook-form";
+import { FieldErrors, UseFormRegister } from "react-hook-form";
 
 interface TextInputProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
   name: string;
   register: UseFormRegister<any>;
-  error?: FieldError;
+  error?: any;   // <-- Change this
 }
 
 export default function TextInput({
@@ -39,7 +39,7 @@ export default function TextInput({
         }`}
       />
 
-      {error && (
+      {error?.message && (
         <p className="text-sm text-red-600">
           {error.message}
         </p>

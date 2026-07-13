@@ -1,61 +1,74 @@
+import { prisma } from "@/lib/prisma";
+
+import DashboardCard from "@/components/admin/dashboard/DashboardCard";
+import RecentProjects from "@/components/admin/dashboard/RecentProjects";
+import QuickActions from "@/components/admin/dashboard/QuickActions";
+
+import {
+  FaFolderOpen,
+  FaCircleCheck,
+  FaSpinner,
+  FaEnvelope,
+} from "react-icons/fa6";
+
 export default async function DashboardPage() {
+  const totalProjects = await prisma.project.count();
+
+  const completedProjects = await prisma.project.count({
+    where: {
+      status: "Completed",
+    },
+  });
+
+  const ongoingProjects = await prisma.project.count({
+    where: {
+      status: "Ongoing",
+    },
+  });
+
+  const totalMessages = 0;
+
   return (
-    <>
-      <h1 className="mb-10 text-4xl font-bold">
-        Dashboard
-      </h1>
+    <div className="space-y-8">
+      <h1 className="text-4xl font-bold">Dashboard</h1>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+        <DashboardCard
+          title="Projects"
+          value={totalProjects}
+          icon={<FaFolderOpen />}
+          color="#0E4A7B"
+        />
 
-        <div className="rounded-xl bg-white p-8 shadow">
+        <DashboardCard
+          title="Completed"
+          value={completedProjects}
+          icon={<FaCircleCheck />}
+          color="#16A34A"
+        />
 
-          <h3 className="text-lg font-semibold">
-            Projects
-          </h3>
+        <DashboardCard
+          title="Ongoing"
+          value={ongoingProjects}
+          icon={<FaSpinner />}
+          color="#F59E0B"
+        />
 
-          <p className="mt-3 text-4xl font-bold">
-            0
-          </p>
-
-        </div>
-
-        <div className="rounded-xl bg-white p-8 shadow">
-
-          <h3 className="text-lg font-semibold">
-            Ongoing
-          </h3>
-
-          <p className="mt-3 text-4xl font-bold">
-            0
-          </p>
-
-        </div>
-
-        <div className="rounded-xl bg-white p-8 shadow">
-
-          <h3 className="text-lg font-semibold">
-            Messages
-          </h3>
-
-          <p className="mt-3 text-4xl font-bold">
-            0
-          </p>
-
-        </div>
-
-        <div className="rounded-xl bg-white p-8 shadow">
-
-          <h3 className="text-lg font-semibold">
-            Featured
-          </h3>
-
-          <p className="mt-3 text-4xl font-bold">
-            0
-          </p>
-
-        </div>
-
+        <DashboardCard
+          title="Messages"
+          value={totalMessages}
+          icon={<FaEnvelope />}
+          color="#7C3AED"
+        />
       </div>
-    </>
+
+      <div className="grid gap-6 lg:grid-cols-3">
+        <div className="lg:col-span-2">
+          <RecentProjects />
+        </div>
+
+        <QuickActions />
+      </div>
+    </div>
   );
 }
