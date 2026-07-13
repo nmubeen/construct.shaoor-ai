@@ -10,7 +10,7 @@ import TextInput from "@/components/admin/forms/TextInput";
 import Select from "@/components/admin/forms/Select";
 import TextArea from "@/components/admin/forms/TextArea";
 import Checkbox from "@/components/admin/forms/Checkbox";
-
+import { createProject } from "@/lib/actions/project.actions";
 import {
   projectSchema,
   ProjectFormInput,
@@ -19,7 +19,7 @@ import {
 export default function NewProjectPage() {
   const {
     register,
-    handleSubmit,
+    
     formState: { errors },
   } = useForm<ProjectFormInput>({
     resolver: zodResolver(projectSchema),
@@ -28,16 +28,14 @@ export default function NewProjectPage() {
     },
   });
 
-  const onSubmit = (data: ProjectFormInput) => {
-    console.log(data);
-  };
+
 
   return (
     <>
       <PageTitle title="Add New Project" />
 
       <form
-        onSubmit={handleSubmit(onSubmit)}
+        action={createProject}
         className="space-y-8 rounded-xl border bg-white p-8 shadow-sm"
       >
         <div className="grid gap-6 md:grid-cols-2">
