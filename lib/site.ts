@@ -6,7 +6,7 @@ export const siteConfig = {
     description:
       "A leading construction company delivering residential, commercial, industrial and infrastructure projects with uncompromising quality.",
 
-    logo: "/logo.svg", // Replace with your actual logo
+    logo: "/logo.svg",
 
     email: "info@samconstructions.com",
 
@@ -26,27 +26,32 @@ export const siteConfig = {
     postalCode: "",
   },
 
-  // Navigation Menu
+  // Navigation
   navigation: [
     {
       title: "Home",
       href: "/",
+      children: [],
     },
     {
       title: "About",
       href: "/about",
+      children: [],
     },
     {
       title: "Services",
       href: "/services",
+      children: [],
     },
     {
       title: "Projects",
       href: "/projects",
+      children: [],
     },
     {
       title: "Contact",
       href: "/contact",
+      children: [],
     },
   ],
 
@@ -76,7 +81,7 @@ export const siteConfig = {
     heroButtonLink: "/projects",
   },
 
-  // CTA Section
+  // Call To Action
   cta: {
     title: "Let's Build Something Great Together",
 
@@ -109,9 +114,11 @@ export const siteConfig = {
 
   // Footer
   footer: {
-    copyright:
-      `© ${new Date().getFullYear()} SAM Constructions. All rights reserved.`,
+    copyright: `© ${new Date().getFullYear()} SAM Constructions. All rights reserved.`,
   },
 } as const;
 
 export type SiteConfig = typeof siteConfig;
+
+export type NavigationItem =
+  (typeof siteConfig.navigation)[number];

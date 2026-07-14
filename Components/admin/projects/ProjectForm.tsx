@@ -1,7 +1,7 @@
 "use client";
 
 import { createProject } from "@/lib/actions/project.actions";
-import type { ProjectWithRelations } from "@/types/project";
+import type { ProjectWithRelations } from "@/Types/project";
 
 interface ProjectFormProps {
   mode: "create" | "edit";

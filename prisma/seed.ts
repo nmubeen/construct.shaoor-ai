@@ -4,46 +4,32 @@ import bcrypt from "bcrypt";
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log("🌱 Seeding database...");
+  const passwordHash = await bcrypt.hash(
+    "Admin@123",
+    12
+  );
 
-  const adminEmail = "admin@2yards.com";
-  const adminPassword = "Admin@123";
-
-  const existingUser = await prisma.user.findUnique({
+  await prisma.user.upsert({
     where: {
-      email: adminEmail,
+      email: "admin@samconstruction.com",
+    },
+    update: {},
+    create: {
+      name: "Administrator",
+
+      email: "admin@samconstruction.com",
+
+      passwordHash,
+
+      role: "ADMIN",
     },
   });
 
-  if (!existingUser) {
-    const passwordHash = await bcrypt.hash(adminPassword, 10);
-
-    await prisma.user.create({
-      data: {
-        name: "Administrator",
-        email: adminEmail,
-        passwordHash,
-        role: "ADMIN",
-      },
-    });
-
-    console.log("✅ Admin user created");
-    console.log("--------------------------------");
-    console.log(`Email    : ${adminEmail}`);
-    console.log(`Password : ${adminPassword}`);
-    console.log("--------------------------------");
-  } else {
-    console.log("ℹ️ Admin user already exists");
-  }
-
-  console.log("✅ Database seeded successfully");
+  console.log("✅ Admin user created");
 }
 
 main()
-  .catch((error) => {
-    console.error(error);
-    process.exit(1);
-  })
+  .catch(console.error)
   .finally(async () => {
     await prisma.$disconnect();
   });
