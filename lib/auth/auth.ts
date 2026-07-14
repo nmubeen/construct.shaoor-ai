@@ -8,35 +8,32 @@ import {
   getCurrentUser,
 } from "./session";
 
-/**
- * Attempts to log a user in.
- */
 export async function login(
   email: string,
   password: string
 ) {
   const user = await prisma.user.findUnique({
     where: {
-      email: email.toLowerCase().trim(),
+      email: email.trim().toLowerCase(),
     },
   });
 
   if (!user) {
     return {
       success: false,
-      message: "Invalid email or password.",
+      error: "Invalid email or password.",
     };
   }
 
-  const validPassword = await verifyPassword(
+  const valid = await verifyPassword(
     password,
     user.passwordHash
   );
 
-  if (!validPassword) {
+  if (!valid) {
     return {
       success: false,
-      message: "Invalid email or password.",
+      error: "Invalid email or password.",
     };
   }
 
@@ -44,13 +41,9 @@ export async function login(
 
   return {
     success: true,
-    user,
   };
 }
 
-/**
- * Logs out the current user.
- */
 export async function logout() {
   await destroySession();
 
@@ -58,7 +51,7 @@ export async function logout() {
 }
 
 /**
- * Returns the current authenticated user.
+ * Returns the currently authenticated user.
  */
 export async function currentUser() {
   return getCurrentUser();
@@ -71,19 +64,6 @@ export async function requireUser() {
   const user = await currentUser();
 
   if (!user) {
-    redirect("/login");
-  }
-
-  return user;
-}
-
-/**
- * Require an administrator.
- */
-export async function requireAdmin() {
-  const user = await requireUser();
-
-  if (user.role !== "ADMIN") {
     redirect("/login");
   }
 
