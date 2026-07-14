@@ -1,10 +1,13 @@
 "use client";
 
 import { createProject } from "@/lib/actions/project.actions";
+import ImageUploader from "@/components/ui/ImageUploader";
+
+import type { ProjectWithRelations } from "@/Types/project";
 
 interface ProjectFormProps {
   mode: "create" | "edit";
-  project?: any;
+  project?: ProjectWithRelations;
 }
 
 export default function ProjectForm({

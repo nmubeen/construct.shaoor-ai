@@ -1,28 +1,22 @@
 "use client";
-import ImageUploader from "@/components/ui/ImageUploader";
 
-import {
-  createProject,
-  updateProject,
-} from "@/lib/actions/project.actions";
+import { createProject } from "@/lib/actions/project.actions";
+import type { ProjectWithRelations } from "@/types/project";
 
 interface ProjectFormProps {
   mode: "create" | "edit";
-  project?: any;
+  project?: ProjectWithRelations;
 }
+
+
 
 export default function ProjectForm({
   mode,
   project,
 }: ProjectFormProps) {
-  const formAction =
-    mode === "create"
-      ? createProject
-      : updateProject.bind(null, project.id);
-
   return (
     <form
-      action={formAction}
+      action={createProject}
       className="space-y-8 rounded-xl bg-white p-8 shadow"
     >
       <div className="grid gap-6 md:grid-cols-2">
@@ -76,8 +70,8 @@ export default function ProjectForm({
             defaultValue={project?.status ?? "Completed"}
             className="w-full rounded-lg border p-3"
           >
-            <option value="Completed">Completed</option>
-            <option value="Ongoing">Ongoing</option>
+            <option>Completed</option>
+            <option>Ongoing</option>
           </select>
         </div>
 
@@ -90,7 +84,6 @@ export default function ProjectForm({
             name="client"
             defaultValue={project?.client ?? ""}
             className="w-full rounded-lg border p-3"
-            required
           />
         </div>
 
@@ -103,7 +96,6 @@ export default function ProjectForm({
             name="location"
             defaultValue={project?.location ?? ""}
             className="w-full rounded-lg border p-3"
-            required
           />
         </div>
 
@@ -117,7 +109,6 @@ export default function ProjectForm({
             name="year"
             defaultValue={project?.year ?? ""}
             className="w-full rounded-lg border p-3"
-            required
           />
         </div>
 
@@ -130,7 +121,6 @@ export default function ProjectForm({
             name="duration"
             defaultValue={project?.duration ?? ""}
             className="w-full rounded-lg border p-3"
-            required
           />
         </div>
 
@@ -143,7 +133,6 @@ export default function ProjectForm({
             name="budget"
             defaultValue={project?.budget ?? ""}
             className="w-full rounded-lg border p-3"
-            required
           />
         </div>
 
@@ -156,13 +145,9 @@ export default function ProjectForm({
             name="area"
             defaultValue={project?.area ?? ""}
             className="w-full rounded-lg border p-3"
-            required
           />
         </div>
-<ImageUploader
-  name="coverImage"
-  value={project?.coverImage ?? ""}
-/>
+
       </div>
 
       <div>
@@ -175,7 +160,6 @@ export default function ProjectForm({
           rows={6}
           defaultValue={project?.description ?? ""}
           className="w-full rounded-lg border p-3"
-          required
         />
       </div>
 
@@ -184,7 +168,7 @@ export default function ProjectForm({
         <input
           type="checkbox"
           name="featured"
-          defaultChecked={project?.featured ?? false}
+          defaultChecked={project?.featured}
         />
 
         <span>Featured Project</span>

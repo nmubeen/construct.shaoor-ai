@@ -1,15 +1,24 @@
-import { HTMLAttributes, ReactNode } from "react";
-import clsx from "clsx";
+import { ReactNode } from "react";
 
-interface CardProps extends HTMLAttributes<HTMLDivElement> {
+interface CardProps {
   children: ReactNode;
+  className?: string;
 }
 
-export default function Card({ children, className, ...props }: CardProps) {
+export default function Card({
+  children,
+  className = "",
+}: CardProps) {
   return (
     <div
-      className={clsx("rounded-2xl border border-slate-200 bg-white p-6 shadow-sm", className)}
-      {...props}
+      className={`
+        rounded-2xl
+        border
+        border-(--border)
+        bg-white
+        shadow-sm
+        ${className}
+      `}
     >
       {children}
     </div>

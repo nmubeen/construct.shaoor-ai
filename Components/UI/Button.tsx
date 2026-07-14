@@ -1,28 +1,68 @@
-import Link from "next/link";
-import clsx from "clsx";
+import { ButtonHTMLAttributes, ReactNode } from "react";
 
-interface ButtonProps {
-  href: string;
-  children: React.ReactNode;
-  variant?: "primary" | "outline";
+type Variant =
+  | "primary"
+  | "secondary"
+  | "outline"
+  | "danger"
+  | "success"
+  | "ghost";
+
+interface ButtonProps
+  extends ButtonHTMLAttributes<HTMLButtonElement> {
+  children: ReactNode;
+  variant?: Variant;
+  fullWidth?: boolean;
 }
 
 export default function Button({
-  href,
   children,
   variant = "primary",
+  fullWidth = false,
+  className = "",
+  ...props
 }: ButtonProps) {
+  const variants = {
+    primary:
+      "bg-[var(--primary)] text-white hover:bg-[var(--primary-dark)]",
+
+    secondary:
+      "bg-[var(--accent)] text-black hover:brightness-95",
+
+    outline:
+      "border border-[var(--border)] bg-white hover:bg-slate-50",
+
+    danger:
+      "bg-red-600 text-white hover:bg-red-700",
+
+    success:
+      "bg-green-600 text-white hover:bg-green-700",
+
+    ghost:
+      "hover:bg-slate-100",
+  };
+
   return (
-    <Link
-      href={href}
-      className={clsx(
-        "rounded-lg px-6 py-3 font-semibold transition-all duration-300",
-        variant === "primary"
-          ? "bg-[#F4B400] text-slate-900 hover:bg-yellow-500"
-          : "border-2 border-white text-white hover:bg-white hover:text-slate-900"
-      )}
+    <button
+      className={`
+        inline-flex
+        items-center
+        justify-center
+        rounded-lg
+        px-5
+        py-3
+        font-medium
+        transition-all
+        duration-200
+        disabled:cursor-not-allowed
+        disabled:opacity-50
+        ${variants[variant]}
+        ${fullWidth ? "w-full" : ""}
+        ${className}
+      `}
+      {...props}
     >
       {children}
-    </Link>
+    </button>
   );
 }

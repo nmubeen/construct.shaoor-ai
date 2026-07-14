@@ -7,14 +7,23 @@
   --accent: #f4b400;
 
   --background: #f8fafc;
-
   --foreground: #0f172a;
 
   --white: #ffffff;
-
   --muted: #64748b;
-
   --border: #e2e8f0;
+
+  /* New */
+
+  --success: #16a34a;
+  --warning: #f59e0b;
+  --danger: #dc2626;
+
+  --card-radius: 16px;
+  --button-radius: 10px;
+
+  --shadow-sm: 0 2px 8px rgba(0,0,0,.08);
+  --shadow-md: 0 8px 20px rgba(0,0,0,.12);
 }
 
 * {
@@ -30,6 +39,8 @@ html {
 body {
   background: var(--background);
   color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+  line-height: 1.6;
 }
 
 a {
@@ -75,7 +86,11 @@ section {
   padding: 14px 28px;
   border-radius: 8px;
   font-weight: 600;
-  transition: .3s;
+  transition:
+  background-color .25s ease,
+  color .25s ease,
+  transform .25s ease,
+  box-shadow .25s ease;
 }
 
 .btn-primary:hover {
@@ -87,4 +102,11 @@ section {
   color: white;
   padding: 14px 28px;
   border-radius: 8px;
+}
+
+.card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--card-radius);
+  box-shadow: var(--shadow-sm);
 }

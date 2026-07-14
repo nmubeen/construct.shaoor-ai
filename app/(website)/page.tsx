@@ -1,18 +1,23 @@
-import Hero from "@/components/home/Hero";
-import StudioPreview from "@/components/home/StudioPreview";
-import ServicesPreview from "@/components/home/ServicesPreview";
-import FeaturedProjects from "@/components/home/FeaturedProjects";
-import WhyChooseUs from "@/components/home/WhyChooseUs";
-import CTA from "@/components/home/CTA";
+import Hero from "@/components/website/home/Hero";
+import FeaturedProjects from "@/components/website/home/FeaturedProjects";
+import WhyChooseUs from "@/components/website/home/WhyChooseUs";
+import Stats from "@/components/website/home/Stats";
+import AboutPreview from "@/components/website/home/AboutPreview";
+import CTA from "@/components/website/home/CTA";
 
 export default function HomePage() {
   return (
     <>
       <Hero />
-      <StudioPreview />
-      <ServicesPreview />
+
       <FeaturedProjects />
+
       <WhyChooseUs />
+
+      <Stats />
+
+      <AboutPreview />
+
       <CTA />
     </>
   );

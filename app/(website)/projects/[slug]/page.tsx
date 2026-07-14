@@ -1,68 +1,294 @@
-import Image from "next/image";
 import { notFound } from "next/navigation";
-import Container from "@/components/ui/Container";
-import PageBanner from "@/components/shared/PageBanner";
-import { projects } from "@/lib/data/projects";
+import Image from "next/image";
+import Link from "next/link";
 
-interface Props {
-  params: Promise<{ slug: string }>;
+import { prisma } from "@/lib/prisma";
+
+interface PageProps {
+  params: Promise<{
+    slug: string;
+  }>;
 }
 
-export default async function ProjectDetailPage({ params }: Props) {
+export default async function ProjectPage({
+  params,
+}: PageProps) {
   const { slug } = await params;
-  const project = projects.find((item) => item.slug === slug);
+
+  const project = await prisma.project.findUnique({
+    where: {
+      slug,
+    },
+    include: {
+      gallery: {
+        orderBy: {
+          id: "asc",
+        },
+      },
+      highlights: {
+        orderBy: {
+          id: "asc",
+        },
+      },
+    },
+  });
 
   if (!project) {
     notFound();
   }
 
+  const relatedProjects = await prisma.project.findMany({
+    where: {
+      category: project.category,
+      id: {
+        not: project.id,
+      },
+    },
+    take: 3,
+  });
+
   return (
-    <>
-      <PageBanner title={project.title} subtitle={project.category} />
+    <main className="mx-auto max-w-7xl px-6 py-16">
 
-      <section className="py-24">
-        <Container>
-          <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
-            <div className="relative h-70 overflow-hidden rounded-3xl sm:h-90 lg:h-105">
-              <Image
-                src={project.coverImage}
-                alt={project.title}
-                fill
-                className="object-cover"
-              />
-            </div>
+      {/* Breadcrumb */}
 
-            <div className="space-y-6">
-              <div>
-                <p className="text-sm font-semibold uppercase tracking-[0.25em] text-sky-900">
-                  {project.category}
-                </p>
-                <h1 className="mt-3 text-4xl font-semibold">{project.title}</h1>
-                <p className="mt-4 text-lg text-slate-600">{project.description}</p>
-              </div>
+      <div className="mb-8 text-sm text-slate-500">
+        <Link
+          href="/projects"
+          className="hover:text-[#0E4A7B]"
+        >
+          Projects
+        </Link>
 
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="rounded-2xl border border-slate-200 p-4">
-                  <p className="text-sm text-slate-500">Client</p>
-                  <p className="mt-1 font-semibold">{project.client}</p>
-                </div>
-                <div className="rounded-2xl border border-slate-200 p-4">
-                  <p className="text-sm text-slate-500">Location</p>
-                  <p className="mt-1 font-semibold">{project.location}</p>
-                </div>
-                <div className="rounded-2xl border border-slate-200 p-4">
-                  <p className="text-sm text-slate-500">Year</p>
-                  <p className="mt-1 font-semibold">{project.year}</p>
-                </div>
-                <div className="rounded-2xl border border-slate-200 p-4">
-                  <p className="text-sm text-slate-500">Budget</p>
-                  <p className="mt-1 font-semibold">{project.budget}</p>
-                </div>
-              </div>
-            </div>
+        {" / "}
+
+        {project.title}
+      </div>
+
+      {/* Cover */}
+
+      <div className="relative mb-12 h-125 overflow-hidden rounded-3xl">
+
+        <Image
+          src={project.coverImage}
+          alt={project.title}
+          fill
+          priority
+          className="object-cover"
+        />
+
+      </div>
+
+      {/* Header */}
+
+      <div className="mb-10">
+
+        <div className="mb-4 flex flex-wrap gap-3">
+
+          <span className="rounded-full bg-slate-100 px-4 py-2 text-sm">
+            {project.category}
+          </span>
+
+          <span
+            className={`rounded-full px-4 py-2 text-sm ${
+              project.status === "Completed"
+                ? "bg-green-100 text-green-700"
+                : "bg-yellow-100 text-yellow-700"
+            }`}
+          >
+            {project.status}
+          </span>
+
+        </div>
+
+        <h1 className="text-5xl font-bold">
+          {project.title}
+        </h1>
+
+      </div>
+
+      {/* Details */}
+
+      <div className="mb-12 grid gap-8 md:grid-cols-4">
+
+        <div>
+          <div className="text-sm text-slate-500">
+            Client
           </div>
-        </Container>
+
+          <div className="font-semibold">
+            {project.client}
+          </div>
+        </div>
+
+        <div>
+          <div className="text-sm text-slate-500">
+            Location
+          </div>
+
+          <div className="font-semibold">
+            {project.location}
+          </div>
+        </div>
+
+        <div>
+          <div className="text-sm text-slate-500">
+            Year
+          </div>
+
+          <div className="font-semibold">
+            {project.year}
+          </div>
+        </div>
+
+        <div>
+          <div className="text-sm text-slate-500">
+            Duration
+          </div>
+
+          <div className="font-semibold">
+            {project.duration}
+          </div>
+        </div>
+
+      </div>
+
+      {/* Description */}
+
+      <section className="mb-16">
+
+        <h2 className="mb-6 text-3xl font-bold">
+          About this Project
+        </h2>
+
+        <p className="whitespace-pre-line leading-8 text-slate-700">
+          {project.description}
+        </p>
+
       </section>
-    </>
+
+      {/* Highlights */}
+
+      {project.highlights.length > 0 && (
+
+        <section className="mb-16">
+
+          <h2 className="mb-6 text-3xl font-bold">
+            Highlights
+          </h2>
+
+          <div className="grid gap-4 md:grid-cols-2">
+
+            {project.highlights.map(
+              (highlight) => (
+                <div
+                  key={highlight.id}
+                  className="rounded-xl border p-5"
+                >
+                  ✓ {highlight.text}
+                </div>
+              )
+            )}
+
+          </div>
+
+        </section>
+
+      )}
+
+      {/* Gallery */}
+
+      {project.gallery.length > 0 && (
+
+        <section className="mb-16">
+
+          <h2 className="mb-6 text-3xl font-bold">
+            Gallery
+          </h2>
+
+          <div className="grid gap-6 md:grid-cols-3">
+
+            {project.gallery.map(
+              (image) => (
+
+                <div
+                  key={image.id}
+                  className="relative aspect-square overflow-hidden rounded-xl"
+                >
+
+                  <Image
+                    src={image.image}
+                    alt={project.title}
+                    fill
+                    className="object-cover"
+                  />
+
+                </div>
+
+              )
+            )}
+
+          </div>
+
+        </section>
+
+      )}
+
+      {/* Related Projects */}
+
+      {relatedProjects.length > 0 && (
+
+        <section>
+
+          <h2 className="mb-6 text-3xl font-bold">
+            Related Projects
+          </h2>
+
+          <div className="grid gap-8 md:grid-cols-3">
+
+            {relatedProjects.map(
+              (related) => (
+
+                <Link
+                  key={related.id}
+                  href={`/projects/${related.slug}`}
+                  className="overflow-hidden rounded-xl border bg-white shadow transition hover:shadow-lg"
+                >
+
+                  <div className="relative h-56">
+
+                    <Image
+                      src={related.coverImage}
+                      alt={related.title}
+                      fill
+                      className="object-cover"
+                    />
+
+                  </div>
+
+                  <div className="p-5">
+
+                    <h3 className="text-xl font-semibold">
+                      {related.title}
+                    </h3>
+
+                    <p className="mt-2 text-slate-500">
+                      {related.location}
+                    </p>
+
+                  </div>
+
+                </Link>
+
+              )
+            )}
+
+          </div>
+
+        </section>
+
+      )}
+
+    </main>
   );
 }
