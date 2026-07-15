@@ -1,8 +1,8 @@
 import Container from "@/components/ui/Container";
 import PageBanner from "@/components/shared/PageBanner";
-import ContactForm from "@/components/contact/ContactForm";
-import ContactInfo from "@/components/contact/ContactInfo";
-import CTA from "@/components/home/CTA";
+import ContactForm from "@/components/website/contact/ContactForm";
+import ContactInfo from "@/components/website/contact/ContactInfo";
+import CTA from "@/components/website/home/CTA";
 
 export default function ContactPage() {
   return (

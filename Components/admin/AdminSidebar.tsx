@@ -38,7 +38,7 @@ export default function AdminSidebar() {
   return (
     <aside className="flex min-h-screen w-72 flex-col bg-slate-900 text-white">
       <div className="p-8">
-        <h2 className="text-2xl font-bold">2 Yards CMS</h2>
+        <h2 className="text-2xl font-bold">SAM Constructions CMS</h2>
       </div>
 
       <nav className="flex-1 space-y-2 px-4">

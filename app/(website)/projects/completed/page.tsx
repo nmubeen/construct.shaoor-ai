@@ -1,6 +1,6 @@
 import Container from "@/components/ui/Container";
 import PageBanner from "@/components/shared/PageBanner";
-import ProjectCard from "@/components/projects/ProjectCard";
+import ProjectCard from "@/components/website/projects/ProjectCard";
 import { projects } from "@/lib/data/projects";
 
 

@@ -1,42 +1,18 @@
-"use client";
+import * as React from "react"
 
-import { forwardRef, TextareaHTMLAttributes } from "react";
-import clsx from "clsx";
+import { cn } from "@/lib/utils"
 
-interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
-  label?: string;
-  error?: string;
+function Textarea({ className, ...props }: React.ComponentProps<"textarea">) {
+  return (
+    <textarea
+      data-slot="textarea"
+      className={cn(
+        "flex field-sizing-content min-h-16 w-full rounded-md border border-input bg-transparent px-2.5 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 md:text-sm dark:bg-input/30 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40",
+        className
+      )}
+      {...props}
+    />
+  )
 }
 
-const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function Textarea(
-  { className, label, error, id, rows = 5, ...props },
-  ref
-) {
-  const textareaId = id ?? props.name;
-
-  return (
-    <div className="space-y-2">
-      {label && (
-        <label htmlFor={textareaId} className="block text-sm font-medium text-slate-700">
-          {label}
-        </label>
-      )}
-
-      <textarea
-        ref={ref}
-        id={textareaId}
-        rows={rows}
-        className={clsx(
-          "w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-900 outline-none transition focus:border-[#0E4A7B] focus:ring-2 focus:ring-[#0E4A7B]/15",
-          error && "border-red-500 focus:border-red-500 focus:ring-red-500/15",
-          className
-        )}
-        {...props}
-      />
-
-      {error && <p className="text-sm text-red-600">{error}</p>}
-    </div>
-  );
-});
-
-export default Textarea;
+export { Textarea }

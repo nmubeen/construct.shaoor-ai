@@ -5,32 +5,40 @@ import {
   FaHelmetSafety,
 } from "react-icons/fa6";
 
-const stats = [
-  {
-    icon: FaBuilding,
-    value: "250+",
-    label: "Projects Completed",
-  },
-  {
-    icon: FaUsers,
-    value: "100+",
-    label: "Satisfied Clients",
-  },
-  {
-    icon: FaAward,
-    value: "20+",
-    label: "Years of Excellence",
-  },
-  {
-    icon: FaHelmetSafety,
-    value: "500+",
-    label: "Skilled Professionals",
-  },
-];
+import { getSiteSettings } from "@/lib/settings";
 
-export default function Stats() {
+export default async function Stats() {
+  const settings = await getSiteSettings();
+
+  const stats = [
+    {
+      icon: FaBuilding,
+      value: settings.projectsCompleted,
+      suffix: "+",
+      label: "Projects Completed",
+    },
+    {
+      icon: FaUsers,
+      value: settings.clientsServed,
+      suffix: "+",
+      label: "Satisfied Clients",
+    },
+    {
+      icon: FaAward,
+      value: settings.yearsExperience,
+      suffix: "+",
+      label: "Years of Excellence",
+    },
+    {
+      icon: FaHelmetSafety,
+      value: settings.employees,
+      suffix: "+",
+      label: "Skilled Professionals",
+    },
+  ];
+
   return (
-    <section className="bg-(--primary) py-20 text-white">
+    <section className="bg-primary py-20 text-white">
       <div className="mx-auto max-w-7xl px-6">
 
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
@@ -43,12 +51,13 @@ export default function Stats() {
                 key={stat.label}
                 className="text-center"
               >
-                <div className="mb-5 flex justify-center text-5xl text-(--accent)">
+                <div className="mb-5 flex justify-center text-5xl text-accent">
                   <Icon />
                 </div>
 
                 <div className="mb-2 text-5xl font-extrabold">
                   {stat.value}
+                  {stat.suffix}
                 </div>
 
                 <div className="text-lg text-slate-200">

@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 
-import ProjectForm from "@/components/admin/forms/ProjectForm";
+import ProjectForm from "@/components/admin/projects/ProjectForm";
 import GalleryUploader from "@/components/admin/projects/GalleryUploader";
 import GalleryGrid from "@/components/admin/projects/GalleryGrid";
 import HighlightsEditor from "@/components/admin/projects/HighlightsEditor";

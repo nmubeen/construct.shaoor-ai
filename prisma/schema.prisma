@@ -64,7 +64,7 @@ enum UserRole {
 }
 
 model Settings {
-  id Int @id
+  id Int @id @default(autoincrement())
 
   // Company
   companyName String
@@ -112,6 +112,19 @@ model Settings {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  // Hero
+  heroImage String?
+
+  // CTA
+  ctaButtonLink String
+
+  // Contact
+  whatsApp String?
+  googleMapsUrl String?
+
+  // Branding
+  favicon String?
 }
 
 

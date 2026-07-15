@@ -1,6 +1,6 @@
 import PageBanner from "@/components/shared/PageBanner";
-import ProcessTimeline from "@/components/process/ProcessTimeLine";
-import CTA from "@/components/home/CTA";
+import ProcessTimeline from "@/components/website/process/ProcessTimeLine";
+import CTA from "@/components/website/home/CTA";
 
 export default function ProcessPage() {
   return (
