@@ -4,6 +4,10 @@ import type { Project } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { FaPen, FaTrash } from "react-icons/fa6";
 import { deleteProject } from "@/lib/actions/project.actions";
+import PageHeader from "@/components/admin/common/PageHeader";
+import PageCard from "@/components/admin/common/PageCard";
+import StatusBadge from "@/components/admin/common/StatusBadge";
+import EmptyState from "@/components/admin/common/EmptyState";
 
 function DeleteProjectButton({
   id,
@@ -59,15 +63,9 @@ function renderProjectRow(project: Project) {
       </td>
 
       <td className="p-4">
-        <span
-          className={`rounded-full px-3 py-1 text-xs font-semibold ${
-            project.status === "Completed"
-              ? "bg-green-100 text-green-700"
-              : "bg-yellow-100 text-yellow-700"
-          }`}
-        >
-          {project.status}
-        </span>
+        <StatusBadge
+          status={project.status}
+        />
       </td>
 
       <td className="p-4">
@@ -105,6 +103,7 @@ function renderProjectRow(project: Project) {
 
 export default async function ProjectsPage() {
   const projects = await prisma.project.findMany({
+    
     orderBy: {
       createdAt: "desc",
     },
@@ -113,22 +112,16 @@ export default async function ProjectsPage() {
   return (
     <div className="space-y-8">
 
-      <div className="flex items-center justify-between">
+    <PageHeader
+      title="Projects"
+      description="Manage your portfolio projects."
+      action={{
+        label: "New Project",
+        href: "/admin/projects/new",
+      }}
+    />
 
-        <h1 className="text-3xl font-bold">
-          Projects
-        </h1>
-
-        <Link
-          href="/admin/projects/new"
-          className="rounded-lg bg-[#0E4A7B] px-5 py-3 text-white hover:bg-[#0A365A]"
-        >
-          + New Project
-        </Link>
-
-      </div>
-
-      <div className="overflow-hidden rounded-xl border bg-white shadow">
+      <PageCard className="overflow-hidden p-0">
 
         <table className="w-full">
 
@@ -163,21 +156,23 @@ export default async function ProjectsPage() {
             {projects.length > 0 ? (
               projects.map(renderProjectRow)
             ) : (
-              <tr>
-                <td
-                  colSpan={8}
-                  className="p-10 text-center text-slate-500"
-                >
-                  No projects found.
-                </td>
-              </tr>
+            <tr>
+              <td colSpan={8}>
+                <EmptyState
+                  title="No Projects Yet"
+                  description="Create your first project to showcase your work."
+                  actionLabel="New Project"
+                  actionHref="/admin/projects/new"
+                />
+              </td>
+            </tr>
             )}
 
           </tbody>
 
         </table>
 
-      </div>
+      </PageCard>
 
     </div>
   );

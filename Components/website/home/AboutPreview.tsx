@@ -13,7 +13,7 @@ export default function AboutPreview() {
 
         <div>
 
-          <span className="text-sm font-semibold uppercase tracking-[0.25em] text-(--primary)">
+          <span className="text-sm font-semibold uppercase tracking-[0.25em] text-primary">
             About Us
           </span>
 
@@ -22,7 +22,7 @@ export default function AboutPreview() {
           </h2>
 
           <p className="mt-6 leading-8 text-slate-600">
-            SAM Constructions has earned a reputation for delivering
+            ABC Builders has earned a reputation for delivering
             high-quality residential, commercial, industrial and
             infrastructure projects through technical excellence,
             disciplined execution and long-term client relationships.
@@ -66,7 +66,7 @@ export default function AboutPreview() {
 
           <Link
             href="/about"
-            className="mt-10 inline-block rounded-lg bg-(--primary) px-8 py-4 font-semibold text-white transition hover:bg-(--primary-dark)"
+            className="mt-10 inline-block rounded-lg bg-primary px-8 py-4 font-semibold text-white transition hover:bg-(--primary-dark)"
           >
             Learn More
           </Link>

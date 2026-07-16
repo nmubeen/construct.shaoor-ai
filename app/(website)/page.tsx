@@ -4,20 +4,17 @@ import WhyChooseUs from "@/components/website/home/WhyChooseUs";
 import Stats from "@/components/website/home/Stats";
 import AboutPreview from "@/components/website/home/AboutPreview";
 import CTA from "@/components/website/home/CTA";
+import ServicesPreview from "@/components/website/home/ServicesPreview";
 
 export default function HomePage() {
   return (
     <>
       <Hero />
-
-      <FeaturedProjects />
-
-      <WhyChooseUs />
-
-      <Stats />
-
       <AboutPreview />
-
+      <ServicesPreview />
+      <FeaturedProjects />
+      <Stats />
+      <WhyChooseUs />
       <CTA />
     </>
   );

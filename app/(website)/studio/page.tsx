@@ -5,7 +5,7 @@ export default function StudioPage() {
     <>
       <PageBanner
         title="Our Studio"
-        subtitle="About SAM Constructions"
+        subtitle="About ABC Builders"
       />
 
       <section className="py-24">
@@ -17,7 +17,7 @@ export default function StudioPage() {
 
           <p className="max-w-4xl text-lg leading-9 text-slate-600">
 
-            At SAM Constructions we combine architecture,
+            At ABC Builders we combine architecture,
             construction and interior design to create
             exceptional spaces that reflect our clients'
             aspirations while maintaining functionality,

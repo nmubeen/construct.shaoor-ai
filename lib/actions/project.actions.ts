@@ -19,9 +19,6 @@ function projectDataFromForm(formData: FormData) {
     area: formData.get("area") as string,
     description: formData.get("description") as string,
     featured: formData.get("featured") === "on",
-    coverImage:
-      (formData.get("coverImage") as string) ||
-      "/images/projects/default.jpg",
       seoTitle:
   formData.get("seoTitle") as string,
 
@@ -70,10 +67,7 @@ export async function updateProject(
     },
     data: {
       ...data,
-      coverImage:
-        data.coverImage ||
-        previousImage,
-    },
+     },
   });
 
   // Delete the old image only if it has been replaced

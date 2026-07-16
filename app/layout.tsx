@@ -11,7 +11,7 @@ const geist = Geist({
 });
 
 export const metadata: Metadata = {
-  title: "SAM Constructions",
+  title: "ABC Builders",
   description: "Architecture & Construction",
 };
 

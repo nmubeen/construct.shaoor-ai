@@ -6,10 +6,20 @@ import {
   FaYoutube,
 } from "react-icons/fa";
 
-import { siteConfig } from "@/lib/site";
+import { getSiteSettings } from "@/lib/settings";
 
-export default function Footer() {
+export default async function Footer() {
+  const settings = await getSiteSettings();
   const year = new Date().getFullYear();
+
+  const navigation = [
+    { title: "Home", href: "/" },
+    { title: "About", href: "/about" },
+    { title: "Services", href: "/services" },
+    { title: "Projects", href: "/projects" },
+    { title: "Process", href: "/process" },
+    { title: "Contact", href: "/contact" },
+  ];
 
   return (
     <footer className="mt-20 border-t bg-slate-900 text-white">
@@ -19,54 +29,54 @@ export default function Footer() {
 
         <div>
           <h3 className="mb-4 text-2xl font-bold">
-            {siteConfig.company.name}
+            {settings.companyName}
           </h3>
 
           <p className="mb-6 text-slate-300">
-            {siteConfig.company.description}
+            {settings.description || settings.tagline}
           </p>
 
           <div className="flex gap-3">
 
-            {siteConfig.social.facebook && (
+            {settings.facebook && (
               <a
-                href={siteConfig.social.facebook}
+                href={settings.facebook}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="rounded-lg bg-slate-800 p-3 transition hover:bg-(--primary)"
+                className="rounded-lg bg-slate-800 p-3 transition hover:bg-[#0E4A7B]"
               >
                 <FaFacebookF />
               </a>
             )}
 
-            {siteConfig.social.instagram && (
+            {settings.instagram && (
               <a
-                href={siteConfig.social.instagram}
+                href={settings.instagram}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="rounded-lg bg-slate-800 p-3 transition hover:bg-(--primary)"
+                className="rounded-lg bg-slate-800 p-3 transition hover:bg-[#0E4A7B]"
               >
                 <FaInstagram />
               </a>
             )}
 
-            {siteConfig.social.linkedin && (
+            {settings.linkedin && (
               <a
-                href={siteConfig.social.linkedin}
+                href={settings.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="rounded-lg bg-slate-800 p-3 transition hover:bg-(--primary)"
+                className="rounded-lg bg-slate-800 p-3 transition hover:bg-[#0E4A7B]"
               >
                 <FaLinkedinIn />
               </a>
             )}
 
-            {siteConfig.social.youtube && (
+            {settings.youtube && (
               <a
-                href={siteConfig.social.youtube}
+                href={settings.youtube}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="rounded-lg bg-slate-800 p-3 transition hover:bg-(--primary)"
+                className="rounded-lg bg-slate-800 p-3 transition hover:bg-[#0E4A7B]"
               >
                 <FaYoutube />
               </a>
@@ -84,7 +94,7 @@ export default function Footer() {
 
           <ul className="space-y-3">
 
-            {siteConfig.navigation.map((item) => (
+            {navigation.map((item) => (
               <li key={item.title}>
                 <Link
                   href={item.href}
@@ -105,23 +115,45 @@ export default function Footer() {
             Contact
           </h4>
 
-          <div className="space-y-3 text-slate-300">
+          <div className="space-y-2 text-slate-300">
 
-            <p>
-              {siteConfig.company.phone}
-            </p>
+            {settings.phone && (
+              <p>{settings.phone}</p>
+            )}
 
-            <p>
-              {siteConfig.company.email}
-            </p>
+            {settings.email && (
+              <p>{settings.email}</p>
+            )}
 
-            <p>
-              {siteConfig.address.line1}
-            </p>
+            {settings.addressLine1 && (
+              <p>{settings.addressLine1}</p>
+            )}
 
-            <p>
-              {siteConfig.address.country}
-            </p>
+            {settings.addressLine2 && (
+              <p>{settings.addressLine2}</p>
+            )}
+
+            {(settings.city || settings.state) && (
+              <p>
+                {settings.city}
+                {settings.city && settings.state ? ", " : ""}
+                {settings.state}
+              </p>
+            )}
+
+            {(settings.country || settings.postalCode) && (
+              <p>
+                {settings.country}
+                {settings.country && settings.postalCode ? " - " : ""}
+                {settings.postalCode}
+              </p>
+            )}
+
+            {settings.whatsApp && (
+              <p>
+                WhatsApp: {settings.whatsApp}
+              </p>
+            )}
 
           </div>
         </div>
@@ -134,18 +166,15 @@ export default function Footer() {
           </h4>
 
           <p className="mb-6 text-slate-300">
-            Contact our team today and
-            let's discuss your next
-            project.
+            Contact our team today and let's discuss your next project.
           </p>
 
           <Link
             href="/contact"
-            className="inline-block rounded-lg bg-(--primary) px-6 py-3 text-white transition hover:bg-(--primary-dark)"
+            className="inline-block rounded-lg bg-[#0E4A7B] px-6 py-3 font-semibold text-white transition hover:bg-[#0A365A]"
           >
             Get a Quote
           </Link>
-
         </div>
 
       </div>
@@ -154,11 +183,14 @@ export default function Footer() {
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-6 py-6 text-sm text-slate-400 md:flex-row">
 
           <div>
-            © {year} {siteConfig.company.name}. All rights reserved.
+            © {year} {settings.companyName}. All rights reserved.
           </div>
 
           <div>
-            Designed & Developed by 2Yards Studios
+            Designed &amp; Developed by{" "}
+            <span className="font-medium text-white">
+              2Yards Studios
+            </span>
           </div>
 
         </div>

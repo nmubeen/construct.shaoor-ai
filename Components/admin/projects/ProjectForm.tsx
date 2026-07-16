@@ -1,7 +1,8 @@
 "use client";
 
-import { createProject } from "@/lib/actions/project.actions";
+import { createProject, updateProject } from "@/lib/actions/project.actions";
 import type { ProjectWithRelations } from "@/Types/project";
+import FormActions from "@/components/admin/common/FormActions";
 
 interface ProjectFormProps {
   mode: "create" | "edit";
@@ -14,9 +15,14 @@ export default function ProjectForm({
   mode,
   project,
 }: ProjectFormProps) {
+  const action =
+  mode === "create"
+    ? createProject
+    : updateProject.bind(null, project!.id);
+
   return (
     <form
-      action={createProject}
+      action={action}
       className="space-y-8 rounded-xl bg-white p-8 shadow"
     >
       <div className="grid gap-6 md:grid-cols-2">
@@ -175,14 +181,14 @@ export default function ProjectForm({
 
       </div>
 
-      <button
-        type="submit"
-        className="rounded-lg bg-[#0E4A7B] px-8 py-3 text-white hover:bg-[#0A365A]"
-      >
-        {mode === "create"
-          ? "Create Project"
-          : "Update Project"}
-      </button>
+      <FormActions
+        cancelHref="/admin/projects"
+        submitLabel={
+          mode === "create"
+            ? "Create Project"
+            : "Update Project"
+        }
+      />
 
     </form>
   );

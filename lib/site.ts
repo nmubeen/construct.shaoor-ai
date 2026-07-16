@@ -1,7 +1,7 @@
 export const siteConfig = {
   // Company Information
   company: {
-    name: "SAM Constructions",
+    name: "ABC Builders",
     tagline: "Building Excellence. Delivering Trust.",
     description:
       "A leading construction company delivering residential, commercial, industrial and infrastructure projects with uncompromising quality.",
@@ -95,7 +95,7 @@ export const siteConfig = {
 
   // Default SEO
   seo: {
-    title: "SAM Constructions",
+    title: "ABC Builders",
 
     description:
       "Professional construction company specializing in residential, commercial, industrial and infrastructure projects.",
@@ -114,7 +114,7 @@ export const siteConfig = {
 
   // Footer
   footer: {
-    copyright: `© ${new Date().getFullYear()} SAM Constructions. All rights reserved.`,
+    copyright: `© ${new Date().getFullYear()} ABC Builders. All rights reserved.`,
   },
 } as const;
 

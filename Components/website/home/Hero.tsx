@@ -4,12 +4,12 @@ import { siteConfig } from "@/lib/site";
 
 export default function Hero() {
   return (
-    <section className="relative overflow-hidden bg-linear-to-br from-(--primary) to-slate-900 text-white">
+    <section className="relative overflow-hidden bg-linear-to-br from-primary to-slate-900 text-white">
       <div className="mx-auto flex min-h-175 max-w-7xl items-center px-6 py-20">
 
         <div className="max-w-3xl">
 
-          <p className="mb-4 text-sm font-semibold uppercase tracking-[0.3em] text-(--accent)">
+          <p className="mb-4 text-sm font-semibold uppercase tracking-[0.3em] text-accent">
             Building Excellence Since Day One
           </p>
 
@@ -25,14 +25,14 @@ export default function Hero() {
 
             <Link
               href={siteConfig.home.heroButtonLink}
-              className="rounded-lg bg-(--accent) px-8 py-4 font-semibold text-black transition hover:brightness-95"
+              className="rounded-lg bg-accent px-8 py-4 font-semibold text-black transition hover:brightness-95"
             >
               {siteConfig.home.heroButtonText}
             </Link>
 
             <Link
               href="/contact"
-              className="rounded-lg border border-white px-8 py-4 font-semibold transition hover:bg-white hover:text-(--primary)"
+              className="rounded-lg border border-white px-8 py-4 font-semibold transition hover:bg-white hover:text-primary"
             >
               Get a Quote
             </Link>

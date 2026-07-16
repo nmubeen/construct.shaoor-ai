@@ -7,6 +7,7 @@ import {
   FaEnvelope,
   FaGear,
   FaArrowRightFromBracket,
+  FaBriefcase,
 } from "react-icons/fa6";
 
 import { logoutAction } from "@/lib/actions/auth.actions";
@@ -23,6 +24,11 @@ const menu = [
     icon: <FaFolderOpen />,
   },
   {
+    title: "Services",
+    href: "/admin/services",
+    icon: <FaBriefcase />,
+  },
+  {
     title: "Messages",
     href: "/admin/messages",
     icon: <FaEnvelope />,
@@ -32,13 +38,14 @@ const menu = [
     href: "/admin/settings",
     icon: <FaGear />,
   },
+  
 ];
 
 export default function AdminSidebar() {
   return (
     <aside className="flex min-h-screen w-72 flex-col bg-slate-900 text-white">
       <div className="p-8">
-        <h2 className="text-2xl font-bold">SAM Constructions CMS</h2>
+        <h2 className="text-2xl font-bold">ABC Builders CMS</h2>
       </div>
 
       <nav className="flex-1 space-y-2 px-4">

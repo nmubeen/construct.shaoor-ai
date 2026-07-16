@@ -46,7 +46,7 @@ export async function getSession() {
   });
 
   if (!session) {
-    await clearSessionCookie();
+    
     return null;
   }
 
