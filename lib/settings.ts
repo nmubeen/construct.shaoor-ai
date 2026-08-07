@@ -8,7 +8,7 @@ export const getSiteSettings = cache(async () => {
   if (!settings) {
     settings = await prisma.settings.create({
       data: {
-        companyName: "ABC Builders",
+        companyName: "Company Name",
         tagline: "Building Excellence",
         description: "",
 

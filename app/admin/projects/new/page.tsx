@@ -1,13 +1,13 @@
+import AdminPage from "@/components/admin/layout/AdminPage";
 import ProjectForm from "@/components/admin/projects/ProjectForm";
 
 export default function NewProjectPage() {
   return (
-    <div className="mx-auto max-w-5xl p-8">
-      <h1 className="mb-8 text-3xl font-bold">
-        Add New Project
-      </h1>
-
+    <AdminPage
+      title="New Project"
+      description="Create a new project for your portfolio."
+    >
       <ProjectForm mode="create" />
-    </div>
+    </AdminPage>
   );
 }

@@ -1,44 +1,66 @@
-import { ReactNode } from "react";
+import Link from "next/link";
+import { FaArrowRight } from "react-icons/fa6";
 
 interface DashboardCardProps {
   title: string;
-  value: number;
-  icon: ReactNode;
-  color: string;
+  subtitle?: string;
+  children: React.ReactNode;
+
+  href?: string;
+  actionLabel?: string;
+
+  className?: string;
+  bodyClassName?: string;
 }
 
 export default function DashboardCard({
   title,
-  value,
-  icon,
-  color,
+  subtitle,
+  children,
+
+  href,
+  actionLabel = "View All",
+
+  className = "",
+  bodyClassName = "p-6",
 }: DashboardCardProps) {
   return (
-    <div className="rounded-xl border bg-white p-6 shadow-sm transition hover:shadow-md">
-      <div className="flex items-center justify-between">
+    <div
+      className={`rounded-xl border bg-white shadow-sm ${className}`}
+    >
+      <header className="flex items-center justify-between border-b px-6 py-4">
 
         <div>
-
-          <p className="text-sm text-slate-500">
+          <h2 className="text-lg font-semibold text-slate-900">
             {title}
-          </p>
-
-          <h2 className="mt-2 text-4xl font-bold">
-            {value}
           </h2>
 
+          {subtitle && (
+            <p className="mt-1 text-sm text-slate-500">
+              {subtitle}
+            </p>
+          )}
         </div>
 
-        <div
-          className="flex h-14 w-14 items-center justify-center rounded-xl text-2xl text-white"
-          style={{
-            backgroundColor: color,
-          }}
-        >
-          {icon}
-        </div>
+        {href && (
+          <Link
+            href={href}
+            className="flex items-center gap-2 text-sm font-medium text-blue-600 transition hover:text-blue-700"
+          >
+            {actionLabel}
+
+            <FaArrowRight className="text-xs" />
+          </Link>
+        )}
+
+      </header>
+
+      <div className={bodyClassName}>
+
+        {children}
 
       </div>
+
     </div>
   );
 }

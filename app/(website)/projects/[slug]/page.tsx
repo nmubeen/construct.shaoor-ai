@@ -1,11 +1,59 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
+import { getDefaultSEO, getRouteMetadata } from "@/lib/seo";
+import PageHero from "@/components/website/shared/PageHero";
+import Container from "@/components/ui/Container";
+import { websiteDesign } from "@/components/website/shared/design";
+import JsonLd from "@/components/shared/JsonLd";
+import {
+  buildBreadcrumbSchema,
+  buildProjectSchema,
+} from "@/lib/schema";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
 }
+
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+
+  const project = await prisma.project.findUnique({
+    where: { slug },
+    select: {
+      title: true,
+      description: true,
+      coverImage: true,
+      seoTitle: true,
+      seoDescription: true,
+      seoKeywords: true,
+      canonicalUrl: true,
+    },
+  });
+
+  if (!project) {
+    return getRouteMetadata({
+      routePath: `/projects/${slug}`,
+      title: "Project Details",
+    });
+  }
+
+  return getRouteMetadata({
+    routePath: `/projects/${slug}`,
+    explicitCanonicalUrl: project.canonicalUrl,
+    title: project.seoTitle ?? project.title,
+    description: project.seoDescription ?? project.description,
+    keywords: project.seoKeywords,
+    ogTitle: project.seoTitle ?? project.title,
+    ogDescription: project.seoDescription ?? project.description,
+    ogImage: project.coverImage,
+  });
+}
+
 export default async function ProjectPage({ params }: PageProps) {
   const { slug } = await params;
 
@@ -34,22 +82,49 @@ export default async function ProjectPage({ params }: PageProps) {
     project.coverImage && project.coverImage !== "/images/projects/default.jpg"
       ? project.coverImage
       : project.gallery[0]?.image ?? "/images/projects/default.jpg";
+  const seo = await getDefaultSEO();
+  const baseUrl = new URL(seo.siteUrl).origin;
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      buildProjectSchema({
+        seo,
+        project: {
+          slug: project.slug,
+          title: project.title,
+          description: project.description,
+          coverImage: project.coverImage,
+          seoTitle: project.seoTitle,
+          seoDescription: project.seoDescription,
+          canonicalUrl: project.canonicalUrl,
+          createdAt: project.createdAt,
+          updatedAt: project.updatedAt,
+          gallery: project.gallery.map((item) => ({ image: item.image })),
+        },
+      }),
+      buildBreadcrumbSchema({
+        items: [
+          { name: "Home", url: `${baseUrl}/` },
+          { name: "Projects", url: `${baseUrl}/projects` },
+          { name: project.title, url: `${baseUrl}/projects/${project.slug}` },
+        ],
+      }),
+    ],
+  };
 
   return (
     <main className="bg-white">
-      <section className="bg-slate-900 py-10 text-white">
-        <div className="mx-auto max-w-7xl px-6">
-          <Link href="/projects" className="text-slate-300 hover:text-white">
-            ← Back to Projects
-          </Link>
-          <h1 className="mt-4 text-4xl font-bold">{project.title}</h1>
-          <p className="mt-2 text-slate-300">
-            {project.category} • {project.location}
-          </p>
-        </div>
-      </section>
+      <JsonLd data={jsonLd} />
 
-      <div className="mx-auto max-w-7xl px-6 py-12">
+      <PageHero
+        title={project.title}
+        subtitle="Project Details"
+        description={`${project.category} • ${project.location}`}
+        backHref="/projects"
+        backLabel="← Back to Projects"
+      />
+
+      <Container className="py-12">
         <div className="relative mb-12 h-75 overflow-hidden rounded-3xl md:h-112.5 lg:h-137.5">
           <Image
             src={heroImage}
@@ -91,7 +166,7 @@ export default async function ProjectPage({ params }: PageProps) {
             <h2 className="mb-6 text-3xl font-bold">Highlights</h2>
             <div className="grid gap-4 md:grid-cols-2">
               {project.highlights.map((h) => (
-                <div key={h.id} className="rounded-xl border p-5">
+                <div key={h.id} className={`${websiteDesign.card} p-5`}>
                   ✓ {h.text}
                 </div>
               ))}
@@ -126,7 +201,7 @@ export default async function ProjectPage({ params }: PageProps) {
             <div className="grid gap-8 md:grid-cols-3">
               {relatedProjects.map((p) => (
                 <Link key={p.id} href={`/projects/${p.slug}`}>
-                  <div className="overflow-hidden rounded-xl border transition hover:shadow-lg">
+                  <div className={websiteDesign.card}>
                     <div className="relative h-48 w-full">
                       <Image
                         src={
@@ -148,7 +223,7 @@ export default async function ProjectPage({ params }: PageProps) {
             </div>
           </section>
         )}
-      </div>
+      </Container>
     </main>
   );
 }

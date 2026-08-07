@@ -1,5 +1,6 @@
 "use client";
 
+import { Settings } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -7,14 +8,9 @@ import { FaBars, FaPhone } from "react-icons/fa6";
 
 import Navigation from "./Navigation";
 import MobileMenu from "./MobileMenu";
-
+import { websiteDesign } from "@/components/website/shared/design";
 interface HeaderClientProps {
-  settings: {
-    companyName: string;
-    tagline: string;
-    logo: string | null;
-    phone: string | null;
-  };
+  settings: Settings;
 }
 
 export default function HeaderClient({
@@ -25,7 +21,7 @@ export default function HeaderClient({
   return (
     <>
       <header className="sticky top-0 z-50 border-b bg-white/95 backdrop-blur">
-        <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+        <div className={`${websiteDesign.container} flex h-20 items-center justify-between px-4`}>
 
           {/* Logo */}
 
@@ -80,7 +76,7 @@ export default function HeaderClient({
 
             <Link
               href="/contact"
-              className="rounded-lg bg-[#0E4A7B] px-5 py-3 font-medium text-white transition hover:bg-[#0A365A]"
+              className={websiteDesign.primaryButton + " px-5 py-3 font-medium text-white!"}
             >
               Get a Quote
             </Link>
@@ -103,6 +99,7 @@ export default function HeaderClient({
       <MobileMenu
         open={menuOpen}
         onClose={() => setMenuOpen(false)}
+        settings={settings}
       />
     </>
   );

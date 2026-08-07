@@ -3,11 +3,14 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { FaPlus, FaTrash } from "react-icons/fa6";
+import ConfirmDialog from "@/components/admin/feedback/ConfirmDialog";
 
 import {
   addHighlight,
   deleteHighlight,
 } from "@/lib/actions/highlight.actions";
+import { notify } from "@/lib/toast";
+import { Entity, Messages } from "@/lib/messages";
 
 interface Highlight {
   id: number;
@@ -26,6 +29,9 @@ export default function HighlightsEditor({
   const router = useRouter();
 
   const [value, setValue] = useState("");
+  const [open, setOpen] = useState(false);
+  const [selectedHighlightId, setSelectedHighlightId] = useState<number | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const [pending, startTransition] =
     useTransition();
@@ -43,8 +49,9 @@ export default function HighlightsEditor({
         setValue("");
 
         router.refresh();
+        notify.success(Messages.created(Entity.highlight));
       } catch (error) {
-        alert(
+        notify.error(
           error instanceof Error
             ? error.message
             : "Unable to add highlight."
@@ -53,28 +60,33 @@ export default function HighlightsEditor({
     });
   }
 
-  function remove(id: number) {
-    if (
-      !window.confirm(
-        "Delete this highlight?"
-      )
-    ) {
-      return;
+  function requestRemove(id: number) {
+    setSelectedHighlightId(id);
+    setOpen(true);
+  }
+
+  async function confirmRemove() {
+    if (selectedHighlightId === null) return;
+
+    try {
+      setDeleteLoading(true);
+
+      await deleteHighlight(selectedHighlightId);
+
+      router.refresh();
+      notify.success(Messages.deleted(Entity.highlight));
+
+      setOpen(false);
+      setSelectedHighlightId(null);
+    } catch (error) {
+      notify.error(
+        error instanceof Error
+          ? error.message
+          : "Unable to delete highlight."
+      );
+    } finally {
+      setDeleteLoading(false);
     }
-
-    startTransition(async () => {
-      try {
-        await deleteHighlight(id);
-
-        router.refresh();
-      } catch (error) {
-        alert(
-          error instanceof Error
-            ? error.message
-            : "Unable to delete highlight."
-        );
-      }
-    });
   }
 
   return (
@@ -126,7 +138,7 @@ export default function HighlightsEditor({
                 type="button"
                 disabled={pending}
                 onClick={() =>
-                  remove(highlight.id)
+                  requestRemove(highlight.id)
                 }
                 className="text-red-600 hover:text-red-800"
               >
@@ -136,6 +148,22 @@ export default function HighlightsEditor({
           ))}
         </div>
       )}
+
+      <ConfirmDialog
+        open={open}
+        loading={deleteLoading}
+        title="Delete Highlight"
+        message="This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        onCancel={() => {
+          if (deleteLoading) return;
+
+          setOpen(false);
+          setSelectedHighlightId(null);
+        }}
+        onConfirm={confirmRemove}
+      />
     </section>
   );
 }

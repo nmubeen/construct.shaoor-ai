@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
 interface Props {
   value?: string;
@@ -17,11 +17,6 @@ export default function ImageUploader({
   const [preview, setPreview] = useState(value);
   const [imagePath, setImagePath] = useState(value);
   const [uploading, setUploading] = useState(false);
-
-  useEffect(() => {
-    setPreview(value);
-    setImagePath(value);
-  }, [value]);
 
   function chooseImage() {
     if (!uploading) {

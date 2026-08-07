@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { ensureSessionTableIsCompatible } from "./session-repair";
 import { generateSessionToken, getSessionExpiry } from "./token";
 import {
   clearSessionCookie,
@@ -10,6 +11,8 @@ import {
  * Creates a new session for the specified user.
  */
 export async function createSession(userId: number) {
+  await ensureSessionTableIsCompatible();
+
   const token = generateSessionToken();
   const expiresAt = getSessionExpiry();
 
@@ -30,6 +33,8 @@ export async function createSession(userId: number) {
  * Returns the current session record.
  */
 export async function getSession() {
+  await ensureSessionTableIsCompatible();
+
   const token = await getSessionCookie();
 
   if (!token) {
@@ -82,6 +87,8 @@ export async function getCurrentUser() {
  * Destroys the current session.
  */
 export async function destroySession() {
+  await ensureSessionTableIsCompatible();
+
   const token = await getSessionCookie();
 
   if (!token) {
@@ -101,6 +108,8 @@ export async function destroySession() {
  * Removes expired sessions.
  */
 export async function cleanupExpiredSessions() {
+  await ensureSessionTableIsCompatible();
+
   await prisma.session.deleteMany({
     where: {
       expiresAt: {

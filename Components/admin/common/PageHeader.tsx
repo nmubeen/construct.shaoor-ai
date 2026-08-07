@@ -35,7 +35,7 @@ export default function PageHeader({
       {action && (
         <Link
           href={action.href}
-          className="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-slate-800"
+          className="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-5 py-2.5 text-sm font-medium !text-white transition hover:bg-slate-800"
         >
           {action.icon}
           {action.label}

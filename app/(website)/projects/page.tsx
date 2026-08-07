@@ -1,7 +1,19 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 
 import { prisma } from "@/lib/prisma";
+import { getSeoPageMetadata } from "@/lib/seo";
+import PageHero from "@/components/website/shared/PageHero";
+import Container from "@/components/ui/Container";
+import { websiteDesign } from "@/components/website/shared/design";
+
+export async function generateMetadata(): Promise<Metadata> {
+  return getSeoPageMetadata({
+    pageKey: "projects",
+    routePath: "/projects",
+  });
+}
 
 export default async function ProjectsPage() {
   const projects = await prisma.project.findMany({
@@ -20,116 +32,104 @@ export default async function ProjectsPage() {
 
   return (
     <main className="bg-white">
+      <PageHero
+        title="Our Projects"
+        subtitle="Our Portfolio"
+        description="Explore our completed and ongoing construction projects."
+      />
 
-      {/* Hero */}
+      <section className={websiteDesign.sectionY}>
+        <Container>
 
-      <section className="bg-slate-900 py-10 text-white">
-        <div className="mx-auto max-w-7xl px-6 text-center">
+          {projects.length === 0 ? (
 
-          <h1 className="text-4xl font-bold">
-            Our Projects
-          </h1>
+            <div className="rounded-xl border border-dashed p-16 text-center text-slate-500">
+              No projects available.
+            </div>
 
-          <p className="mx-auto mt-3 max-w-3xl text-lg text-slate-300">
-            Explore our completed and ongoing construction projects.
-          </p>
+          ) : (
 
-        </div>
-      </section>
+            <div className="mx-auto grid max-w-fit gap-10 md:grid-cols-2 xl:grid-cols-3">
 
-      {/* Projects */}
+              {projects.map((project) => {
 
-      <section className="mx-auto max-w-7xl px-6 py-16">
+                const image =
+                  project.coverImage &&
+                    project.coverImage !== "/images/projects/default.jpg"
+                    ? project.coverImage
+                    : project.gallery.length > 0
+                      ? project.gallery[0].image
+                      : "/images/projects/default.jpg";
 
-        {projects.length === 0 ? (
+                return (
 
-          <div className="rounded-xl border border-dashed p-16 text-center text-slate-500">
-            No projects available.
-          </div>
+                  <article
+                    key={project.id}
+                    className={`${websiteDesign.card} w-95`}
+                  >
 
-        ) : (
+                    <div className="relative h-64">
 
-          <div className="mx-auto grid max-w-fit gap-10 md:grid-cols-2 xl:grid-cols-3">
-
-            {projects.map((project) => {
-
-              const image =
-                project.coverImage &&
-                project.coverImage !== "/images/projects/default.jpg"
-                  ? project.coverImage
-                  : project.gallery.length > 0
-                    ? project.gallery[0].image
-                    : "/images/projects/default.jpg";
-
-              return (
-
-                <article
-                  key={project.id}
-                  className="w-95 overflow-hidden rounded-2xl border bg-white shadow transition hover:-translate-y-1 hover:shadow-xl"
-                >
-
-                  <div className="relative h-64">
-
-                    <Image
-                      src={image}
-                      alt={project.title}
-                      fill
-                      className="object-cover"
-                    />
-
-                  </div>
-
-                  <div className="space-y-4 p-6">
-
-                    <div className="flex items-center justify-between">
-
-                      <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold">
-                        {project.category}
-                      </span>
-
-                      <span
-                        className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                          project.status === "Completed"
-                            ? "bg-green-100 text-green-700"
-                            : "bg-yellow-100 text-yellow-700"
-                        }`}
-                      >
-                        {project.status}
-                      </span>
+                      <Image
+                        src={image}
+                        alt={project.title}
+                        fill
+                        className="object-cover"
+                      />
 
                     </div>
 
-                    <h2 className="text-2xl font-bold">
-                      {project.title}
-                    </h2>
+                    <div className="space-y-4 p-6">
 
-                    <p className="text-slate-600">
-                      {project.location}
-                    </p>
+                      <div className="flex items-center justify-between">
 
-                    <p className="line-clamp-3 text-sm text-slate-500">
-                      {project.description}
-                    </p>
+                        <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold">
+                          {project.category}
+                        </span>
 
-                    <Link
-                      href={`/projects/${project.slug}`}
-                      className="inline-flex font-semibold text-[#0E4A7B] hover:underline"
-                    >
-                      View Project →
-                    </Link>
+                        <span
+                          className={`rounded-full px-3 py-1 text-xs font-semibold ${project.status === "Completed"
+                              ? "bg-green-100 text-green-700"
+                              : "bg-yellow-100 text-yellow-700"
+                            }`}
+                        >
+                          {project.status}
+                        </span>
 
-                  </div>
+                      </div>
 
-                </article>
+                      <h2 className="text-2xl font-bold">
+                        {project.title}
+                      </h2>
 
-              );
+                      <p className="text-slate-600">
+                        {project.location}
+                      </p>
 
-            })}
+                      <p className="line-clamp-3 text-sm text-slate-500">
+                        {project.description}
+                      </p>
 
-          </div>
+                      <Link
+                        href={`/projects/${project.slug}`}
+                        className="inline-flex font-semibold text-primary hover:underline"
+                      >
+                        View Project →
+                      </Link>
 
-        )}
+                    </div>
 
+                  </article>
+
+                );
+
+              })}
+
+            </div>
+
+          )}
+
+        </Container>
       </section>
 
     </main>

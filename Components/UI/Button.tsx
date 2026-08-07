@@ -34,7 +34,7 @@ export default function Button(props: ButtonProps) {
     primary:
       "bg-[#0E4A7B] text-white hover:bg-[#0b3b63]",
     secondary:
-      "bg-yellow-500 text-slate-900 hover:bg-yellow-400",
+      "bg-yellow-500 text-white hover:bg-yellow-400",
     outline:
       "border-2 border-white bg-transparent text-white hover:bg-white hover:text-[#0E4A7B]",
   };

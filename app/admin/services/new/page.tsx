@@ -1,13 +1,14 @@
+import AdminPage from "@/components/admin/layout/AdminPage";
 import ServiceForm from "@/components/admin/services/ServiceForm";
 
 export default function NewServicePage() {
   return (
-    <div className="mx-auto max-w-5xl p-8">
-      <h1 className="mb-8 text-3xl font-bold">
-        Add New Service
-      </h1>
+    <AdminPage
+      title="New Service"
+      description="Add a new service."
+    >
 
       <ServiceForm mode="create" />
-    </div>
+    </AdminPage>
   );
 }

@@ -1,13 +1,17 @@
 "use client";
 
 import Image from "next/image";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FaTrash, FaStar } from "react-icons/fa6";
+import ConfirmDialog from "@/components/admin/feedback/ConfirmDialog";
 
 import {
-  deleteGalleryImage,
+  deleteProjectGalleryImage,
   setProjectCoverImage,
-} from "@/lib/actions/gallery.actions";
+} from "@/lib/actions/project-gallery.actions";
+import { notify } from "@/lib/toast";
+import { Entity, Messages } from "@/lib/messages";
 
 interface GalleryImage {
   id: number;
@@ -16,7 +20,7 @@ interface GalleryImage {
 
 interface Props {
   projectId: number;
-  coverImage: string;
+  coverImage: string | null;
   images: GalleryImage[];
 }
 
@@ -26,25 +30,43 @@ export default function GalleryGrid({
   images,
 }: Props) {
   const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const [selectedImageId, setSelectedImageId] = useState<number | null>(null);
+  const [loading, setLoading] = useState(false);
 
+  function requestDelete(id: number) {
+    setSelectedImageId(id);
+    setOpen(true);
+  }
 
-  async function deleteImage(id: number) {
-    if (
-      !window.confirm(
-        "Delete this image?"
-      )
-    ) {
-      return;
+  async function confirmDelete() {
+    if (selectedImageId === null) return;
+
+    try {
+      setLoading(true);
+
+      await deleteProjectGalleryImage(selectedImageId);
+
+      router.refresh();
+      notify.success(Messages.deleted(Entity.galleryImage));
+
+      setOpen(false);
+      setSelectedImageId(null);
+    } catch (error) {
+      notify.error(error instanceof Error ? error.message : Messages.deleteFailed);
+    } finally {
+      setLoading(false);
     }
-
-    await deleteGalleryImage(id);
-
-    router.refresh();
   }
 
 async function makeCover(imagePath: string) {
-  await setProjectCoverImage(projectId, imagePath);
-  router.refresh();
+  try {
+    await setProjectCoverImage(projectId, imagePath);
+    router.refresh();
+    notify.success(Messages.updated(Entity.project));
+  } catch (error) {
+    notify.error(error instanceof Error ? error.message : Messages.unexpected);
+  }
 }
 
   if (images.length === 0) {
@@ -111,7 +133,7 @@ async function makeCover(imagePath: string) {
               <button
                 type="button"
                 onClick={() =>
-                  deleteImage(image.id)
+                  requestDelete(image.id)
                 }
                 className="flex w-full items-center justify-center gap-2 rounded-lg bg-red-100 py-2 font-medium text-red-700 transition hover:bg-red-200"
               >
@@ -128,6 +150,22 @@ async function makeCover(imagePath: string) {
         );
 
       })}
+
+      <ConfirmDialog
+        open={open}
+        loading={loading}
+        title="Delete Image"
+        message="This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        onCancel={() => {
+          if (loading) return;
+
+          setOpen(false);
+          setSelectedImageId(null);
+        }}
+        onConfirm={confirmDelete}
+      />
 
     </div>
   );

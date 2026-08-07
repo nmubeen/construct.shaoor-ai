@@ -19,12 +19,12 @@ model Project {
   duration    String
   budget      String
   area        String
-  coverImage  String
+  coverImage  String?
   description String
   featured    Boolean     @default(false)
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
-  gallery     Gallery[]
+  gallery     ProjectGallery[]
   highlights  Highlight[]
   seoTitle       String?
   seoDescription String?
@@ -40,12 +40,69 @@ model Highlight {
   project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 }
 
-model Gallery {
+model ProjectGallery {
   id        Int    @id @default(autoincrement())
   image     String
 
   projectId Int
   project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+  DOCUMENT
+  OTHER
+}
+
+model Media {
+  id           Int       @id @default(autoincrement())
+  fileName     String
+  originalName String
+  altText      String?
+  title        String?
+  description  String?
+  folder       String?
+  mimeType     String
+  extension    String
+  fileSize     Int
+  width        Int?
+  height       Int?
+  type         MediaType
+  url          String
+  thumbnailUrl String?
+  isActive     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  galleryItems GalleryItem[]
+}
+
+model Gallery {
+  id          Int           @id @default(autoincrement())
+  title       String
+  slug        String        @unique
+  description String?
+  coverImage  String?
+  featured    Boolean       @default(false)
+  isActive    Boolean       @default(true)
+  sortOrder   Int           @default(0)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  items       GalleryItem[]
+}
+
+model GalleryItem {
+  id        Int      @id @default(autoincrement())
+  galleryId Int
+  mediaId   Int
+  caption   String?
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+
+  gallery Gallery @relation(fields: [galleryId], references: [id], onDelete: Cascade)
+  media   Media   @relation(fields: [mediaId], references: [id])
+
+  @@index([galleryId])
 }
 
 model User {
@@ -125,12 +182,26 @@ model Settings {
 
   // Branding
   favicon String?
+
+  // About Page
+
+aboutTitle            String?
+aboutSubtitle         String?
+aboutStory            String? 
+
+missionTitle          String?
+missionDescription    String? 
+
+visionTitle           String?
+visionDescription     String? 
+
+aboutImage            String?
 }
 
 
 
 model Session {
-  id        String   @id @default(cuid())
+  id        Int      @id @default(autoincrement())
   token     String   @unique
   expiresAt DateTime
   createdAt DateTime @default(now())
@@ -139,7 +210,7 @@ model Session {
 }
 
 model Service {
-  id               String   @id @default(cuid())
+  id               Int      @id @default(autoincrement())
   title            String
   slug             String   @unique
   shortDescription String
@@ -148,6 +219,10 @@ model Service {
   icon             String?
   displayOrder     Int      @default(0)
   isActive         Boolean  @default(true)
+  seoTitle       String?
+  seoDescription String?
+  seoKeywords    String?
+  canonicalUrl   String?
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 }
@@ -181,4 +256,156 @@ model TeamMember {
 
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
+}
+
+model Client {
+  id            Int      @id @default(autoincrement())
+  name          String
+  slug          String   @unique
+
+  logo          String?
+  website       String?
+
+  category      String?
+  description   String?
+
+  displayOrder  Int      @default(0)
+
+  featured      Boolean  @default(false)
+  active        Boolean  @default(true)
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Testimonial {
+  id            Int      @id @default(autoincrement())
+
+  clientName    String
+  company       String?
+  designation   String?
+
+  photo         String?
+
+  rating        Int      @default(5)
+
+  testimonial   String
+
+  projectName   String?
+
+  featured      Boolean  @default(false)
+  active        Boolean  @default(true)
+
+  displayOrder  Int      @default(0)
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model FAQ {
+  id            Int      @id @default(autoincrement())
+
+  question      String
+  answer        String
+
+  category      String?
+
+  displayOrder  Int      @default(0)
+
+  featured      Boolean  @default(false)
+  active        Boolean  @default(true)
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Message {
+  id              Int      @id @default(autoincrement())
+  name            String
+  email           String
+  phone           String?
+  subject         String?
+  message         String
+  projectInterest String?
+  isRead          Boolean  @default(false)
+  isReplied       Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model SeoSettings {
+  id Int @id @default(autoincrement())
+
+  siteName String
+
+  defaultTitle String
+  defaultDescription String
+
+  defaultKeywords String?
+
+  siteUrl String
+
+  defaultOgImage String?
+
+  favicon String?
+
+  appleTouchIcon String?
+
+  twitterHandle String?
+
+  facebookAppId String?
+
+  robotsIndex Boolean @default(true)
+  robotsFollow Boolean @default(true)
+
+  googleVerification String?
+
+  bingVerification String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SeoPage {
+
+  id Int @id @default(autoincrement())
+
+  pageKey String @unique
+
+  pageName String
+
+  title String
+
+  description String
+
+  keywords String?
+
+  canonicalUrl String?
+
+  ogTitle String?
+
+  ogDescription String?
+
+  ogImage String?
+
+  robotsIndex Boolean @default(true)
+
+  robotsFollow Boolean @default(true)
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+}
+
+model AuditLog {
+  id        Int      @id @default(autoincrement())
+  module    String
+  action    String
+  recordId  String?
+  title     String
+  details   String?
+  createdAt DateTime @default(now())
+
+  @@index([module])
+  @@index([createdAt])
 }

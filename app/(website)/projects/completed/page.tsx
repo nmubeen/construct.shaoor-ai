@@ -1,7 +1,18 @@
+import type { Metadata } from "next";
+
 import Container from "@/components/ui/Container";
 import PageBanner from "@/components/shared/PageBanner";
 import ProjectCard from "@/components/website/projects/ProjectCard";
 import { projects } from "@/lib/data/projects";
+import { getRouteMetadata } from "@/lib/seo";
+
+export async function generateMetadata(): Promise<Metadata> {
+  return getRouteMetadata({
+    routePath: "/projects/completed",
+    title: "Completed Projects",
+    description: "Browse our portfolio of completed construction projects.",
+  });
+}
 
 
 export default function CompletedProjectsPage() {

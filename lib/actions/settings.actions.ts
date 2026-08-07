@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { getSiteSettings } from "@/lib/settings";
+import { logActivity } from "@/lib/actions/audit.actions";
 
 export async function getSettings() {
   return getSiteSettings();
@@ -12,7 +13,7 @@ export async function updateSettings(formData: FormData) {
   try {
     const settings = await getSettings();
 
-    await prisma.settings.update({
+    const updatedSettings = await prisma.settings.update({
       where: {
         id: settings.id,
       },
@@ -59,6 +60,14 @@ export async function updateSettings(formData: FormData) {
         googleMapsUrl: String(formData.get("googleMapsUrl") ?? ""),
         favicon: String(formData.get("favicon") ?? ""),
       },
+    });
+
+    await logActivity({
+      module: "Settings",
+      action: "UPDATE",
+      recordId: String(updatedSettings.id),
+      title: "Updated Site Settings",
+      details: `Company: ${updatedSettings.companyName}`,
     });
 
     revalidatePath("/");

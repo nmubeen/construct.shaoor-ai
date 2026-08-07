@@ -2,6 +2,9 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { prisma } from "@/lib/prisma";
+import PageSection from "@/components/website/shared/PageSection";
+import SectionHeader from "@/components/website/shared/SectionHeader";
+import { websiteDesign } from "@/components/website/shared/design";
 
 export default async function FeaturedProjects() {
   const projects = await prisma.project.findMany({
@@ -19,39 +22,36 @@ export default async function FeaturedProjects() {
   }
 
   return (
-    <section className="bg-white py-24">
-      <div className="mx-auto max-w-7xl px-6">
+    <PageSection className="bg-white">
+      <SectionHeader
+        eyebrow="Our Work"
+        title="Featured Projects"
+        subtitle="A selection of projects that reflect our commitment to quality, innovation, and timely delivery."
+        align="left"
+      />
 
-        <div className="mb-16 text-center">
+      <div className="py-4">
+        <Link
+          href="/projects"
+          className={`${websiteDesign.primaryButton} text-white!`}
+        >
+          View All Projects
+        </Link>
+      </div>
 
-          <span className="text-sm font-semibold uppercase tracking-[0.25em] text-(--primary)">
-            Our Work
-          </span>
-
-          <h2 className="mt-3 text-4xl font-bold">
-            Featured Projects
-          </h2>
-
-          <p className="mx-auto mt-5 max-w-3xl text-lg text-slate-600">
-            A selection of projects that reflect our commitment
-            to quality, innovation, and timely delivery.
-          </p>
-
-        </div>
-
-        <div className="grid gap-8 lg:grid-cols-3">
+      <div className="grid gap-8 lg:grid-cols-3">
 
           {projects.map((project) => (
             <article
               key={project.id}
-              className="group overflow-hidden rounded-2xl border bg-white shadow-sm transition duration-300 hover:-translate-y-2 hover:shadow-xl"
+              className={`group ${websiteDesign.card}`}
             >
               <Link href={`/projects/${project.slug}`}>
 
                 <div className="relative h-72 overflow-hidden">
 
                   <Image
-                    src={project.coverImage}
+                    src={project.coverImage || "/images/no-image.webp"}
                     alt={project.title}
                     fill
                     className="object-cover transition duration-500 group-hover:scale-105"
@@ -79,7 +79,7 @@ export default async function FeaturedProjects() {
 
                   </div>
 
-                  <h3 className="text-2xl font-bold transition group-hover:text-(--primary)">
+                  <h3 className="text-2xl font-bold transition group-hover:text-primary">
                     {project.title}
                   </h3>
 
@@ -91,7 +91,7 @@ export default async function FeaturedProjects() {
                     {project.description}
                   </p>
 
-                  <div className="pt-2 font-semibold text-(--primary)">
+                  <div className="pt-2 font-semibold text-primary">
                     View Project →
                   </div>
 
@@ -101,20 +101,7 @@ export default async function FeaturedProjects() {
             </article>
           ))}
 
-        </div>
-
-        <div className="mt-16 text-center">
-
-          <Link
-            href="/projects"
-            className="inline-flex rounded-lg bg-(--primary) px-8 py-4 font-semibold text-white transition hover:bg-(--primary-dark)"
-          >
-            View All Projects
-          </Link>
-
-        </div>
-
       </div>
-    </section>
+    </PageSection>
   );
 }

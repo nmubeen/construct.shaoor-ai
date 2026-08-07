@@ -3,6 +3,22 @@ import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
 
+const SEO_PAGE_DEFAULTS = [
+  { pageKey: "home", pageName: "Home" },
+  { pageKey: "about", pageName: "About" },
+  { pageKey: "services", pageName: "Services" },
+  { pageKey: "projects", pageName: "Projects" },
+  { pageKey: "team", pageName: "Team" },
+  { pageKey: "clients", pageName: "Clients" },
+  { pageKey: "testimonials", pageName: "Testimonials" },
+  { pageKey: "faq", pageName: "FAQ" },
+  { pageKey: "contact", pageName: "Contact" },
+] as const;
+
+function pageHref(pageKey: string) {
+  return pageKey === "home" ? "/" : `/${pageKey}`;
+}
+
 async function main() {
   const passwordHash = await bcrypt.hash(
     "Admin@123",
@@ -26,6 +42,94 @@ async function main() {
   });
 
   console.log("✅ Admin user created");
+
+  const appSettings = await prisma.settings.upsert({
+    where: {
+      id: 1,
+    },
+    update: {},
+    create: {
+      companyName: "Company Name",
+      tagline: "Building Excellence",
+      description: "",
+      logo: "",
+      favicon: "",
+      phone: "",
+      email: "",
+      website: "",
+      addressLine1: "",
+      addressLine2: "",
+      city: "",
+      state: "",
+      country: "",
+      postalCode: "",
+      facebook: "",
+      instagram: "",
+      linkedin: "",
+      twitter: "",
+      youtube: "",
+      heroTitle: "",
+      heroSubtitle: "",
+      heroImage: "",
+      ctaTitle: "",
+      ctaSubtitle: "",
+      ctaButtonText: "Contact Us",
+      ctaButtonLink: "/contact",
+      projectsCompleted: 0,
+      clientsServed: 0,
+      yearsExperience: 0,
+      employees: 0,
+      seoTitle: "",
+      seoDescription: "",
+      seoKeywords: "",
+      whatsApp: "",
+      googleMapsUrl: "",
+    },
+  });
+
+  const existingSettings = await prisma.seoSettings.findFirst({
+    orderBy: {
+      createdAt: "asc",
+    },
+  });
+
+  const seoSettings =
+    existingSettings ??
+    (await prisma.seoSettings.create({
+      data: {
+        siteName: appSettings.companyName,
+        defaultTitle: appSettings.seoTitle || appSettings.companyName,
+        defaultDescription:
+          "Professional construction company delivering quality projects.",
+        siteUrl: appSettings.website || "https://example.com",
+      },
+    }));
+
+  await Promise.all(
+    SEO_PAGE_DEFAULTS.map((item) =>
+      prisma.seoPage.upsert({
+        where: {
+          pageKey: item.pageKey,
+        },
+        update: {},
+        create: {
+          pageKey: item.pageKey,
+          pageName: item.pageName,
+          title: `${item.pageName} | ${seoSettings.siteName}`,
+          description: seoSettings.defaultDescription,
+          keywords: seoSettings.defaultKeywords,
+          canonicalUrl: `${seoSettings.siteUrl}${pageHref(item.pageKey)}`,
+          ogTitle: `${item.pageName} | ${seoSettings.siteName}`,
+          ogDescription: seoSettings.defaultDescription,
+          ogImage: seoSettings.defaultOgImage,
+          robotsIndex: seoSettings.robotsIndex,
+          robotsFollow: seoSettings.robotsFollow,
+        },
+      })
+    )
+  );
+
+  console.log("✅ SEO defaults ensured");
 }
 
 main()

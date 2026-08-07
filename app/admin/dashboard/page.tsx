@@ -1,73 +1,37 @@
-import { prisma } from "@/lib/prisma";
-
-import DashboardCard from "@/components/admin/dashboard/DashboardCard";
+import DashboardHeader from "@/components/admin/dashboard/DashboardHeader";
+import DashboardStats from "@/components/admin/dashboard/DashboardStats";
+import RecentMessages from "@/components/admin/dashboard/RecentMessages";
 import RecentProjects from "@/components/admin/dashboard/RecentProjects";
-import QuickActions from "@/components/admin/dashboard/QuickActions";
-
-import {
-  FaFolderOpen,
-  FaCircleCheck,
-  FaSpinner,
-  FaEnvelope,
-} from "react-icons/fa6";
+import ActivityTimeline from "@/components/admin/dashboard/ActivityTimeline";
+import SystemStatus from "@/components/admin/dashboard/SystemStatus";
+import { getDashboardData } from "@/lib/actions/dashboard.actions";
 
 export default async function DashboardPage() {
-  const totalProjects = await prisma.project.count();
-
-  const completedProjects = await prisma.project.count({
-    where: {
-      status: "Completed",
-    },
-  });
-
-  const ongoingProjects = await prisma.project.count({
-    where: {
-      status: "Ongoing",
-    },
-  });
-
-  const totalMessages = 0;
+  const {
+    stats,
+    recentMessages,
+    recentProjects,
+    activityTimeline,
+    systemStatus,
+  } = await getDashboardData();
 
   return (
-    <div className="space-y-8">
-      <h1 className="text-4xl font-bold">Dashboard</h1>
+    <div className="mx-auto max-w-7xl p-6">
+      <div>
+        <DashboardHeader />
 
-      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-        <DashboardCard
-          title="Projects"
-          value={totalProjects}
-          icon={<FaFolderOpen />}
-          color="#0E4A7B"
-        />
+        <div className="space-y-12 pt-8">
+          <DashboardStats stats={stats} />
+          <SystemStatus status={systemStatus} />
+          <div className="grid gap-6 lg:grid-cols-2">
+            <RecentMessages messages={recentMessages} />
+            <RecentProjects projects={recentProjects} />
+          </div>
 
-        <DashboardCard
-          title="Completed"
-          value={completedProjects}
-          icon={<FaCircleCheck />}
-          color="#16A34A"
-        />
+          <ActivityTimeline items={activityTimeline} />
 
-        <DashboardCard
-          title="Ongoing"
-          value={ongoingProjects}
-          icon={<FaSpinner />}
-          color="#F59E0B"
-        />
-
-        <DashboardCard
-          title="Messages"
-          value={totalMessages}
-          icon={<FaEnvelope />}
-          color="#7C3AED"
-        />
-      </div>
-
-      <div className="grid gap-6 lg:grid-cols-3">
-        <div className="lg:col-span-2">
-          <RecentProjects />
+          
         </div>
-
-        <QuickActions />
       </div>
     </div>
   );

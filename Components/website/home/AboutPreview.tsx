@@ -1,28 +1,33 @@
-import Image from "next/image";
 import Link from "next/link";
 import {
   FaCheckCircle,
 } from "react-icons/fa";
 
-export default function AboutPreview() {
+import PageSection from "@/components/website/shared/PageSection";
+import SectionHeader from "@/components/website/shared/SectionHeader";
+import { websiteDesign } from "@/components/website/shared/design";
+import { getSiteSettings } from "@/lib/settings";
+
+export default async function AboutPreview() {
+  const settings = await getSiteSettings();
+
   return (
-    <section className="bg-white py-24">
-      <div className="mx-auto grid max-w-7xl items-center gap-16 px-6 lg:grid-cols-2">
+    <PageSection
+      className="bg-white"
+      contentClassName="grid items-center gap-16 lg:grid-cols-2"
+    >
 
         {/* Left */}
 
         <div>
+          <SectionHeader
+            title="Building Strong Foundations for the Future"
+            eyebrow="About Us"
+            align="left"
+          />
 
-          <span className="text-sm font-semibold uppercase tracking-[0.25em] text-primary">
-            About Us
-          </span>
-
-          <h2 className="mt-4 text-4xl font-bold leading-tight">
-            Building Strong Foundations for the Future
-          </h2>
-
-          <p className="mt-6 leading-8 text-slate-600">
-            ABC Builders has earned a reputation for delivering
+          <p className="leading-8 text-slate-600">
+            {settings.companyName} has earned a reputation for delivering
             high-quality residential, commercial, industrial and
             infrastructure projects through technical excellence,
             disciplined execution and long-term client relationships.
@@ -66,27 +71,12 @@ export default function AboutPreview() {
 
           <Link
             href="/about"
-            className="mt-10 inline-block rounded-lg bg-primary px-8 py-4 font-semibold text-white transition hover:bg-(--primary-dark)"
+            className={`mt-10 ${websiteDesign.primaryButton} text-white!`}
           >
             Learn More
           </Link>
 
         </div>
-
-        {/* Right */}
-
-        <div className="relative h-125 overflow-hidden rounded-3xl shadow-xl">
-
-          <Image
-            src="/images/about/company.jpg"
-            alt="Construction Site"
-            fill
-            className="object-cover"
-          />
-
-        </div>
-
-      </div>
-    </section>
+    </PageSection>
   );
 }

@@ -1,6 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { websiteDesign } from "@/components/website/shared/design";
+
 export interface Project {
   id: number;
   slug: string;
@@ -19,7 +21,7 @@ export default function ProjectCard({ project }: Props) {
   return (
     <Link
       href={`/projects/${project.slug}`}
-      className="group overflow-hidden rounded-2xl bg-white shadow transition-all duration-300 hover:-translate-y-2 hover:shadow-xl"
+      className={`group ${websiteDesign.card} transition-all`}
     >
       <div className="relative h-64 overflow-hidden">
         <Image

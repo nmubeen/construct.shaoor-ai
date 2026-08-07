@@ -1,0 +1,154 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "build-gallery-module",
+			"type": "shell",
+			"command": "npm run build",
+			"isBackground": false
+		},
+		{
+			"label": "lint-audit-module",
+			"type": "shell",
+			"command": "npm run lint",
+			"isBackground": false
+		},
+		{
+			"label": "build-audit-module",
+			"type": "shell",
+			"command": "npm run build",
+			"isBackground": false
+		},
+		{
+			"label": "lint-audit-module-check",
+			"type": "shell",
+			"command": "npm run lint && echo LINT_OK",
+			"isBackground": false
+		},
+		{
+			"label": "lint-audit-files",
+			"type": "shell",
+			"command": "npx eslint app/admin/audit/page.tsx components/admin/audit/AuditFilters.tsx components/admin/audit/AuditTable.tsx lib/actions/audit.actions.ts lib/actions/project.actions.ts lib/actions/service.actions.ts lib/actions/team.actions.ts lib/actions/client.actions.ts lib/actions/testimonial.actions.ts lib/actions/faq.actions.ts lib/actions/message.actions.ts lib/actions/seo.actions.ts lib/actions/media.actions.ts lib/actions/gallery.actions.ts lib/actions/settings.actions.ts components/admin/AdminSidebar.tsx",
+			"isBackground": false
+		},
+		{
+			"label": "build-audit-final",
+			"type": "shell",
+			"command": "npm run build",
+			"isBackground": false
+		},
+		{
+			"label": "prisma-generate-audit-fix",
+			"type": "shell",
+			"command": "npx prisma generate",
+			"isBackground": false
+		},
+		{
+			"label": "verify-auditlog-delegate",
+			"type": "shell",
+			"command": "node -e \"const {PrismaClient}=require('@prisma/client'); const p=new PrismaClient(); console.log('hasAuditLog', 'auditLog' in p, typeof p.auditLog); p.$disconnect();\"",
+			"isBackground": false
+		},
+		{
+			"label": "Build (verify public design refactor)",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"build"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Build (verify contact form refactor)",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"build"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Clean .next and rebuild",
+			"type": "shell",
+			"command": "pwsh",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"if (Test-Path .next) { Remove-Item -Recurse -Force .next }; npm run build"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Lint contact form file",
+			"type": "shell",
+			"command": "npx",
+			"args": [
+				"eslint",
+				"components/website/contact/ContactForm.tsx"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Prisma Generate (int id migration)",
+			"type": "shell",
+			"command": "npx",
+			"args": [
+				"prisma",
+				"generate"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Kill Node locks",
+			"type": "shell",
+			"command": "pwsh",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"Get-Process node -ErrorAction SilentlyContinue | Stop-Process -Force"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Prisma Generate (retry)",
+			"type": "shell",
+			"command": "npx",
+			"args": [
+				"prisma",
+				"generate"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Build after Prisma ID changes",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"build"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "dev-qa",
+			"type": "shell",
+			"command": "npm run dev",
+			"isBackground": true,
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "qa-dev-server",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"dev"
+			],
+			"isBackground": true,
+			"group": "build"
+		}
+	]
+}

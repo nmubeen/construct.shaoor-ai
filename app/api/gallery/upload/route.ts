@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { uploadProjectImage } from "@/lib/actions/upload.actions";
-import { addGalleryImage } from "@/lib/actions/gallery.actions";
+import { addProjectGalleryImage } from "@/lib/actions/project-gallery.actions";
 
 export async function POST(
   request: Request
@@ -30,7 +30,7 @@ export async function POST(
     const image =
       await uploadProjectImage(file);
 
-    await addGalleryImage(
+    await addProjectGalleryImage(
       projectId,
       image
     );

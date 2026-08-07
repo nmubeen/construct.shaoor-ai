@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { deleteGalleryImage } from "@/lib/actions/gallery.actions";
+import { deleteProjectGalleryImage } from "@/lib/actions/project-gallery.actions";
 
 interface RouteProps {
   params: Promise<{
@@ -14,7 +14,7 @@ export async function DELETE(
   try {
     const { id } = await params;
 
-    await deleteGalleryImage(Number(id));
+    await deleteProjectGalleryImage(Number(id));
 
     return NextResponse.json({
       success: true,

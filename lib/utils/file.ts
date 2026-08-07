@@ -10,10 +10,14 @@ export async function deleteUploadedFile(imagePath: string) {
   }
 
   try {
+    const relativePath = imagePath
+      .replace(/^\/+/, "")
+      .replace(/\\/g, "/");
+
     const fullPath = path.join(
       process.cwd(),
       "public",
-      imagePath
+      relativePath
     );
 
     await fs.unlink(fullPath);

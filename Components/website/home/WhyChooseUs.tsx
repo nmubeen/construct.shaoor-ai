@@ -5,6 +5,10 @@ import {
   FaAward,
 } from "react-icons/fa6";
 
+import PageSection from "@/components/website/shared/PageSection";
+import SectionHeader from "@/components/website/shared/SectionHeader";
+import { websiteDesign } from "@/components/website/shared/design";
+
 const features = [
   {
     icon: FaBuilding,
@@ -34,26 +38,13 @@ const features = [
 
 export default function WhyChooseUs() {
   return (
-    <section className="bg-slate-50 py-24">
-      <div className="mx-auto max-w-7xl px-6">
-
-        <div className="mb-16 text-center">
-
-          <span className="text-sm font-semibold uppercase tracking-[0.25em] text-(--primary)">
-            Why Choose Us
-          </span>
-
-          <h2 className="mt-3 text-4xl font-bold">
-            Building with Confidence
-          </h2>
-
-          <p className="mx-auto mt-5 max-w-3xl text-lg text-slate-600">
-            Every project is backed by professional expertise,
-            disciplined execution, and a commitment to delivering
-            exceptional results.
-          </p>
-
-        </div>
+    <PageSection className="bg-slate-50">
+      <SectionHeader
+        eyebrow="Why Choose Us"
+        title="Building with Confidence"
+        subtitle="Every project is backed by professional expertise, disciplined execution, and a commitment to delivering exceptional results."
+        align="left"
+      />
 
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
 
@@ -63,17 +54,17 @@ export default function WhyChooseUs() {
             return (
               <div
                 key={feature.title}
-                className="rounded-2xl bg-white p-8 shadow-sm transition hover:-translate-y-2 hover:shadow-xl"
+                className={websiteDesign.card}
               >
-                <div className="mb-6 inline-flex rounded-xl bg-(--primary) p-4 text-2xl text-white">
+                <div className="m-8 mb-0 inline-flex rounded-xl bg-primary p-4 text-2xl text-white">
                   <Icon />
                 </div>
 
-                <h3 className="mb-4 text-xl font-bold">
+                <h3 className="mb-4 mt-6 px-8 text-xl font-bold">
                   {feature.title}
                 </h3>
 
-                <p className="leading-7 text-slate-600">
+                <p className="px-8 pb-8 leading-7 text-slate-600">
                   {feature.description}
                 </p>
               </div>
@@ -81,8 +72,6 @@ export default function WhyChooseUs() {
           })}
 
         </div>
-
-      </div>
-    </section>
+    </PageSection>
   );
 }

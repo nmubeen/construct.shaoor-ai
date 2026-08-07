@@ -2,18 +2,19 @@
 
 import { useEffect } from "react";
 import { FaTimes } from "react-icons/fa";
-
 import Navigation from "./Navigation";
-import { siteConfig } from "@/lib/site";
+import { Settings } from "@prisma/client";
 
 interface MobileMenuProps {
   open: boolean;
   onClose: () => void;
+  settings: Settings;
 }
 
 export default function MobileMenu({
   open,
   onClose,
+  settings,
 }: MobileMenuProps) {
   useEffect(() => {
     if (open) {
@@ -54,11 +55,11 @@ export default function MobileMenu({
         <div className="flex items-center justify-between border-b p-6">
           <div>
             <h2 className="text-xl font-bold">
-              {siteConfig.company.name}
+              {settings.companyName}
             </h2>
 
             <p className="text-xs text-slate-500">
-              {siteConfig.company.tagline}
+              {settings.tagline}
             </p>
           </div>
 
@@ -84,8 +85,8 @@ export default function MobileMenu({
         <div className="border-t p-6">
 
           <a
-            href={`tel:${siteConfig.company.phone}`}
-            className="mb-3 block rounded-lg bg-(--primary) px-4 py-3 text-center text-white transition hover:bg-(--primary-dark)"
+            href={`tel:${settings.phone}`}
+            className="mb-3 block rounded-lg bg-(--primary) px-4 py-3 text-center text-white! transition hover:bg-(--primary-dark)"
           >
             📞 Call Now
           </a>

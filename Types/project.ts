@@ -7,4 +7,4 @@ export type ProjectWithRelations = Prisma.ProjectGetPayload<{
   };
 }>;
 
-export type ProjectSummary = Prisma.ProjectGetPayload<{}>;
+export type ProjectSummary = Prisma.ProjectGetPayload<Prisma.ProjectDefaultArgs>;

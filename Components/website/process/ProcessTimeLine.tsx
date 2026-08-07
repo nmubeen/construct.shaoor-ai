@@ -1,5 +1,6 @@
 import Container from "@/components/ui/Container";
 import SectionTitle from "@/components/ui/SectionTitle";
+import { websiteDesign } from "@/components/website/shared/design";
 
 const steps = [
   {
@@ -42,7 +43,7 @@ const steps = [
 
 export default function ProcessTimeline() {
   return (
-    <section className="py-24 bg-white">
+    <section className={`${websiteDesign.sectionY} bg-white`}>
       <Container>
         <SectionTitle
           subtitle="Our Process"
@@ -53,7 +54,7 @@ export default function ProcessTimeline() {
           {steps.map((step) => (
             <div
               key={step.number}
-              className="flex gap-6 rounded-xl border border-slate-200 p-6 shadow-sm"
+              className={`${websiteDesign.card} flex gap-6 p-6`}
             >
               <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#0E4A7B] text-xl font-bold text-white">
                 {step.number}

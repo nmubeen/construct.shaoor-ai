@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import {
   FaFacebookF,
@@ -5,6 +6,7 @@ import {
   FaLinkedinIn,
   FaYoutube,
 } from "react-icons/fa";
+import { FaXTwitter } from "react-icons/fa6";
 
 import { getSiteSettings } from "@/lib/settings";
 
@@ -28,12 +30,38 @@ export default async function Footer() {
         {/* Company */}
 
         <div>
-          <h3 className="mb-4 text-2xl font-bold">
-            {settings.companyName}
-          </h3>
+          <Link href="/" className="mb-5 flex items-center gap-3">
+
+            {settings.logo ? (
+              <Image
+                src={settings.logo}
+                alt={settings.companyName}
+                width={56}
+                height={56}
+                className="h-14 w-14 object-contain"
+              />
+            ) : (
+              <div className="flex h-14 w-14 items-center justify-center rounded-lg bg-[#0E4A7B] text-xl font-bold text-white">
+                {settings.companyName.charAt(0)}
+              </div>
+            )}
+
+            <div>
+              <h3 className="text-2xl font-bold">
+                {settings.companyName}
+              </h3>
+
+              {settings.tagline && (
+                <p className="text-sm text-slate-400">
+                  {settings.tagline}
+                </p>
+              )}
+            </div>
+
+          </Link>
 
           <p className="mb-6 text-slate-300">
-            {settings.description || settings.tagline}
+            {settings.description}
           </p>
 
           <div className="flex gap-3">
@@ -43,6 +71,7 @@ export default async function Footer() {
                 href={settings.facebook}
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="Facebook"
                 className="rounded-lg bg-slate-800 p-3 transition hover:bg-[#0E4A7B]"
               >
                 <FaFacebookF />
@@ -54,6 +83,7 @@ export default async function Footer() {
                 href={settings.instagram}
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="Instagram"
                 className="rounded-lg bg-slate-800 p-3 transition hover:bg-[#0E4A7B]"
               >
                 <FaInstagram />
@@ -65,9 +95,22 @@ export default async function Footer() {
                 href={settings.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="LinkedIn"
                 className="rounded-lg bg-slate-800 p-3 transition hover:bg-[#0E4A7B]"
               >
                 <FaLinkedinIn />
+              </a>
+            )}
+
+            {settings.twitter && (
+              <a
+                href={settings.twitter}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="X"
+                className="rounded-lg bg-slate-800 p-3 transition hover:bg-[#0E4A7B]"
+              >
+                <FaXTwitter />
               </a>
             )}
 
@@ -76,6 +119,7 @@ export default async function Footer() {
                 href={settings.youtube}
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="YouTube"
                 className="rounded-lg bg-slate-800 p-3 transition hover:bg-[#0E4A7B]"
               >
                 <FaYoutube />
@@ -115,14 +159,24 @@ export default async function Footer() {
             Contact
           </h4>
 
-          <div className="space-y-2 text-slate-300">
+          <div className="space-y-3 text-slate-300">
 
             {settings.phone && (
-              <p>{settings.phone}</p>
+              <a
+                href={`tel:${settings.phone}`}
+                className="block transition hover:text-white"
+              >
+                {settings.phone}
+              </a>
             )}
 
             {settings.email && (
-              <p>{settings.email}</p>
+              <a
+                href={`mailto:${settings.email}`}
+                className="block transition hover:text-white"
+              >
+                {settings.email}
+              </a>
             )}
 
             {settings.addressLine1 && (
@@ -150,9 +204,14 @@ export default async function Footer() {
             )}
 
             {settings.whatsApp && (
-              <p>
+              <a
+                href={`https://wa.me/${settings.whatsApp.replace(/\D/g, "")}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block transition hover:text-white"
+              >
                 WhatsApp: {settings.whatsApp}
-              </p>
+              </a>
             )}
 
           </div>
@@ -166,12 +225,12 @@ export default async function Footer() {
           </h4>
 
           <p className="mb-6 text-slate-300">
-            Contact our team today and let's discuss your next project.
+            Contact our team today and let&apos;s discuss your next construction project.
           </p>
 
           <Link
             href="/contact"
-            className="inline-block rounded-lg bg-[#0E4A7B] px-6 py-3 font-semibold text-white transition hover:bg-[#0A365A]"
+            className="inline-block rounded-lg bg-[#0E4A7B] px-6 py-3 font-semibold text-white! transition hover:bg-[#0A365A]"
           >
             Get a Quote
           </Link>
@@ -189,7 +248,7 @@ export default async function Footer() {
           <div>
             Designed &amp; Developed by{" "}
             <span className="font-medium text-white">
-              2Yards Studios
+              Mubeen
             </span>
           </div>
 

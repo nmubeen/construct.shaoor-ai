@@ -2,6 +2,9 @@ import Link from "next/link";
 import Image from "next/image";
 
 import { prisma } from "@/lib/prisma";
+import PageSection from "@/components/website/shared/PageSection";
+import SectionHeader from "@/components/website/shared/SectionHeader";
+import { websiteDesign } from "@/components/website/shared/design";
 
 export default async function ServicesPreview() {
   const services = await prisma.service.findMany({
@@ -19,30 +22,29 @@ export default async function ServicesPreview() {
   }
 
   return (
-    <section className="bg-white py-20">
+    <PageSection className="bg-white">
+      <SectionHeader
+        title="Our Services"
+        subtitle="Comprehensive construction solutions tailored to your needs."
+        align="left"
+      />
 
-      <div className="mx-auto max-w-7xl px-6">
+      <div className="py-4">
+        <Link
+          href="/services"
+          className={websiteDesign.primaryButton + " text-white!"}
+        >
+          View All Services
+        </Link>
+      </div>
 
-        <div className="mb-14 text-center">
-
-          <h2 className="text-4xl font-bold">
-            Our Services
-          </h2>
-
-          <p className="mt-4 text-slate-600">
-            Comprehensive construction solutions
-            tailored to your needs.
-          </p>
-
-        </div>
-
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
 
           {services.map((service) => (
 
             <article
               key={service.id}
-              className="overflow-hidden rounded-xl border bg-white shadow transition hover:-translate-y-1 hover:shadow-lg"
+              className={websiteDesign.card}
             >
 
               {service.image && (
@@ -69,7 +71,7 @@ export default async function ServicesPreview() {
 
                 <Link
                   href={`/services/${service.slug}`}
-                  className="mt-6 inline-block font-semibold text-[#0E4A7B] hover:underline"
+                  className="mt-6 inline-block font-semibold text-primary hover:underline"
                 >
                   Learn More →
                 </Link>
@@ -80,21 +82,7 @@ export default async function ServicesPreview() {
 
           ))}
 
-        </div>
-
-        <div className="mt-14 text-center">
-
-          <Link
-            href="/services"
-            className="rounded-lg bg-[#0E4A7B] px-8 py-4 font-semibold text-white hover:bg-[#0A365A]"
-          >
-            View All Services
-          </Link>
-
-        </div>
-
       </div>
-
-    </section>
+    </PageSection>
   );
 }

@@ -1,7 +1,9 @@
+const defaultCompanyName = "Company Name";
+
 export const siteConfig = {
   // Company Information
   company: {
-    name: "ABC Builders",
+    name: defaultCompanyName,
     tagline: "Building Excellence. Delivering Trust.",
     description:
       "A leading construction company delivering residential, commercial, industrial and infrastructure projects with uncompromising quality.",
@@ -95,7 +97,7 @@ export const siteConfig = {
 
   // Default SEO
   seo: {
-    title: "ABC Builders",
+    title: defaultCompanyName,
 
     description:
       "Professional construction company specializing in residential, commercial, industrial and infrastructure projects.",
@@ -114,7 +116,7 @@ export const siteConfig = {
 
   // Footer
   footer: {
-    copyright: `© ${new Date().getFullYear()} ABC Builders. All rights reserved.`,
+    copyright: `© ${new Date().getFullYear()} ${defaultCompanyName}. All rights reserved.`,
   },
 } as const;
 

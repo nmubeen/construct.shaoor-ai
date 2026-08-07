@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation";
 
-import { prisma } from "@/lib/prisma";
+import AdminPage from "@/components/admin/layout/AdminPage";
 import ServiceForm from "@/components/admin/services/ServiceForm";
+import { getService } from "@/lib/actions/service.actions";
 
 interface PageProps {
   params: Promise<{
@@ -13,33 +14,28 @@ export default async function EditServicePage({
   params,
 }: PageProps) {
   const { id } = await params;
+  const numericId = Number(id);
 
-  const service = await prisma.service.findUnique({
-    where: {
-      id,
-    },
-  });
+  if (Number.isNaN(numericId) || numericId < 1) {
+    notFound();
+  }
+
+  const service = await getService(numericId);
 
   if (!service) {
     notFound();
   }
 
   return (
-    <div className="mx-auto max-w-5xl p-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold">
-          Edit Service
-        </h1>
-
-        <p className="mt-2 text-slate-500">
-          Update service details.
-        </p>
-      </div>
+    <AdminPage
+      title="Edit Service"
+      description="Update service details."
+    >
 
       <ServiceForm
         mode="edit"
         service={service}
       />
-    </div>
+    </AdminPage>
   );
 }

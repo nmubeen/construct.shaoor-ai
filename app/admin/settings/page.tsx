@@ -1,23 +1,18 @@
-import { getSettings } from "@/lib/actions/settings.actions";
-import SettingsForm from "@/components/admin/settings/SettingsForm";
+import { getSiteSettings } from "@/lib/settings";
+
+import AdminPage from "@/components/admin/layout/AdminPage";
+
+import SettingsForm from "@/components/admin/settings/sections/SettingsForm";
 
 export default async function SettingsPage() {
-  const settings = await getSettings();
+  const settings = await getSiteSettings();
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold">
-          Website Settings
-        </h1>
-
-        <p className="mt-2 text-slate-500">
-          Manage your company information, homepage content,
-          contact details and SEO settings.
-        </p>
-      </div>
-
+    <AdminPage
+      title="Website Settings"
+      description="Manage company information and website configuration."
+    >
       <SettingsForm settings={settings} />
-    </div>
+    </AdminPage>
   );
 }

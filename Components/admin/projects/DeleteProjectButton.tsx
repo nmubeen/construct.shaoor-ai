@@ -1,42 +1,53 @@
 "use client";
 
-import { useRef } from "react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { deleteProject } from "@/lib/actions/project.actions";
+import ConfirmDialog from "@/components/admin/feedback/ConfirmDialog";
+import { notify } from "@/lib/toast";
+import { Entity, Messages } from "@/lib/messages";
 
 interface Props {
   id: number;
 }
 
 export default function DeleteProjectButton({ id }: Props) {
-  const formRef = useRef<HTMLFormElement>(null);
-
-  function handleClick() {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this project?\n\nThis action cannot be undone."
-    );
-
-    if (!confirmed) return;
-
-    formRef.current?.requestSubmit();
-  }
+  const [open, setOpen] = useState(false);
+  const router = useRouter();
 
   const deleteAction = deleteProject.bind(null, id);
+
+  async function handleDelete() {
+    try {
+      const result = await deleteAction();
+      if (!result.success) throw new Error(result.message);
+      setOpen(false);
+      router.refresh();
+      notify.success(Messages.deleted(Entity.project));
+    } catch (error) {
+      notify.error(error instanceof Error ? error.message : Messages.deleteFailed);
+    }
+  }
 
   return (
     <>
       <button
         type="button"
-        onClick={handleClick}
+        onClick={() => setOpen(true)}
         className="text-red-600 hover:text-red-800"
         title="Delete Project"
       >
         🗑
       </button>
 
-      <form
-        ref={formRef}
-        action={deleteAction}
-        className="hidden"
+      <ConfirmDialog
+        open={open}
+        title="Delete Project"
+        message="This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        onCancel={() => setOpen(false)}
+        onConfirm={handleDelete}
       />
     </>
   );

@@ -1,26 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import type { Service } from "@prisma/client";
 
 import {
   createService,
   updateService,
 } from "@/lib/actions/service.actions";
 
-import ImageUpload from "@/components/admin/common/ImageUpload";
 import FormActions from "@/components/admin/common/FormActions";
-
-interface Service {
-  id: string;
-  title: string;
-  slug: string;
-  shortDescription: string;
-  description: string;
-  image: string | null;
-  icon: string | null;
-  displayOrder: number;
-  isActive: boolean;
-}
+import ImageUpload from "@/components/admin/common/ImageUpload";
+import AdminSection from "@/components/admin/layout/AdminSection";
+import NumberField from "@/components/admin/fields/NumberField";
+import SwitchField from "@/components/admin/fields/SwitchField";
+import TextField from "@/components/admin/fields/TextField";
+import TextAreaField from "@/components/admin/fields/TextAreaField";
+import { notify } from "@/lib/toast";
+import { Entity, Messages } from "@/lib/messages";
 
 interface ServiceFormProps {
   mode: "create" | "edit";
@@ -40,6 +37,7 @@ export default function ServiceForm({
   mode,
   service,
 }: ServiceFormProps) {
+  const router = useRouter();
   const [title, setTitle] = useState(
     service?.title ?? ""
   );
@@ -47,12 +45,6 @@ export default function ServiceForm({
   const [slug, setSlug] = useState(
     service?.slug ?? ""
   );
-
-  useEffect(() => {
-    if (mode === "create") {
-      setSlug(slugify(title));
-    }
-  }, [title, mode]);
 
   const action =
     mode === "create"
@@ -62,136 +54,144 @@ export default function ServiceForm({
           service!.id
         );
 
+  async function handleSubmit(formData: FormData) {
+    try {
+      await action(formData);
+      notify.success(mode === "create" ? Messages.created(Entity.service) : Messages.updated(Entity.service));
+      router.push("/admin/services");
+    } catch (error) {
+      notify.error(error instanceof Error ? error.message : Messages.unexpected);
+    }
+  }
+
   return (
     <form
-      action={action}
-      className="space-y-8 rounded-xl bg-white p-8 shadow"
+      action={handleSubmit}
+      className="space-y-8 rounded-xl bg-white p-6 shadow sm:p-8"
     >
-      <div className="grid gap-6 md:grid-cols-2">
-
-        <div>
-          <label className="mb-2 block font-medium">
-            Service Title
-          </label>
-
-          <input
-            name="title"
-            value={title}
-            onChange={(e) =>
-              setTitle(e.target.value)
-            }
-            className="w-full rounded-lg border p-3"
-            required
+      <AdminSection
+        title="Basic Information"
+        description="Public information displayed on the website."
+      >
+        <div className="space-y-6">
+          <ImageUpload
+            label="Service Image"
+            name="image"
+            defaultValue={service?.image ?? ""}
           />
-        </div>
 
-        <div>
-          <label className="mb-2 block font-medium">
-            Slug
-          </label>
+          <div className="grid gap-6 md:grid-cols-2">
+            <TextField
+              label="Title"
+              name="title"
+              placeholder="Design and Build"
+              value={title}
+              onChange={(event) => {
+                const nextTitle = event.target.value;
+                setTitle(nextTitle);
 
-          <input
-            name="slug"
-            value={slug}
-            onChange={(e) =>
-              setSlug(e.target.value)
-            }
-            className="w-full rounded-lg border p-3"
-            required
+                if (mode === "create") {
+                  setSlug(slugify(nextTitle));
+                }
+              }}
+              required
+            />
+
+            <TextField
+              label="Slug"
+              name="slug"
+              value={slug}
+              helperText="Automatically generated from the title."
+              onChange={(event) => setSlug(event.target.value)}
+              required
+            />
+          </div>
+
+          <TextAreaField
+            name="shortDescription"
+            label="Short Description"
+            rows={4}
+            defaultValue={service?.shortDescription ?? ""}
           />
-        </div>
 
-      </div>
+          <TextAreaField
+            name="description"
+            label="Description"
+            rows={8}
+            defaultValue={service?.description ?? ""}
+          />
 
-      <div>
-        <label className="mb-2 block font-medium">
-          Short Description
-        </label>
-
-        <textarea
-          name="shortDescription"
-          rows={3}
-          defaultValue={
-            service?.shortDescription ??
-            ""
-          }
-          className="w-full rounded-lg border p-3"
-        />
-      </div>
-
-      <div>
-        <label className="mb-2 block font-medium">
-          Description
-        </label>
-
-        <textarea
-          name="description"
-          rows={8}
-          defaultValue={
-            service?.description ??
-            ""
-          }
-          className="w-full rounded-lg border p-3"
-        />
-      </div>
-
-      <ImageUpload
-        label="Service Image"
-        name="image"
-        defaultValue={
-          service?.image ?? ""
-        }
-      />
-
-      <div className="grid gap-6 md:grid-cols-2">
-
-        <div>
-          <label className="mb-2 block font-medium">
-            Icon
-          </label>
-
-          <input
+          <TextField
+            label="Icon"
             name="icon"
-            defaultValue={
-              service?.icon ?? ""
-            }
-            className="w-full rounded-lg border p-3"
             placeholder="fa-building"
+            defaultValue={service?.icon ?? ""}
           />
         </div>
+      </AdminSection>
 
-        <div>
-          <label className="mb-2 block font-medium">
-            Display Order
-          </label>
-
-          <input
-            type="number"
+      <AdminSection
+        title="Display Settings"
+        description="Control visibility and ordering."
+      >
+        <div className="space-y-6">
+          <NumberField
+            label="Display Order"
             name="displayOrder"
-            defaultValue={
-              service?.displayOrder ??
-              0
-            }
-            className="w-full rounded-lg border p-3"
+            min="0"
+            helperText="Lower numbers appear first."
+            defaultValue={service?.displayOrder ?? 0}
           />
+
+          <div className="space-y-4">
+            <SwitchField
+              name="isActive"
+              label="Status"
+              text="Active"
+              defaultChecked={service?.isActive ?? true}
+            />
+          </div>
         </div>
+      </AdminSection>
 
-      </div>
+      <AdminSection
+        title="SEO Settings"
+        description="Optional metadata for search engines."
+      >
+        <div className="grid gap-6 md:grid-cols-2">
+          <TextField
+            label="SEO Title"
+            name="seoTitle"
+            defaultValue={service?.seoTitle ?? ""}
+          />
 
-      <label className="flex items-center gap-3">
+          <TextField
+            label="SEO Keywords"
+            name="seoKeywords"
+            defaultValue={service?.seoKeywords ?? ""}
+          />
 
-        <input
-          type="checkbox"
-          name="isActive"
-          defaultChecked={
-            service?.isActive ??
-            true
-          }
-        />
+          <div className="md:col-span-2">
+            <TextAreaField
+              label="SEO Description"
+              name="seoDescription"
+              rows={3}
+              defaultValue={service?.seoDescription ?? ""}
+            />
+          </div>
 
-        Active
-
-      </label>
+          <div className="md:col-span-2">
+            <TextField
+              label="Canonical URL"
+              type="url"
+              name="canonicalUrl"
+              placeholder="https://company.com/services/design"
+              helperText="Optional absolute URL."
+              defaultValue={service?.canonicalUrl ?? ""}
+            />
+          </div>
+        </div>
+      </AdminSection>
 
       <FormActions
         cancelHref="/admin/services"

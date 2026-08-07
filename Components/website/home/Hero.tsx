@@ -1,11 +1,24 @@
 import Link from "next/link";
+import Image from "next/image";
+import type { Settings } from "@prisma/client";
 
-import { siteConfig } from "@/lib/site";
+interface HeroProps {
+  settings: Settings;
+}
 
-export default function Hero() {
+export default function Hero({ settings }: HeroProps) {
   return (
-    <section className="relative overflow-hidden bg-linear-to-br from-primary to-slate-900 text-white">
-      <div className="mx-auto flex min-h-175 max-w-7xl items-center px-6 py-20">
+    <section className="relative overflow-hidden text-white">
+      <Image
+        src={settings.heroImage || "/images/hero/hero-default.jpg"}
+        alt={settings.heroTitle}
+        fill
+        priority
+        className="object-cover"
+      />
+
+      <div className="absolute inset-0 bg-black/55" />
+      <div className="relative z-10 mx-auto flex min-h-50 max-w-7xl items-center px-6 py-20">
 
         <div className="max-w-3xl">
 
@@ -14,21 +27,16 @@ export default function Hero() {
           </p>
 
           <h1 className="mb-8 text-5xl font-extrabold leading-tight md:text-7xl">
-            {siteConfig.home.heroTitle}
+            {settings.heroTitle}
           </h1>
 
           <p className="mb-10 max-w-2xl text-lg leading-8 text-slate-200">
-            {siteConfig.home.heroSubtitle}
+            {settings.heroSubtitle}
           </p>
 
           <div className="flex flex-wrap gap-5">
 
-            <Link
-              href={siteConfig.home.heroButtonLink}
-              className="rounded-lg bg-accent px-8 py-4 font-semibold text-black transition hover:brightness-95"
-            >
-              {siteConfig.home.heroButtonText}
-            </Link>
+
 
             <Link
               href="/contact"
