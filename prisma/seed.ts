@@ -25,21 +25,30 @@ async function main() {
     12
   );
 
-  await prisma.user.upsert({
+  await prisma.company.upsert({
+    where: { id: 0 },
+    update: {},
+    create: { id: 0, code: "Shaoor-Construct" },
+  });
+
+  const admin = await prisma.user.upsert({
     where: {
-      email: "admin@samconstruction.com",
+      companyId_email: { companyId: 0, email: "superadmin" },
     },
     update: {},
     create: {
       name: "Administrator",
 
-      email: "admin@samconstruction.com",
+      email: "superadmin",
 
       passwordHash,
 
       role: "ADMIN",
+      companyId: 0,
     },
   });
+
+  await prisma.company.update({ where: { id: 0 }, data: { adminUserId: admin.id } });
 
   console.log("✅ Admin user created");
 
@@ -84,6 +93,7 @@ async function main() {
       seoKeywords: "",
       whatsApp: "",
       googleMapsUrl: "",
+      companyId: 0,
     },
   });
 
@@ -102,6 +112,7 @@ async function main() {
         defaultDescription:
           "Professional construction company delivering quality projects.",
         siteUrl: appSettings.website || "https://example.com",
+        companyId: 0,
       },
     }));
 
@@ -109,7 +120,7 @@ async function main() {
     SEO_PAGE_DEFAULTS.map((item) =>
       prisma.seoPage.upsert({
         where: {
-          pageKey: item.pageKey,
+          companyId_pageKey: { companyId: 0, pageKey: item.pageKey },
         },
         update: {},
         create: {
@@ -124,6 +135,7 @@ async function main() {
           ogImage: seoSettings.defaultOgImage,
           robotsIndex: seoSettings.robotsIndex,
           robotsFollow: seoSettings.robotsFollow,
+          companyId: 0,
         },
       })
     )

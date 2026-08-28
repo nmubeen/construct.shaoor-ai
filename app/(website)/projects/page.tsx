@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 
-import { prisma } from "@/lib/prisma";
+import { getPublicProjects } from "@/lib/public-site-data";
 import { getSeoPageMetadata } from "@/lib/seo";
 import PageHero from "@/components/website/shared/PageHero";
 import Container from "@/components/ui/Container";
@@ -16,19 +16,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function ProjectsPage() {
-  const projects = await prisma.project.findMany({
-    include: {
-      gallery: {
-        orderBy: {
-          id: "asc",
-        },
-        take: 1,
-      },
-    },
-    orderBy: {
-      year: "desc",
-    },
-  });
+  const projects = await getPublicProjects();
 
   return (
     <main className="bg-white">

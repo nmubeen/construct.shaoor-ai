@@ -1,10 +1,10 @@
 import Link from "next/link";
-import { Settings } from "@prisma/client";
+import type { PublicSiteSettings } from "@/lib/public-site-data";
 
 import { websiteDesign } from "@/components/website/shared/design";
 
 type CTAProps = {
-  settings: Settings;
+  settings: PublicSiteSettings;
   title?: string;
   subtitle?: string;
   buttonText?: string;

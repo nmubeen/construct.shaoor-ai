@@ -33,43 +33,7 @@ export async function createClient(formData: FormData) {
 
   const data = clientDataFromForm(formData);
 
-  await prisma.$executeRaw`
-    INSERT INTO "Client" (
-      "name",
-      "slug",
-      "logo",
-      "website",
-      "category",
-      "description",
-      "displayOrder",
-      "featured",
-      "active",
-      "createdAt",
-      "updatedAt"
-    ) VALUES (
-      ${data.name},
-      ${data.slug},
-      ${data.logo ?? null},
-      ${data.website ?? null},
-      ${data.category ?? null},
-      ${data.description ?? null},
-      ${data.displayOrder},
-      ${data.featured ? 1 : 0},
-      ${data.active ? 1 : 0},
-      CURRENT_TIMESTAMP,
-      CURRENT_TIMESTAMP
-    )
-  `;
-
-  const client = await prisma.client.findUnique({
-    where: {
-      slug: data.slug,
-    },
-  });
-
-  if (!client) {
-    throw new Error("Client creation failed.");
-  }
+  const client = await prisma.client.create({ data });
 
   await logActivity({
     module: "Clients",
@@ -81,13 +45,10 @@ export async function createClient(formData: FormData) {
 
   revalidatePath("/admin/clients");
   revalidatePath("/clients");
-
+  revalidatePath("/");
 }
 
-export async function updateClient(
-  id: number,
-  formData: FormData
-) {
+export async function updateClient(id: number, formData: FormData) {
   const existingClient = await prisma.client.findUnique({
     where: {
       id,
@@ -109,10 +70,7 @@ export async function updateClient(
     data,
   });
 
-  if (
-    previousLogo &&
-    updatedClient.logo !== previousLogo
-  ) {
+  if (previousLogo && updatedClient.logo !== previousLogo) {
     await deleteFileIfOrphaned(previousLogo);
   }
 
@@ -127,7 +85,7 @@ export async function updateClient(
   revalidatePath("/admin/clients");
   revalidatePath(`/admin/clients/${id}`);
   revalidatePath("/clients");
-
+  revalidatePath("/");
 }
 
 export async function deleteClient(id: number) {
@@ -161,7 +119,7 @@ export async function deleteClient(id: number) {
 
   revalidatePath("/admin/clients");
   revalidatePath("/clients");
-
+  revalidatePath("/");
 }
 
 export async function getClients() {
@@ -178,7 +136,7 @@ export async function getClients() {
 }
 
 export async function getClient(id: number) {
-  return prisma.client.findUnique({
+  return prisma.client.findFirst({
     where: {
       id,
     },
@@ -186,7 +144,7 @@ export async function getClient(id: number) {
 }
 
 export async function getClientBySlug(slug: string) {
-  return prisma.client.findUnique({
+  return prisma.client.findFirst({
     where: {
       slug,
     },

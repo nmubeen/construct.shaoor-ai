@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { TeamMember } from "@prisma/client";
+import type { PublicTeamMember } from "@/lib/public-site-data";
 
 import LeadershipGrid from "./LeadershipGrid";
 import { websiteDesign } from "@/components/website/shared/design";
@@ -7,7 +7,7 @@ import { websiteDesign } from "@/components/website/shared/design";
 interface LeadershipSectionProps {
   title: string;
   subtitle?: string;
-  members: TeamMember[];
+  members: PublicTeamMember[];
   buttonText?: string;
   buttonHref?: string;
 }

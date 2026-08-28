@@ -1,0 +1,5 @@
+import { notFound, redirect } from "next/navigation";
+import { ServiceForm } from "@/components/dashboard/services/ServiceForm";
+import { requireActiveConstructContext } from "@/lib/auth/construct-context";
+import { getConstructPrisma } from "@/lib/construct-prisma";
+export default async function EditServicePage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ error?: string }> }) { const context = await requireActiveConstructContext(); if (context.role === "VIEWER") redirect("/dashboard/services"); const { id } = await params; const service = await getConstructPrisma().service.findFirst({ where: { id, organizationId: context.organizationId } }); if (!service) notFound(); const { error } = await searchParams; return <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8"><header className="mb-6"><p className="text-xs font-bold uppercase tracking-[0.2em] text-teal-700">Services</p><h1 className="mt-2 text-3xl font-bold">Edit service</h1></header><ServiceForm service={service} error={error} /></div>; }

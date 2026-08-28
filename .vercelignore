@@ -1,0 +1,7 @@
+tmp/
+output/
+Pitch Assets/
+Infographic.jpg
+Sample Data.docx
+prisma/dev.db-journal
+*.tsbuildinfo

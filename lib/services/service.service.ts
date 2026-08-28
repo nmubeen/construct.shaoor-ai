@@ -21,7 +21,7 @@ export const serviceService = {
   },
 
   async getById(id: number) {
-    return prisma.service.findUnique({
+    return prisma.service.findFirst({
       where: {
         id,
       },
@@ -29,7 +29,7 @@ export const serviceService = {
   },
 
   async getBySlug(slug: string) {
-    return prisma.service.findUnique({
+    return prisma.service.findFirst({
       where: {
         slug,
       },

@@ -30,7 +30,7 @@ export default function MediaGrid({ items, view }: MediaGridProps) {
       return "space-y-4";
     }
 
-    return "grid gap-6 sm:grid-cols-2 xl:grid-cols-3";
+    return "grid gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5";
   }, [view]);
 
   function handleDelete(item: Media) {
@@ -49,7 +49,9 @@ export default function MediaGrid({ items, view }: MediaGridProps) {
         setDeleteItem(null);
         router.refresh();
       } catch (error) {
-        notify.error(error instanceof Error ? error.message : Messages.deleteFailed);
+        notify.error(
+          error instanceof Error ? error.message : Messages.deleteFailed,
+        );
       }
     });
   }

@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 
-import { prisma } from "@/lib/prisma";
+import { getPublicServiceBySlug, getRelatedPublicServices } from "@/lib/public-site-data";
 import { getDefaultSEO, getRouteMetadata } from "@/lib/seo";
 import PageHero from "@/components/website/shared/PageHero";
 import Container from "@/components/ui/Container";
@@ -25,22 +25,7 @@ export async function generateMetadata({
 }: PageProps): Promise<Metadata> {
   const { slug } = await params;
 
-  const service = await prisma.service.findUnique({
-    where: {
-      slug,
-    },
-    select: {
-      title: true,
-      shortDescription: true,
-      description: true,
-      image: true,
-      seoTitle: true,
-      seoDescription: true,
-      seoKeywords: true,
-      canonicalUrl: true,
-      isActive: true,
-    },
-  });
+  const service = await getPublicServiceBySlug(slug);
 
   if (!service || !service.isActive) {
     const metadata = await getRouteMetadata({
@@ -74,28 +59,13 @@ export default async function ServiceDetailsPage({
 }: PageProps) {
   const { slug } = await params;
 
-  const service = await prisma.service.findUnique({
-    where: {
-      slug,
-    },
-  });
+  const service = await getPublicServiceBySlug(slug);
 
   if (!service || !service.isActive) {
     notFound();
   }
 
-  const relatedServices = await prisma.service.findMany({
-    where: {
-      isActive: true,
-      NOT: {
-        id: service.id,
-      },
-    },
-    orderBy: {
-      displayOrder: "asc",
-    },
-    take: 3,
-  });
+  const relatedServices = await getRelatedPublicServices(service.id, 3);
   const seo = await getDefaultSEO();
   const baseUrl = new URL(seo.siteUrl).origin;
   const jsonLd = {

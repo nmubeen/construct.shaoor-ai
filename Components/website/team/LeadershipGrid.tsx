@@ -1,9 +1,9 @@
-import type { TeamMember } from "@prisma/client";
+import type { PublicTeamMember } from "@/lib/public-site-data";
 
 import LeadershipCard from "./LeadershipCard";
 
 interface LeadershipGridProps {
-  members: TeamMember[];
+  members: PublicTeamMember[];
 }
 
 export default function LeadershipGrid({

@@ -19,81 +19,39 @@ function teamDataFromForm(formData: FormData) {
 
     slug: stringValue(formData, "slug"),
 
-    designation: stringValue(
-      formData,
-      "designation"
-    ),
+    designation: stringValue(formData, "designation"),
 
     shortBio: stringValue(formData, "shortBio"),
 
-    photo:
-      stringValue(formData, "photo") || "",
+    photo: stringValue(formData, "photo") || "",
 
-    email: optionalValue(
-      formData,
-      "email"
-    ),
+    email: optionalValue(formData, "email"),
 
-    phone: optionalValue(
-      formData,
-      "phone"
-    ),
+    phone: optionalValue(formData, "phone"),
 
-    linkedin: optionalValue(
-      formData,
-      "linkedin"
-    ),
+    linkedin: optionalValue(formData, "linkedin"),
 
-    instagram: optionalValue(
-      formData,
-      "instagram"
-    ),
+    instagram: optionalValue(formData, "instagram"),
 
-    twitter: optionalValue(
-      formData,
-      "twitter"
-    ),
+    twitter: optionalValue(formData, "twitter"),
 
-    displayOrder: numberValue(
-      formData,
-      "displayOrder"
-    ),
+    displayOrder: numberValue(formData, "displayOrder"),
 
-    showOnHomepage: booleanValue(
-      formData,
-      "showOnHomepage"
-    ),
+    showOnHomepage: booleanValue(formData, "showOnHomepage"),
 
-    isActive: booleanValue(
-      formData,
-      "isActive"
-    ),
+    isActive: booleanValue(formData, "isActive"),
 
-    seoTitle: optionalValue(
-      formData,
-      "seoTitle"
-    ),
+    seoTitle: optionalValue(formData, "seoTitle"),
 
-    seoDescription: optionalValue(
-      formData,
-      "seoDescription"
-    ),
+    seoDescription: optionalValue(formData, "seoDescription"),
 
-    seoKeywords: optionalValue(
-      formData,
-      "seoKeywords"
-    ),
+    seoKeywords: optionalValue(formData, "seoKeywords"),
 
-    canonicalUrl: optionalValue(
-      formData,
-      "canonicalUrl"
-    ),
+    canonicalUrl: optionalValue(formData, "canonicalUrl"),
   };
 }
 
-export async function createTeamMember(
-  formData: FormData
-) {
+export async function createTeamMember(formData: FormData) {
   const member = await prisma.teamMember.create({
     data: teamDataFromForm(formData),
   });
@@ -108,52 +66,36 @@ export async function createTeamMember(
 
   revalidatePath("/admin/team");
   revalidatePath("/team");
-
+  revalidatePath("/");
 }
 
-export async function updateTeamMember(
-  id: number,
-  formData: FormData
-) {
-  const existingMember =
-    await prisma.teamMember.findUnique({
-      where: {
-        id,
-      },
-    });
+export async function updateTeamMember(id: number, formData: FormData) {
+  const existingMember = await prisma.teamMember.findUnique({
+    where: {
+      id,
+    },
+  });
 
   if (!existingMember) {
-    throw new Error(
-      "Team member not found."
-    );
+    throw new Error("Team member not found.");
   }
 
-  const data =
-    teamDataFromForm(formData);
+  const data = teamDataFromForm(formData);
 
-  const previousPhoto =
-    existingMember.photo;
+  const previousPhoto = existingMember.photo;
 
-  const updatedMember =
-    await prisma.teamMember.update({
-      where: {
-        id,
-      },
-      data: {
-        ...data,
-        photo:
-          data.photo ||
-          previousPhoto,
-      },
-    });
+  const updatedMember = await prisma.teamMember.update({
+    where: {
+      id,
+    },
+    data: {
+      ...data,
+      photo: data.photo || previousPhoto,
+    },
+  });
 
-  if (
-    previousPhoto &&
-    updatedMember.photo !== previousPhoto
-  ) {
-    await deleteFileIfOrphaned(
-      previousPhoto
-    );
+  if (previousPhoto && updatedMember.photo !== previousPhoto) {
+    await deleteFileIfOrphaned(previousPhoto);
   }
 
   await logActivity({
@@ -165,27 +107,20 @@ export async function updateTeamMember(
   });
 
   revalidatePath("/admin/team");
-  revalidatePath(
-    `/admin/team/${id}`
-  );
+  revalidatePath(`/admin/team/${id}`);
   revalidatePath("/team");
-
+  revalidatePath("/");
 }
 
-export async function deleteTeamMember(
-  id: number
-) {
-  const member =
-    await prisma.teamMember.findUnique({
-      where: {
-        id,
-      },
-    });
+export async function deleteTeamMember(id: number) {
+  const member = await prisma.teamMember.findUnique({
+    where: {
+      id,
+    },
+  });
 
   if (!member) {
-    throw new Error(
-      "Team member not found."
-    );
+    throw new Error("Team member not found.");
   }
 
   await prisma.teamMember.delete({
@@ -195,9 +130,7 @@ export async function deleteTeamMember(
   });
 
   if (member.photo) {
-    await deleteFileIfOrphaned(
-      member.photo
-    );
+    await deleteFileIfOrphaned(member.photo);
   }
 
   await logActivity({
@@ -210,7 +143,7 @@ export async function deleteTeamMember(
 
   revalidatePath("/admin/team");
   revalidatePath("/team");
-
+  revalidatePath("/");
 }
 
 export async function getTeamMembers() {
@@ -221,20 +154,16 @@ export async function getTeamMembers() {
   });
 }
 
-export async function getTeamMember(
-  id: number
-) {
-  return prisma.teamMember.findUnique({
+export async function getTeamMember(id: number) {
+  return prisma.teamMember.findFirst({
     where: {
       id,
     },
   });
 }
 
-export async function getTeamMemberBySlug(
-  slug: string
-) {
-  return prisma.teamMember.findUnique({
+export async function getTeamMemberBySlug(slug: string) {
+  return prisma.teamMember.findFirst({
     where: {
       slug,
     },

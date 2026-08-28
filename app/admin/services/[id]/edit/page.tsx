@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { tenantPath } from "@/lib/tenant";
 
 interface PageProps {
   params: Promise<{
@@ -9,5 +10,5 @@ interface PageProps {
 export default async function LegacyEditServicePage({ params }: PageProps) {
   const { id } = await params;
 
-  redirect(`/admin/services/${id}`);
+  redirect(await tenantPath(`/admin/services/${id}`));
 }

@@ -1,0 +1,2 @@
+import { redirect } from "next/navigation"; import { ProjectForm } from "@/components/dashboard/projects/ProjectForm"; import { requireActiveConstructContext } from "@/lib/auth/construct-context";
+export default async function NewProjectPage({searchParams}:{searchParams:Promise<{error?:string}>}){const c=await requireActiveConstructContext();if(c.role==="VIEWER")redirect("/dashboard/projects");const{error}=await searchParams;return <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8"><h1 className="mb-6 text-3xl font-bold">Create project</h1><ProjectForm error={error}/></div>}

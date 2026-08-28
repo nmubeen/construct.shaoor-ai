@@ -1,6 +1,9 @@
 import { prisma } from "@/lib/prisma";
 import { ensureSeoDefaults } from "@/lib/actions/seo.actions";
 import { getSiteSettings } from "@/lib/settings";
+import { getConstructPrisma } from "@/lib/construct-prisma";
+import { resolvePublicConstructOrganization } from "@/lib/construct-public-tenant";
+import { ensureConstructSeoDefaults } from "@/lib/services/construct-seo.service";
 import type { Metadata } from "next";
 
 export interface SeoMetadataResult {
@@ -368,6 +371,22 @@ export async function getRouteMetadata({
 }
 
 export async function getDefaultSEO(): Promise<SeoMetadataResult> {
+  const constructOrganization = await resolvePublicConstructOrganization();
+  if (constructOrganization) {
+    await ensureConstructSeoDefaults(constructOrganization.id);
+    const [settings, publication] = await Promise.all([getConstructPrisma().seoSettings.findUniqueOrThrow({ where: { organizationId: constructOrganization.id } }), getConstructPrisma().sitePublication.findUnique({ where: { organizationId: constructOrganization.id } })]);
+    const isPublished = publication?.status === "PUBLISHED";
+    return {
+      title: settings.defaultTitle, description: settings.defaultDescription,
+      keywords: normalizeOptionalText(settings.defaultKeywords), canonicalUrl: settings.siteUrl,
+      ogTitle: settings.defaultTitle, ogDescription: settings.defaultDescription,
+      ogImage: normalizeOptionalText(settings.defaultOgImageUrl),
+      robots: { index: isPublished && settings.robotsIndex, follow: isPublished && settings.robotsFollow },
+      verification: { google: normalizeOptionalText(settings.googleVerification), bing: normalizeOptionalText(settings.bingVerification) },
+      twitterHandle: normalizeOptionalText(settings.twitterHandle), facebookAppId: normalizeOptionalText(settings.facebookAppId),
+      siteName: settings.siteName, siteUrl: settings.siteUrl,
+    };
+  }
   await ensureSeoDefaults();
 
   const appSettings = await getSiteSettings();
@@ -446,6 +465,29 @@ export async function getDefaultSEO(): Promise<SeoMetadataResult> {
 export async function getPageSEO(
   pageKey: string
 ): Promise<SeoMetadataResult> {
+  const constructOrganization = await resolvePublicConstructOrganization();
+  if (constructOrganization) {
+    await ensureConstructSeoDefaults(constructOrganization.id);
+    const prisma = getConstructPrisma();
+    const [settings, page, publication] = await Promise.all([
+      prisma.seoSettings.findUniqueOrThrow({ where: { organizationId: constructOrganization.id } }),
+      prisma.seoPage.findUnique({ where: { organizationId_pageKey: { organizationId: constructOrganization.id, pageKey } } }),
+      prisma.sitePublication.findUnique({ where: { organizationId: constructOrganization.id } }),
+    ]);
+    if (!page) return getDefaultSEO();
+    return {
+      title: page.title, description: page.description,
+      keywords: normalizeOptionalText(page.keywords) ?? normalizeOptionalText(settings.defaultKeywords),
+      canonicalUrl: normalizeOptionalText(page.canonicalUrl),
+      ogTitle: normalizeOptionalText(page.ogTitle) ?? page.title,
+      ogDescription: normalizeOptionalText(page.ogDescription) ?? page.description,
+      ogImage: normalizeOptionalText(page.ogImageUrl) ?? normalizeOptionalText(settings.defaultOgImageUrl),
+      robots: { index: publication?.status === "PUBLISHED" && page.robotsIndex, follow: publication?.status === "PUBLISHED" && page.robotsFollow },
+      verification: { google: normalizeOptionalText(settings.googleVerification), bing: normalizeOptionalText(settings.bingVerification) },
+      twitterHandle: normalizeOptionalText(settings.twitterHandle), facebookAppId: normalizeOptionalText(settings.facebookAppId),
+      siteName: settings.siteName, siteUrl: settings.siteUrl,
+    };
+  }
   await ensureSeoDefaults();
 
   const [settings, page] = await Promise.all([
@@ -454,7 +496,7 @@ export async function getPageSEO(
         createdAt: "asc",
       },
     }),
-    prisma.seoPage.findUnique({
+    prisma.seoPage.findFirst({
       where: {
         pageKey,
       },

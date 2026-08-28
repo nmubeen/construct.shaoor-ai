@@ -2,11 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 
-import { prisma } from "@/lib/prisma";
+import { getPublicFaqs, getPublicServices } from "@/lib/public-site-data";
 import { getSeoPageMetadata } from "@/lib/seo";
 import PageHero from "@/components/website/shared/PageHero";
 import Container from "@/components/ui/Container";
 import { websiteDesign } from "@/components/website/shared/design";
+import FaqSection from "@/components/website/services/FaqSection";
 
 export async function generateMetadata(): Promise<Metadata> {
   return getSeoPageMetadata({
@@ -16,14 +17,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function ServicesPage() {
-  const services = await prisma.service.findMany({
-    where: {
-      isActive: true,
-    },
-    orderBy: {
-      displayOrder: "asc",
-    },
-  });
+  const [services, faqs] = await Promise.all([getPublicServices(), getPublicFaqs()]);
 
   return (
     <main className="bg-white">
@@ -72,6 +66,7 @@ export default async function ServicesPage() {
           </div>
         </Container>
       </section>
+      <FaqSection faqs={faqs} />
     </main>
   );
 }

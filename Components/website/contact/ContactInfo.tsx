@@ -1,4 +1,4 @@
-import { Settings } from "@prisma/client";
+import type { PublicSiteSettings } from "@/lib/public-site-data";
 
 import {
   FaEnvelope,
@@ -7,7 +7,7 @@ import {
 } from "react-icons/fa6";
 
 interface ContactInfoProps {
-  settings: Settings;
+  settings: PublicSiteSettings;
 }
 
 export default function ContactInfo({

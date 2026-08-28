@@ -1,4 +1,5 @@
-import { prisma } from "@/lib/prisma";
+import { rawPrisma as prisma } from "@/lib/prisma";
+import { getTenantContext } from "@/lib/tenant";
 import { ensureSessionTableIsCompatible } from "./session-repair";
 import { generateSessionToken, getSessionExpiry } from "./token";
 import {
@@ -10,7 +11,7 @@ import {
 /**
  * Creates a new session for the specified user.
  */
-export async function createSession(userId: number) {
+export async function createSession(userId: number, companyId: number) {
   await ensureSessionTableIsCompatible();
 
   const token = generateSessionToken();
@@ -20,6 +21,7 @@ export async function createSession(userId: number) {
     data: {
       token,
       userId,
+      companyId,
       expiresAt,
     },
   });
@@ -41,9 +43,11 @@ export async function getSession() {
     return null;
   }
 
-  const session = await prisma.session.findUnique({
+  const { companyId } = await getTenantContext();
+  const session = await prisma.session.findFirst({
     where: {
       token,
+      companyId,
     },
     include: {
       user: true,

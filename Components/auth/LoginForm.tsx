@@ -21,12 +21,12 @@ export default function LoginForm() {
     >
       <div>
         <label className="mb-2 block text-sm font-medium">
-          Email
+          User ID
         </label>
 
         <input
           name="email"
-          type="email"
+          type="text"
           required
           className="w-full rounded-lg border border-slate-300 px-4 py-3 focus:border-blue-600 focus:outline-none"
         />

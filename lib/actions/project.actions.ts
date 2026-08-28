@@ -7,9 +7,7 @@ import { logActivity } from "@/lib/actions/audit.actions";
 import { deleteFileIfOrphaned } from "@/lib/actions/helpers/media-file.helpers";
 
 function projectDataFromForm(formData: FormData) {
-  const coverImageValue = String(
-    formData.get("coverImage") ?? ""
-  ).trim();
+  const coverImageValue = String(formData.get("coverImage") ?? "").trim();
 
   return {
     title: formData.get("title") as string,
@@ -24,10 +22,7 @@ function projectDataFromForm(formData: FormData) {
     duration: formData.get("duration") as string,
     budget: formData.get("budget") as string,
     area: formData.get("area") as string,
-    coverImage:
-      coverImageValue === ""
-        ? null
-        : coverImageValue,
+    coverImage: coverImageValue === "" ? null : coverImageValue,
 
     description: formData.get("description") as string,
 
@@ -54,39 +49,30 @@ export async function createProject(formData: FormData) {
   });
 
   revalidatePath("/admin/projects");
-
+  revalidatePath("/");
 }
 
-export async function updateProject(
-  id: number,
-  formData: FormData
-) {
-  const existingProject =
-    await prisma.project.findUnique({
-      where: {
-        id,
-      },
-    });
+export async function updateProject(id: number, formData: FormData) {
+  const existingProject = await prisma.project.findUnique({
+    where: {
+      id,
+    },
+  });
 
   if (!existingProject) {
     throw new Error("Project not found.");
   }
 
-  const previousImage =
-    existingProject.coverImage;
+  const previousImage = existingProject.coverImage;
 
-  const updatedProject =
-    await prisma.project.update({
-      where: {
-        id,
-      },
-      data: projectDataFromForm(formData),
-    });
+  const updatedProject = await prisma.project.update({
+    where: {
+      id,
+    },
+    data: projectDataFromForm(formData),
+  });
 
-  if (
-    previousImage &&
-    previousImage !== updatedProject.coverImage
-  ) {
+  if (previousImage && previousImage !== updatedProject.coverImage) {
     await deleteFileIfOrphaned(previousImage);
   }
 
@@ -100,16 +86,15 @@ export async function updateProject(
 
   revalidatePath("/admin/projects");
   revalidatePath(`/admin/projects/${id}`);
-
+  revalidatePath("/");
 }
 
 export async function deleteProject(id: number) {
-  const project =
-    await prisma.project.findUnique({
-      where: {
-        id,
-      },
-    });
+  const project = await prisma.project.findUnique({
+    where: {
+      id,
+    },
+  });
 
   if (!project) {
     return {
@@ -125,9 +110,7 @@ export async function deleteProject(id: number) {
   });
 
   if (project.coverImage) {
-    await deleteFileIfOrphaned(
-      project.coverImage
-    );
+    await deleteFileIfOrphaned(project.coverImage);
   }
 
   await logActivity({
@@ -139,6 +122,7 @@ export async function deleteProject(id: number) {
   });
 
   revalidatePath("/admin/projects");
+  revalidatePath("/");
 
   return {
     success: true,

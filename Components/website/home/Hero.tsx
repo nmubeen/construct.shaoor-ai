@@ -1,9 +1,9 @@
 import Link from "next/link";
 import Image from "next/image";
-import type { Settings } from "@prisma/client";
+import type { PublicSiteSettings } from "@/lib/public-site-data";
 
 interface HeroProps {
-  settings: Settings;
+  settings: PublicSiteSettings;
 }
 
 export default function Hero({ settings }: HeroProps) {

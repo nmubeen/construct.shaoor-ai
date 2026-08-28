@@ -11,7 +11,6 @@ interface MediaToolbarProps {
   extension: string;
   sort: "newest" | "oldest" | "name" | "size";
   view: "grid" | "list";
-  folders: string[];
   extensions: string[];
 }
 
@@ -21,7 +20,7 @@ function buildViewHref(
   type: "ALL" | MediaType,
   folder: string,
   extension: string,
-  sort: "newest" | "oldest" | "name" | "size"
+  sort: "newest" | "oldest" | "name" | "size",
 ) {
   const params = new URLSearchParams();
 
@@ -43,15 +42,18 @@ export default function MediaToolbar({
   extension,
   sort,
   view,
-  folders,
   extensions,
 }: MediaToolbarProps) {
   const gridHref = buildViewHref("grid", query, type, folder, extension, sort);
   const listHref = buildViewHref("list", query, type, folder, extension, sort);
 
   return (
-    <form action="/admin/media" className="space-y-4 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+    <form
+      action="/admin/media"
+      className="space-y-4 rounded-xl border border-slate-200 bg-white p-5 shadow-sm"
+    >
       <input type="hidden" name="view" value={view} />
+      {folder && <input type="hidden" name="folder" value={folder} />}
 
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex-1">
@@ -107,10 +109,8 @@ export default function MediaToolbar({
 
       <MediaFilters
         currentType={type}
-        currentFolder={folder}
         currentExtension={extension}
         currentSort={sort}
-        folders={folders}
         extensions={extensions}
       />
     </form>

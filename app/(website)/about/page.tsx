@@ -4,7 +4,7 @@ import PageBanner from "@/components/shared/PageBanner";
 import Container from "@/components/ui/Container";
 import { websiteDesign } from "@/components/website/shared/design";
 import { getSeoPageMetadata } from "@/lib/seo";
-import { getSiteSettings } from "@/lib/settings";
+import { getPublicSiteSettings } from "@/lib/public-site-data";
 
 export async function generateMetadata(): Promise<Metadata> {
     return getSeoPageMetadata({
@@ -14,7 +14,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function AboutPage() {
-    const settings = await getSiteSettings();
+    const settings = await getPublicSiteSettings();
 
     return (
         <>

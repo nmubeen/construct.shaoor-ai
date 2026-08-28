@@ -1,43 +1,42 @@
 import {
-  FaAward,
   FaBuilding,
   FaHelmetSafety,
+  FaScrewdriverWrench,
   FaUsers,
 } from "react-icons/fa6";
 
-import { getSiteSettings } from "@/lib/settings";
+import { getPublicStats } from "@/lib/public-site-data";
 import Container from "@/components/ui/Container";
 import SectionHeader from "@/components/website/shared/SectionHeader";
 
 export default async function Stats() {
-  const settings = await getSiteSettings();
-
-  if (!settings) return null;
+  const [completedProjects, activeClients, activeServices, activeTeamMembers] =
+    await getPublicStats();
 
   const stats = [
     {
       icon: FaBuilding,
-      value: settings.projectsCompleted,
-      suffix: "+",
+      value: completedProjects,
+      suffix: "",
       label: "Projects Completed",
     },
     {
       icon: FaUsers,
-      value: settings.clientsServed,
-      suffix: "+",
+      value: activeClients,
+      suffix: "",
       label: "Satisfied Clients",
     },
     {
-      icon: FaAward,
-      value: settings.yearsExperience,
-      suffix: "+",
-      label: "Years of Excellence",
+      icon: FaScrewdriverWrench,
+      value: activeServices,
+      suffix: "",
+      label: "Active Services",
     },
     {
       icon: FaHelmetSafety,
-      value: settings.employees,
+      value: activeTeamMembers,
       suffix: "",
-      label: "Skilled Professionals",
+      label: "Team Members",
     },
   ];
 
@@ -55,20 +54,19 @@ export default async function Stats() {
         {/* Statistics */}
 
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
-
           {stats.map((stat) => {
             const Icon = stat.icon;
 
             return (
               <div
                 key={stat.label}
-                className="rounded-xl border border-white/10 bg-white/5 p-8 backdrop-blur-sm transition duration-300 hover:bg-white/10"
+                className="relative rounded-xl border border-white/10 bg-white/5 p-8 backdrop-blur-sm transition duration-300 hover:bg-white/10"
               >
-                <div className="mb-6 flex text-5xl text-accent">
+                <div className="absolute right-6 top-6 flex text-4xl text-accent">
                   <Icon />
                 </div>
 
-                <div className="mb-2 text-5xl font-extrabold">
+                <div className="mb-2 pt-12 text-5xl font-extrabold">
                   {stat.value}
                   {stat.suffix}
                 </div>
@@ -79,9 +77,7 @@ export default async function Stats() {
               </div>
             );
           })}
-
         </div>
-
       </Container>
     </section>
   );

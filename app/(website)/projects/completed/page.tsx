@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import Container from "@/components/ui/Container";
 import PageBanner from "@/components/shared/PageBanner";
 import ProjectCard from "@/components/website/projects/ProjectCard";
-import { projects } from "@/lib/data/projects";
+import { getPublicProjects } from "@/lib/public-site-data";
 import { getRouteMetadata } from "@/lib/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -15,10 +15,8 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 
-export default function CompletedProjectsPage() {
-  const completedProjects = projects.filter(
-    (project) => project.status === "Completed"
-  );
+export default async function CompletedProjectsPage() {
+  const completedProjects = await getPublicProjects({ status: "Completed" });
 
   return (
     <>
@@ -33,7 +31,7 @@ export default function CompletedProjectsPage() {
             {completedProjects.map((project) => (
               <ProjectCard
                 key={project.id}
-                project={project}
+                project={{ ...project, coverImage: project.coverImage || "/images/projects/default.jpg" }}
               />
             ))}
           </div>

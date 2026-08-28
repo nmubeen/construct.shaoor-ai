@@ -2,12 +2,13 @@ import Link from "next/link";
 import { FaImages } from "react-icons/fa6";
 import { MediaType } from "@prisma/client";
 
-import { getMedia } from "@/lib/actions/media.actions";
+import { getMedia, getMediaFolders } from "@/lib/actions/media.actions";
 
 import AdminPage from "@/components/admin/layout/AdminPage";
 import EmptyState from "@/components/admin/common/EmptyState";
 import MediaGrid from "@/components/admin/media/MediaGrid";
 import MediaToolbar from "@/components/admin/media/MediaToolbar";
+import MediaFolderTree from "@/components/admin/media/MediaFolderTree";
 
 interface PageProps {
   searchParams: Promise<{
@@ -22,7 +23,12 @@ interface PageProps {
 }
 
 function parseType(value?: string): "ALL" | MediaType {
-  if (value === "IMAGE" || value === "VIDEO" || value === "DOCUMENT" || value === "OTHER") {
+  if (
+    value === "IMAGE" ||
+    value === "VIDEO" ||
+    value === "DOCUMENT" ||
+    value === "OTHER"
+  ) {
     return value;
   }
 
@@ -51,7 +57,17 @@ function parsePage(value?: string) {
   return Math.floor(parsed);
 }
 
-function pageHref(page: number, current: { q: string; type: "ALL" | MediaType; folder: string; extension: string; sort: "newest" | "oldest" | "name" | "size"; view: "grid" | "list" }) {
+function pageHref(
+  page: number,
+  current: {
+    q: string;
+    type: "ALL" | MediaType;
+    folder: string;
+    extension: string;
+    sort: "newest" | "oldest" | "name" | "size";
+    view: "grid" | "list";
+  },
+) {
   const params = new URLSearchParams();
 
   if (current.q) params.set("q", current.q);
@@ -77,15 +93,18 @@ export default async function MediaPage({ searchParams }: PageProps) {
   const view = parseView(params.view);
   const page = parsePage(params.page);
 
-  const result = await getMedia({
-    page,
-    pageSize: 18,
-    search: query,
-    type,
-    folder,
-    extension,
-    sort,
-  });
+  const [result, folders] = await Promise.all([
+    getMedia({
+      page,
+      pageSize: 30,
+      search: query,
+      type,
+      folder,
+      extension,
+      sort,
+    }),
+    getMediaFolders(),
+  ]);
 
   const previousHref = pageHref(Math.max(1, result.page - 1), {
     q: query,
@@ -114,66 +133,70 @@ export default async function MediaPage({ searchParams }: PageProps) {
         href: "/admin/media/upload",
       }}
     >
-      <MediaToolbar
-        query={query}
-        type={type}
-        folder={folder}
-        extension={extension}
-        sort={sort}
-        view={view}
-        folders={result.folders}
-        extensions={result.extensions}
-      />
+      <div className="grid gap-6 lg:grid-cols-[240px_minmax(0,1fr)] lg:items-start">
+        <MediaFolderTree folders={folders} selectedFolder={folder} />
+        <div className="min-w-0 space-y-5">
+          <MediaToolbar
+            query={query}
+            type={type}
+            folder={folder}
+            extension={extension}
+            sort={sort}
+            view={view}
+            extensions={result.extensions}
+          />
 
-      {result.items.length === 0 ? (
-        <EmptyState
-          icon={<FaImages />}
-          title="No Media Found"
-          description="Upload files or adjust your filters to see results."
-          actionLabel="Upload Media"
-          actionHref="/admin/media/upload"
-        />
-      ) : (
-        <div className="space-y-5">
-          <div className="flex items-center justify-between text-sm text-slate-600">
-            <p>
-              Showing {result.items.length} of {result.total} files
-            </p>
+          {result.items.length === 0 ? (
+            <EmptyState
+              icon={<FaImages />}
+              title="No Media Found"
+              description="Upload files or adjust your filters to see results."
+              actionLabel="Upload Media"
+              actionHref="/admin/media/upload"
+            />
+          ) : (
+            <div className="space-y-5">
+              <div className="flex items-center justify-between text-sm text-slate-600">
+                <p>
+                  Showing {result.items.length} of {result.total} files
+                </p>
 
-            <p>
-              Page {result.page} of {result.totalPages}
-            </p>
-          </div>
+                <p>
+                  Page {result.page} of {result.totalPages}
+                </p>
+              </div>
 
-          <MediaGrid items={result.items} view={view} />
+              <MediaGrid items={result.items} view={view} />
 
-          <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3">
-            <Link
-              href={previousHref}
-              aria-disabled={result.page === 1}
-              className={`rounded-lg border px-3 py-2 text-sm transition ${
-                result.page === 1
-                  ? "pointer-events-none border-slate-200 text-slate-400"
-                  : "border-slate-300 text-slate-700 hover:bg-slate-100"
-              }`}
-            >
-              Previous
-            </Link>
+              <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3">
+                <Link
+                  href={previousHref}
+                  aria-disabled={result.page === 1}
+                  className={`rounded-lg border px-3 py-2 text-sm transition ${
+                    result.page === 1
+                      ? "pointer-events-none border-slate-200 text-slate-400"
+                      : "border-slate-300 text-slate-700 hover:bg-slate-100"
+                  }`}
+                >
+                  Previous
+                </Link>
 
-            <Link
-              href={nextHref}
-              aria-disabled={result.page === result.totalPages}
-              className={`rounded-lg border px-3 py-2 text-sm transition ${
-                result.page === result.totalPages
-                  ? "pointer-events-none border-slate-200 text-slate-400"
-                  : "border-slate-300 text-slate-700 hover:bg-slate-100"
-              }`}
-            >
-              Next
-            </Link>
-          </div>
+                <Link
+                  href={nextHref}
+                  aria-disabled={result.page === result.totalPages}
+                  className={`rounded-lg border px-3 py-2 text-sm transition ${
+                    result.page === result.totalPages
+                      ? "pointer-events-none border-slate-200 text-slate-400"
+                      : "border-slate-300 text-slate-700 hover:bg-slate-100"
+                  }`}
+                >
+                  Next
+                </Link>
+              </div>
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </AdminPage>
   );
 }

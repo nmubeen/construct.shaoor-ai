@@ -4,6 +4,8 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { Toaster } from "sonner";
 import { getSiteSettings } from "@/lib/settings";
+import { getTenantContext } from "@/lib/tenant";
+import TenantNavigation from "@/components/tenant/TenantNavigation";
 
 const inter = Inter({subsets:['latin'],variable:'--font-sans'});
 
@@ -23,7 +25,7 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -31,6 +33,7 @@ export default function RootLayout({
   return (
     <html lang="en" data-scroll-behavior="smooth" className={cn("font-sans", inter.variable)}>
       <body className={geist.className}>
+        <TenantNavigation prefix={(await getTenantContext()).urlPrefix} />
         {children}
         <Toaster
           position="top-right"

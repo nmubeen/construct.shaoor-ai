@@ -110,7 +110,7 @@ export async function createGallery(formData: FormData) {
     throw new Error(parsed.error.issues[0]?.message ?? "Invalid gallery form values.");
   }
 
-  const slugTaken = await prisma.gallery.findUnique({
+  const slugTaken = await prisma.gallery.findFirst({
     where: { slug: parsed.data.slug },
     select: { id: true },
   });

@@ -1,4 +1,5 @@
-import { prisma } from "@/lib/prisma";
+import { rawPrisma } from "@/lib/prisma";
+import { getTenantContext, tenantPath } from "@/lib/tenant";
 import { redirect } from "next/navigation";
 
 import { verifyPassword } from "./password";
@@ -12,16 +13,20 @@ export async function login(
   email: string,
   password: string
 ) {
-  const user = await prisma.user.findUnique({
+  const { companyId } = await getTenantContext();
+  const user = await rawPrisma.user.findUnique({
     where: {
-      email: email.trim().toLowerCase(),
+      companyId_email: {
+        companyId,
+        email: email.trim().toLowerCase(),
+      },
     },
   });
 
   if (!user) {
     return {
       success: false,
-      error: "Invalid email or password.",
+      error: "Invalid user ID or password.",
     };
   }
 
@@ -33,21 +38,31 @@ export async function login(
   if (!valid) {
     return {
       success: false,
-      error: "Invalid email or password.",
+      error: "Invalid user ID or password.",
     };
   }
 
-  await createSession(user.id);
+  const company = await rawPrisma.company.findFirst({
+    where: { id: companyId, adminUserId: user.id, status: "ACTIVE" },
+    select: { id: true },
+  });
+
+  if (!company) {
+    return { success: false, error: "You are not the administrator for this company." };
+  }
+
+  await createSession(user.id, companyId);
 
   return {
     success: true,
+    mustChangePassword: companyId !== 0 && password === "Password",
   };
 }
 
 export async function logout() {
   await destroySession();
 
-  redirect("/login");
+  redirect(await tenantPath("/login"));
 }
 
 /**
@@ -64,7 +79,7 @@ export async function requireUser() {
   const user = await currentUser();
 
   if (!user) {
-    redirect("/login");
+    redirect(await tenantPath("/login"));
   }
 
   return user;

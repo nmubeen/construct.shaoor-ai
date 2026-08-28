@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
+import { tenantPath } from "@/lib/tenant";
 
-export default function AdminPage() {
-  redirect("/admin/dashboard");
+export default async function AdminPage() {
+  redirect(await tenantPath("/admin/dashboard"));
 }

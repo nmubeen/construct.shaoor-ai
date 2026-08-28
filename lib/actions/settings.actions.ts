@@ -25,6 +25,7 @@ export async function updateSettings(formData: FormData) {
         phone: String(formData.get("phone") ?? ""),
         email: String(formData.get("email") ?? ""),
         website: String(formData.get("website") ?? ""),
+        logo: String(formData.get("logo") ?? ""),
         addressLine1: String(formData.get("addressLine1") ?? ""),
         addressLine2: String(formData.get("addressLine2") ?? ""),
         city: String(formData.get("city") ?? ""),
@@ -46,11 +47,6 @@ export async function updateSettings(formData: FormData) {
         ctaSubtitle: String(formData.get("ctaSubtitle") ?? ""),
         ctaButtonText: String(formData.get("ctaButtonText") ?? ""),
         ctaButtonLink: String(formData.get("ctaButtonLink") ?? ""),
-
-        projectsCompleted: Number(formData.get("projectsCompleted") ?? 0),
-        clientsServed: Number(formData.get("clientsServed") ?? 0),
-        yearsExperience: Number(formData.get("yearsExperience") ?? 0),
-        employees: Number(formData.get("employees") ?? 0),
 
         seoTitle: String(formData.get("seoTitle") ?? ""),
         seoDescription: String(formData.get("seoDescription") ?? ""),

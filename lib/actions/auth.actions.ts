@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 
 import { login, logout } from "@/lib/auth/auth";
+import { tenantPath } from "@/lib/tenant";
 
 /**
  * Login Server Action
@@ -16,7 +17,7 @@ export async function loginAction(
 
   if (!email || !password) {
     return {
-      error: "Email and password are required.",
+      error: "User ID and password are required.",
     };
   }
 
@@ -28,7 +29,11 @@ export async function loginAction(
     };
   }
 
-  redirect("/admin");
+  if (result.mustChangePassword) {
+    redirect(await tenantPath("/change-password"));
+  }
+
+  redirect(await tenantPath("/admin"));
 }
 
 /**
@@ -37,5 +42,5 @@ export async function loginAction(
 export async function logoutAction() {
   await logout();
 
-  redirect("/login");
+  redirect(await tenantPath("/login"));
 }

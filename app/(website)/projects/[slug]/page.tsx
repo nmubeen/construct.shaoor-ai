@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { prisma } from "@/lib/prisma";
+import { getPublicProjectBySlug, getRelatedPublicProjects } from "@/lib/public-site-data";
 import { getDefaultSEO, getRouteMetadata } from "@/lib/seo";
 import PageHero from "@/components/website/shared/PageHero";
 import Container from "@/components/ui/Container";
@@ -22,18 +22,7 @@ export async function generateMetadata({
 }: PageProps): Promise<Metadata> {
   const { slug } = await params;
 
-  const project = await prisma.project.findUnique({
-    where: { slug },
-    select: {
-      title: true,
-      description: true,
-      coverImage: true,
-      seoTitle: true,
-      seoDescription: true,
-      seoKeywords: true,
-      canonicalUrl: true,
-    },
-  });
+  const project = await getPublicProjectBySlug(slug);
 
   if (!project) {
     return getRouteMetadata({
@@ -57,26 +46,11 @@ export async function generateMetadata({
 export default async function ProjectPage({ params }: PageProps) {
   const { slug } = await params;
 
-  const project = await prisma.project.findUnique({
-    where: { slug },
-    include: {
-      gallery: { orderBy: { id: "asc" } },
-      highlights: { orderBy: { id: "asc" } },
-    },
-  });
+  const project = await getPublicProjectBySlug(slug);
 
   if (!project) notFound();
 
-  const relatedProjects = await prisma.project.findMany({
-    where: {
-      category: project.category,
-      id: { not: project.id },
-    },
-    include: {
-      gallery: { orderBy: { id: "asc" }, take: 1 },
-    },
-    take: 3,
-  });
+  const relatedProjects = await getRelatedPublicProjects(project, 3);
 
   const heroImage =
     project.coverImage && project.coverImage !== "/images/projects/default.jpg"

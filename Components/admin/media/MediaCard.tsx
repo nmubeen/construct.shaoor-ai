@@ -55,15 +55,24 @@ export default function MediaCard({
 
   return (
     <article
+      draggable={view === "grid" && isImage}
+      onDragStart={(event) => {
+        if (!isImage) return;
+        event.dataTransfer.setData("application/x-media-id", String(item.id));
+        event.dataTransfer.effectAllowed = "move";
+      }}
       className={[
         "rounded-xl border border-slate-200 bg-white shadow-sm transition hover:shadow-md",
+        view === "grid" && isImage ? "cursor-grab active:cursor-grabbing" : "",
         view === "list" ? "flex gap-4 p-4" : "overflow-hidden",
       ].join(" ")}
     >
       <div
         className={[
           "relative overflow-hidden rounded-lg bg-slate-100",
-          view === "list" ? "h-28 w-36 shrink-0" : "aspect-4/3 w-full rounded-none",
+          view === "list"
+            ? "h-28 w-36 shrink-0"
+            : "aspect-4/3 w-full rounded-none",
         ].join(" ")}
       >
         {isImage ? (
@@ -71,7 +80,11 @@ export default function MediaCard({
             src={previewUrl}
             alt={item.altText || item.title || item.originalName}
             fill
-            sizes={view === "list" ? "160px" : "(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"}
+            sizes={
+              view === "list"
+                ? "160px"
+                : "(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
+            }
             className="object-cover"
           />
         ) : (
@@ -81,24 +94,24 @@ export default function MediaCard({
         )}
       </div>
 
-      <div className={view === "list" ? "flex-1" : "p-4"}>
+      <div className={view === "list" ? "flex-1" : "p-3"}>
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <h3 className="truncate text-base font-semibold text-slate-900">
+            <h3 className="truncate text-sm font-semibold text-slate-900">
               {item.title || item.originalName}
             </h3>
 
-            <p className="truncate text-sm text-slate-500">
-              {item.fileName}
-            </p>
+            <p className="truncate text-xs text-slate-500">{item.fileName}</p>
           </div>
 
-          <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${typeBadge(item.type)}`}>
+          <span
+            className={`rounded-full px-2 py-1 text-[10px] font-semibold ${typeBadge(item.type)}`}
+          >
             {item.type}
           </span>
         </div>
 
-        <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 text-xs text-slate-600 sm:text-sm">
+        <dl className="mt-3 grid grid-cols-2 gap-x-2 gap-y-2 text-[11px] text-slate-600">
           <div>
             <dt className="text-slate-400">Dimensions</dt>
             <dd className="font-medium text-slate-700">{dimensions(item)}</dd>
@@ -106,7 +119,9 @@ export default function MediaCard({
 
           <div>
             <dt className="text-slate-400">Size</dt>
-            <dd className="font-medium text-slate-700">{formatFileSize(item.fileSize)}</dd>
+            <dd className="font-medium text-slate-700">
+              {formatFileSize(item.fileSize)}
+            </dd>
           </div>
 
           <div>
@@ -122,34 +137,34 @@ export default function MediaCard({
           </div>
         </dl>
 
-        <div className="mt-4 flex items-center justify-end gap-2">
+        <div className="mt-3 flex items-center justify-end gap-1.5">
           <button
             type="button"
             onClick={() => onPreview(item)}
-            className="inline-flex items-center gap-2 rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-100"
+            className="inline-flex items-center rounded-lg border border-slate-300 p-2 text-xs text-slate-700 transition hover:bg-slate-100"
             aria-label={`View ${item.originalName}`}
           >
             <FaEye />
-            View
+            <span className="sr-only">View</span>
           </button>
 
           <Link
             href={`/admin/media/${item.id}`}
-            className="inline-flex items-center gap-2 rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-100"
+            className="inline-flex items-center rounded-lg border border-slate-300 p-2 text-xs text-slate-700 transition hover:bg-slate-100"
             aria-label={`Edit ${item.originalName}`}
           >
             <FaPenToSquare />
-            Edit
+            <span className="sr-only">Edit</span>
           </Link>
 
           <button
             type="button"
             onClick={() => onDelete(item)}
-            className="inline-flex items-center gap-2 rounded-lg border border-red-200 px-3 py-2 text-sm text-red-700 transition hover:bg-red-50"
+            className="inline-flex items-center rounded-lg border border-red-200 p-2 text-xs text-red-700 transition hover:bg-red-50"
             aria-label={`Delete ${item.originalName}`}
           >
             <FaTrash />
-            Delete
+            <span className="sr-only">Delete</span>
           </button>
         </div>
       </div>

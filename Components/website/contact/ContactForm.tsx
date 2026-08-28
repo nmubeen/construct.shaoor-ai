@@ -46,6 +46,9 @@ export default function ContactForm() {
       action={handleSubmit}
       className="space-y-8 rounded-xl bg-white p-6 shadow sm:p-8"
     >
+      <div className="hidden" aria-hidden="true">
+        <label>Company website<input name="companyWebsite" tabIndex={-1} autoComplete="off" /></label>
+      </div>
       <AdminSection
         title="Enquiry Details"
         description="Share your requirements and our team will get back to you."
@@ -106,6 +109,11 @@ export default function ContactForm() {
           />
         </div>
       </AdminSection>
+
+      <label className="flex items-start gap-3 text-sm text-slate-600">
+        <input name="consent" type="checkbox" required className="mt-1 size-4 rounded border-slate-300 text-teal-600" />
+        <span>I consent to this company using my details to respond to this enquiry.</span>
+      </label>
 
       <div className="mt-8 flex justify-end gap-4 border-t border-slate-200 pt-6">
         <Button type="submit" loading={isPending}>

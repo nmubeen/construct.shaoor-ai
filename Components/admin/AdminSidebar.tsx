@@ -21,6 +21,8 @@ import { logoutAction } from "@/lib/actions/auth.actions";
 
 interface AdminSidebarProps {
   companyName: string;
+  prefix: string;
+  superAdmin: boolean;
 }
 
 const menu = [
@@ -94,7 +96,10 @@ const menu = [
 
 export default function AdminSidebar({
   companyName,
+  prefix,
+  superAdmin,
 }: AdminSidebarProps) {
+  const visibleMenu = superAdmin ? [{ title: "Companies", href: "/admin/companies", icon: <FaBuilding /> }] : menu;
   return (
     <aside className="flex min-h-screen w-44 flex-col bg-slate-900 text-white">
       <div className="p-8">
@@ -102,10 +107,10 @@ export default function AdminSidebar({
       </div>
 
       <nav className="flex-1 space-y-2 px-4">
-        {menu.map((item) => (
+        {visibleMenu.map((item) => (
           <Link
             key={item.href}
-            href={item.href}
+            href={`${prefix}${item.href}`}
             className="flex items-center gap-3 rounded-lg px-4 py-3 transition-colors hover:bg-slate-800"
           >
             {item.icon}

@@ -7,6 +7,7 @@ import { logActivity } from "@/lib/actions/audit.actions";
 import { prisma } from "@/lib/prisma";
 import { ensureSeoTablesAreCompatible } from "@/lib/seo-repair";
 import { getSiteSettings } from "@/lib/settings";
+import { getTenantContext } from "@/lib/tenant";
 
 const SEO_PAGE_DEFAULTS = [
   { pageKey: "home", pageName: "Home" },
@@ -144,6 +145,7 @@ function pageHref(pageKey: string) {
 export async function ensureSeoDefaults() {
   await ensureSeoTablesAreCompatible();
 
+  const { companyId } = await getTenantContext();
   const existingSettings = await prisma.seoSettings.findFirst({
     orderBy: {
       createdAt: "asc",
@@ -171,7 +173,7 @@ export async function ensureSeoDefaults() {
     SEO_PAGE_DEFAULTS.map((item) =>
       prisma.seoPage.upsert({
         where: {
-          pageKey: item.pageKey,
+          companyId_pageKey: { companyId, pageKey: item.pageKey },
         },
         update: {},
         create: {
@@ -268,7 +270,7 @@ export async function getSeoPages() {
 export async function getSeoPage(pageKey: string) {
   await ensureSeoDefaults();
 
-  return prisma.seoPage.findUnique({
+  return prisma.seoPage.findFirst({
     where: {
       pageKey,
     },
@@ -279,7 +281,7 @@ export async function updateSeoPage(
   pageKey: string,
   formData: FormData
 ) {
-  const existing = await prisma.seoPage.findUnique({
+  const existing = await prisma.seoPage.findFirst({
     where: {
       pageKey,
     },
@@ -307,7 +309,7 @@ export async function updateSeoPage(
 
   const updatedPage = await prisma.seoPage.update({
     where: {
-      pageKey,
+      id: existing.id,
     },
     data: parsed.data,
   });

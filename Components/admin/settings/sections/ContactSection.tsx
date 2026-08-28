@@ -31,7 +31,8 @@ export default function ContactSection({
 
       <TextField
         label="WhatsApp"
-        name="whatsapp"
+        name="whatsApp"
+        type="tel"
         defaultValue={settings.whatsApp ?? ""}
       />
 

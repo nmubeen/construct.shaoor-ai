@@ -1,6 +1,7 @@
 "use server";
 
 import path from "path";
+import fs from "fs/promises";
 import { revalidatePath } from "next/cache";
 import { MediaType, Prisma } from "@prisma/client";
 import { z } from "zod";
@@ -41,6 +42,139 @@ export interface GetMediaOptions {
   sort?: "newest" | "oldest" | "name" | "size";
 }
 
+const UPLOADS_ROOT = path.join(process.cwd(), "public", "uploads");
+
+function validateFolderPath(value: string) {
+  const normalized = sanitizeFolder(value);
+  if (
+    !normalized ||
+    normalized !== value.trim().toLowerCase().replace(/\\/g, "/")
+  ) {
+    throw new Error(
+      "Use only letters, numbers, spaces, hyphens, or underscores in folder names.",
+    );
+  }
+  return normalized;
+}
+
+async function readFolderPaths(
+  directory = UPLOADS_ROOT,
+  prefix = "",
+): Promise<string[]> {
+  let entries;
+  try {
+    entries = await fs.readdir(directory, { withFileTypes: true });
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return [];
+    throw error;
+  }
+
+  const folders: string[] = [];
+  for (const entry of entries) {
+    if (!entry.isDirectory() || (!prefix && entry.name === "thumbnails"))
+      continue;
+    const folder = prefix ? `${prefix}/${entry.name}` : entry.name;
+    folders.push(
+      folder,
+      ...(await readFolderPaths(path.join(directory, entry.name), folder)),
+    );
+  }
+  return folders;
+}
+
+export async function getMediaFolders() {
+  const [diskFolders, mediaFolders] = await Promise.all([
+    readFolderPaths(),
+    prisma.media.findMany({
+      where: { isActive: true, folder: { not: null } },
+      distinct: ["folder"],
+      select: { folder: true },
+    }),
+  ]);
+
+  const folders = new Set(diskFolders);
+  for (const item of mediaFolders) {
+    const parts = (item.folder ?? "").split("/").filter(Boolean);
+    for (let index = 1; index <= parts.length; index += 1) {
+      folders.add(parts.slice(0, index).join("/"));
+    }
+  }
+  return [...folders].sort((a, b) => a.localeCompare(b));
+}
+
+export async function createMediaFolder(parent: string, name: string) {
+  const leaf = sanitizeFolder(name);
+  if (!leaf || leaf.includes("/"))
+    throw new Error("Enter a valid folder name without slashes.");
+  const folder = validateFolderPath(parent ? `${parent}/${leaf}` : leaf);
+  await fs.mkdir(path.join(UPLOADS_ROOT, ...folder.split("/")), {
+    recursive: true,
+  });
+  revalidatePath("/admin/media");
+  revalidatePath("/admin/media/upload");
+  return folder;
+}
+
+export async function deleteMediaFolder(folderInput: string) {
+  const folder = validateFolderPath(folderInput);
+  const mediaCount = await prisma.media.count({
+    where: {
+      isActive: true,
+      OR: [{ folder }, { folder: { startsWith: `${folder}/` } }],
+    },
+  });
+  if (mediaCount > 0)
+    throw new Error("This folder contains media and cannot be deleted.");
+
+  try {
+    await fs.rmdir(path.join(UPLOADS_ROOT, ...folder.split("/")));
+  } catch (error) {
+    const code = (error as NodeJS.ErrnoException).code;
+    if (code === "ENOTEMPTY" || code === "EEXIST") {
+      throw new Error("Delete the folder's subfolders or files first.");
+    }
+    if (code !== "ENOENT") throw error;
+  }
+  revalidatePath("/admin/media");
+  revalidatePath("/admin/media/upload");
+}
+
+export async function moveMediaToFolder(id: number, folderInput: string) {
+  const folder = folderInput ? validateFolderPath(folderInput) : null;
+  const media = await prisma.media.findUnique({ where: { id } });
+
+  if (!media || !media.isActive) throw new Error("Media item not found.");
+  if (media.type !== "IMAGE")
+    throw new Error("Only images can be moved using the folder tree.");
+
+  if (folder) {
+    await fs.mkdir(path.join(UPLOADS_ROOT, ...folder.split("/")), {
+      recursive: true,
+    });
+  }
+
+  const updated = await prisma.media.update({
+    where: { id },
+    data: { folder },
+  });
+
+  try {
+    await logActivity({
+      module: "Media",
+      action: "UPDATE",
+      recordId: String(updated.id),
+      title: `Moved Media: ${updated.originalName}`,
+      details: folder ? `Folder: ${folder}` : "Folder: uploads root",
+    });
+  } catch (error) {
+    console.error("Failed to write media move audit log:", error);
+  }
+
+  revalidatePath("/admin/media");
+  revalidatePath(`/admin/media/${id}`);
+  return updated;
+}
+
 function text(formData: FormData, key: string) {
   return String(formData.get(key) ?? "").trim();
 }
@@ -53,7 +187,9 @@ function optionalText(formData: FormData, key: string) {
 function buildWhere(options: GetMediaOptions): Prisma.MediaWhereInput {
   const search = (options.search ?? "").trim();
   const folder = sanitizeFolder(options.folder);
-  const extension = options.extension ? normalizeExtension(options.extension) : "";
+  const extension = options.extension
+    ? normalizeExtension(options.extension)
+    : "";
 
   const where: Prisma.MediaWhereInput = {
     isActive: true,
@@ -85,7 +221,9 @@ function buildWhere(options: GetMediaOptions): Prisma.MediaWhereInput {
   return where;
 }
 
-function sortOrder(sort: GetMediaOptions["sort"]): Prisma.MediaOrderByWithRelationInput[] {
+function sortOrder(
+  sort: GetMediaOptions["sort"],
+): Prisma.MediaOrderByWithRelationInput[] {
   switch (sort) {
     case "oldest":
       return [{ createdAt: "asc" }];
@@ -129,12 +267,15 @@ async function createMediaRecord(data: Prisma.MediaUncheckedCreateInput) {
       throw error;
     }
 
-    const rows = await prisma.$queryRawUnsafe<Array<{ nextId: number | bigint }>>(
-      'SELECT COALESCE(MAX(CAST("id" AS INTEGER)), 0) + 1 AS "nextId" FROM "Media"'
+    const rows = await prisma.$queryRawUnsafe<
+      Array<{ nextId: number | bigint }>
+    >(
+      'SELECT COALESCE(MAX(CAST("id" AS INTEGER)), 0) + 1 AS "nextId" FROM "Media"',
     );
 
     const rawNextId = rows[0]?.nextId ?? 1;
-    const nextId = typeof rawNextId === "bigint" ? Number(rawNextId) : Number(rawNextId);
+    const nextId =
+      typeof rawNextId === "bigint" ? Number(rawNextId) : Number(rawNextId);
 
     return prisma.media.create({
       data: {
@@ -179,7 +320,9 @@ export async function getMedia(options: GetMediaOptions = {}) {
     page,
     pageSize,
     totalPages: Math.max(1, Math.ceil(total / pageSize)),
-    folders: folders.map((item) => item.folder).filter((item): item is string => Boolean(item)),
+    folders: folders
+      .map((item) => item.folder)
+      .filter((item): item is string => Boolean(item)),
     extensions: extensions.map((item) => item.extension),
   };
 }
@@ -208,23 +351,12 @@ export async function uploadMedia(formData: FormData) {
 
   const extension = normalizeExtension(path.extname(originalName));
   if (!isAllowedExtension(extension)) {
-    throw new Error(`Unsupported file type. Allowed: ${ALLOWED_MEDIA_EXTENSIONS.join(", ")}.`);
+    throw new Error(
+      `Unsupported file type. Allowed: ${ALLOWED_MEDIA_EXTENSIONS.join(", ")}.`,
+    );
   }
 
   const folder = sanitizeFolder(text(formData, "folder"));
-
-  const duplicate = await prisma.media.findFirst({
-    where: {
-      originalName,
-      folder,
-      isActive: true,
-    },
-    select: { id: true },
-  });
-
-  if (duplicate) {
-    throw new Error("A file with this filename already exists in this folder.");
-  }
 
   const title = optionalText(formData, "title");
   const altText = optionalText(formData, "altText");
@@ -232,30 +364,47 @@ export async function uploadMedia(formData: FormData) {
 
   const saved = await saveMediaFile(file, folder);
 
-  const media = await createMediaRecord({
-    fileName: saved.fileName,
-    originalName,
-    title,
-    altText,
-    description,
-    folder: saved.folder,
-    mimeType: saved.mimeType,
-    extension: saved.extension,
-    fileSize: saved.fileSize,
-    width: saved.width,
-    height: saved.height,
-    type: saved.type,
-    url: saved.url,
-    thumbnailUrl: saved.thumbnailUrl,
-  });
+  let media;
+  try {
+    media = await createMediaRecord({
+      fileName: saved.fileName,
+      originalName,
+      title,
+      altText,
+      description,
+      folder: saved.folder,
+      mimeType: saved.mimeType,
+      extension: saved.extension,
+      fileSize: saved.fileSize,
+      width: saved.width,
+      height: saved.height,
+      type: saved.type,
+      url: saved.url,
+      thumbnailUrl: saved.thumbnailUrl,
+    });
+  } catch (error) {
+    await Promise.all([
+      deleteUploadedFile(saved.url),
+      saved.thumbnailUrl
+        ? deleteUploadedFile(saved.thumbnailUrl)
+        : Promise.resolve(),
+    ]);
+    throw error;
+  }
 
-  await logActivity({
-    module: "Media",
-    action: "CREATE",
-    recordId: String(media.id),
-    title: `Uploaded Media: ${media.originalName}`,
-    details: media.folder ? `Folder: ${media.folder}` : null,
-  });
+  try {
+    await logActivity({
+      module: "Media",
+      action: "CREATE",
+      recordId: String(media.id),
+      title: `Uploaded Media: ${media.originalName}`,
+      details: media.folder ? `Folder: ${media.folder}` : null,
+    });
+  } catch (error) {
+    // The media record is already committed. Audit logging must not turn a
+    // successful upload into a client-visible failure that encourages retries.
+    console.error("Failed to write media upload audit log:", error);
+  }
 
   revalidatePath("/admin/media");
 
@@ -323,7 +472,9 @@ export async function deleteMedia(id: number) {
 
   await Promise.all([
     deleteUploadedFile(media.url),
-    media.thumbnailUrl ? deleteUploadedFile(media.thumbnailUrl) : Promise.resolve(),
+    media.thumbnailUrl
+      ? deleteUploadedFile(media.thumbnailUrl)
+      : Promise.resolve(),
   ]);
 
   await logActivity({
@@ -344,7 +495,7 @@ export async function searchMedia(
     folder?: string;
     extension?: string;
     limit?: number;
-  } = {}
+  } = {},
 ) {
   const where = buildWhere({
     search: searchQuery,

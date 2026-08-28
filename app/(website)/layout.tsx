@@ -3,9 +3,11 @@ import type { Metadata } from "next";
 import Header from "@/components/website/layout/Header";
 import Footer from "@/components/website/layout/Footer";
 import { getDefaultSEO, resolveBaseUrl } from "@/lib/seo";
-import { getSiteSettings } from "@/lib/settings";
+import { getPublicSiteSettings } from "@/lib/public-site-data";
 import JsonLd from "@/components/shared/JsonLd";
 import { buildWebsiteSchema } from "@/lib/schema";
+import { getConstructPrisma } from "@/lib/construct-prisma";
+import { resolvePublicConstructOrganization } from "@/lib/construct-public-tenant";
 
 import "../globals.css";
 
@@ -51,11 +53,19 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function WebsiteLayout({
+export default async function WebsiteLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const organization = await resolvePublicConstructOrganization();
+  if (organization) {
+    const publication = await getConstructPrisma().sitePublication.findUnique({ where: { organizationId: organization.id } });
+    if (publication?.status !== "PUBLISHED") {
+      return <main className="grid min-h-screen place-items-center bg-slate-950 px-6 text-center text-white"><div><p className="text-xs font-bold uppercase tracking-[.22em] text-teal-400">Shaoor Construct</p><h1 className="mt-4 text-3xl font-bold">Website coming soon</h1><p className="mt-3 text-sm text-slate-400">This website is not currently published.</p></div></main>;
+    }
+    return <><Header /><WebsiteStructuredData /><main className="min-h-screen">{children}</main><Footer /></>;
+  }
   return (
     <>
       <Header />
@@ -74,7 +84,7 @@ export default function WebsiteLayout({
 async function WebsiteStructuredData() {
   const [seo, settings] = await Promise.all([
     getDefaultSEO(),
-    getSiteSettings(),
+    getPublicSiteSettings(),
   ]);
 
   return <JsonLd data={buildWebsiteSchema({ seo, settings })} />;

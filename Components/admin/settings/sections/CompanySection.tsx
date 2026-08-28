@@ -2,6 +2,7 @@
 
 import type { Settings } from "@prisma/client";
 
+import ImageUpload from "@/components/admin/common/ImageUpload";
 import AdminSection from "@/components/admin/layout/AdminSection";
 import TextField from "@/components/admin/fields/TextField";
 
@@ -37,11 +38,11 @@ export default function CompanySection({
         defaultValue={settings.website ?? ""}
       />
 
-      <TextField
-        label="Logo URL"
+      <ImageUpload
+        label="Logo"
         name="logo"
         defaultValue={settings.logo ?? ""}
-        helperText="Image upload component will replace this later."
+        helperText="Select the company logo from your Media Library."
       />
     </AdminSection>
   );

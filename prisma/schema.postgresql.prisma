@@ -1,0 +1,608 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/@prisma/construct-client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("CONSTRUCT_DATABASE_URL")
+  schemas  = ["construct"]
+}
+
+enum OrganizationStatus {
+  PENDING
+  ACTIVE
+  SUSPENDED
+  ARCHIVED
+
+  @@schema("construct")
+}
+
+enum MembershipRole {
+  OWNER
+  ADMIN
+  EDITOR
+  VIEWER
+
+  @@schema("construct")
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  REVOKED
+  EXPIRED
+
+  @@schema("construct")
+}
+
+enum DomainStatus {
+  PENDING
+  VERIFYING
+  ACTIVE
+  FAILED
+  REMOVED
+
+  @@schema("construct")
+}
+
+enum PublicationStatus {
+  DRAFT
+  PUBLISHED
+  UNPUBLISHED
+
+  @@schema("construct")
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+  DOCUMENT
+  OTHER
+
+  @@schema("construct")
+}
+
+enum MessageStatus {
+  NEW
+  READ
+  REPLIED
+  ARCHIVED
+
+  @@schema("construct")
+}
+
+model Organization {
+  id        String             @id @default(uuid()) @db.Uuid
+  name      String
+  slug      String             @unique
+  status    OrganizationStatus @default(PENDING)
+  createdAt DateTime           @default(now()) @map("created_at")
+  updatedAt DateTime           @updatedAt @map("updated_at")
+
+  memberships     Membership[]
+  invitations     Invitation[]
+  domains         Domain[]
+  settings        SiteSettings?
+  publication     SitePublication?
+  projects        Project[]
+  media           Media[]
+  galleries       Gallery[]
+  services        Service[]
+  teamMembers     TeamMember[]
+  clients         Client[]
+  testimonials    Testimonial[]
+  faqs            Faq[]
+  messages        ContactMessage[]
+  seoSettings     SeoSettings?
+  seoPages        SeoPage[]
+  navigationItems NavigationItem[]
+  auditLogs       AuditLog[]
+
+  @@map("organizations")
+  @@schema("construct")
+}
+
+model User {
+  id        String   @id @db.Uuid
+  email     String   @unique
+  fullName  String?  @map("full_name")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  memberships     Membership[]
+  invitationsSent Invitation[]      @relation("InvitationsSent")
+  auditLogs       AuditLog[]
+  publications    SitePublication[] @relation("PublishedBy")
+
+  @@map("users")
+  @@schema("construct")
+}
+
+model Membership {
+  id             String         @id @default(uuid()) @db.Uuid
+  organizationId String         @map("organization_id") @db.Uuid
+  userId         String         @map("user_id") @db.Uuid
+  role           MembershipRole @default(EDITOR)
+  createdAt      DateTime       @default(now()) @map("created_at")
+  updatedAt      DateTime       @updatedAt @map("updated_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, userId])
+  @@index([userId])
+  @@map("memberships")
+  @@schema("construct")
+}
+
+model Invitation {
+  id             String           @id @default(uuid()) @db.Uuid
+  organizationId String           @map("organization_id") @db.Uuid
+  email          String
+  role           MembershipRole
+  tokenHash      String           @unique @map("token_hash")
+  status         InvitationStatus @default(PENDING)
+  invitedById    String           @map("invited_by_id") @db.Uuid
+  expiresAt      DateTime         @map("expires_at")
+  acceptedAt     DateTime?        @map("accepted_at")
+  createdAt      DateTime         @default(now()) @map("created_at")
+  updatedAt      DateTime         @updatedAt @map("updated_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  invitedBy    User         @relation("InvitationsSent", fields: [invitedById], references: [id])
+
+  @@index([organizationId, status])
+  @@index([email])
+  @@map("invitations")
+  @@schema("construct")
+}
+
+model Domain {
+  id                String       @id @default(uuid()) @db.Uuid
+  organizationId    String       @map("organization_id") @db.Uuid
+  hostname          String       @unique
+  status            DomainStatus @default(PENDING)
+  verificationToken String       @unique @map("verification_token")
+  isPrimary         Boolean      @default(false) @map("is_primary")
+  verifiedAt        DateTime?    @map("verified_at")
+  createdAt         DateTime     @default(now()) @map("created_at")
+  updatedAt         DateTime     @updatedAt @map("updated_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, status])
+  @@map("domains")
+  @@schema("construct")
+}
+
+model SitePublication {
+  organizationId String            @id @map("organization_id") @db.Uuid
+  status         PublicationStatus @default(DRAFT)
+  publishedAt    DateTime?         @map("published_at")
+  publishedById  String?           @map("published_by_id") @db.Uuid
+  createdAt      DateTime          @default(now()) @map("created_at")
+  updatedAt      DateTime          @updatedAt @map("updated_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  publishedBy  User?        @relation("PublishedBy", fields: [publishedById], references: [id], onDelete: SetNull)
+
+  @@map("site_publications")
+  @@schema("construct")
+}
+
+model SiteSettings {
+  organizationId     String   @id @map("organization_id") @db.Uuid
+  companyName        String   @map("company_name")
+  tagline            String
+  description        String
+  logoUrl            String?  @map("logo_url")
+  faviconUrl         String?  @map("favicon_url")
+  phone              String
+  email              String
+  website            String?
+  addressLine1       String   @map("address_line_1")
+  addressLine2       String?  @map("address_line_2")
+  city               String
+  state              String?
+  country            String
+  postalCode         String?  @map("postal_code")
+  facebook           String?
+  instagram          String?
+  linkedin           String?
+  youtube            String?
+  twitter            String?
+  heroTitle          String   @map("hero_title")
+  heroSubtitle       String   @map("hero_subtitle")
+  heroImageUrl       String?  @map("hero_image_url")
+  ctaTitle           String   @map("cta_title")
+  ctaSubtitle        String   @map("cta_subtitle")
+  ctaButtonText      String   @map("cta_button_text")
+  ctaButtonLink      String   @map("cta_button_link")
+  projectsCompleted  Int      @default(0) @map("projects_completed")
+  clientsServed      Int      @default(0) @map("clients_served")
+  yearsExperience    Int      @default(0) @map("years_experience")
+  employees          Int      @default(0)
+  whatsApp           String?  @map("whats_app")
+  googleMapsUrl      String?  @map("google_maps_url")
+  aboutTitle         String?  @map("about_title")
+  aboutSubtitle      String?  @map("about_subtitle")
+  aboutStory         String?  @map("about_story")
+  missionTitle       String?  @map("mission_title")
+  missionDescription String?  @map("mission_description")
+  visionTitle        String?  @map("vision_title")
+  visionDescription  String?  @map("vision_description")
+  aboutImageUrl      String?  @map("about_image_url")
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@map("site_settings")
+  @@schema("construct")
+}
+
+model Project {
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  slug           String
+  title          String
+  category       String
+  status         String
+  client         String
+  location       String
+  year           Int
+  duration       String
+  budget         String
+  area           String
+  coverImageUrl  String?  @map("cover_image_url")
+  description    String
+  featured       Boolean  @default(false)
+  seoTitle       String?  @map("seo_title")
+  seoDescription String?  @map("seo_description")
+  seoKeywords    String?  @map("seo_keywords")
+  canonicalUrl   String?  @map("canonical_url")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  organization Organization         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  highlights   ProjectHighlight[]
+  galleryItems ProjectGalleryItem[]
+
+  @@unique([organizationId, slug])
+  @@index([organizationId, status])
+  @@index([organizationId, featured])
+  @@map("projects")
+  @@schema("construct")
+}
+
+model ProjectHighlight {
+  id             String @id @default(uuid()) @db.Uuid
+  organizationId String @map("organization_id") @db.Uuid
+  projectId      String @map("project_id") @db.Uuid
+  text           String
+  sortOrder      Int    @default(0) @map("sort_order")
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, projectId])
+  @@map("project_highlights")
+  @@schema("construct")
+}
+
+model ProjectGalleryItem {
+  id             String  @id @default(uuid()) @db.Uuid
+  organizationId String  @map("organization_id") @db.Uuid
+  projectId      String  @map("project_id") @db.Uuid
+  imageUrl       String  @map("image_url")
+  altText        String? @map("alt_text")
+  sortOrder      Int     @default(0) @map("sort_order")
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, projectId])
+  @@map("project_gallery_items")
+  @@schema("construct")
+}
+
+model Media {
+  id             String    @id @default(uuid()) @db.Uuid
+  organizationId String    @map("organization_id") @db.Uuid
+  fileName       String    @map("file_name")
+  originalName   String    @map("original_name")
+  storagePath    String    @map("storage_path")
+  url            String
+  thumbnailUrl   String?   @map("thumbnail_url")
+  altText        String?   @map("alt_text")
+  title          String?
+  description    String?
+  folder         String?
+  mimeType       String    @map("mime_type")
+  extension      String
+  fileSize       Int       @map("file_size")
+  width          Int?
+  height         Int?
+  type           MediaType
+  isActive       Boolean   @default(true) @map("is_active")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+
+  organization Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  galleryItems GalleryItem[]
+
+  @@unique([organizationId, storagePath])
+  @@index([organizationId, folder])
+  @@map("media")
+  @@schema("construct")
+}
+
+model Gallery {
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  title          String
+  slug           String
+  description    String?
+  coverImageUrl  String?  @map("cover_image_url")
+  featured       Boolean  @default(false)
+  isActive       Boolean  @default(true) @map("is_active")
+  sortOrder      Int      @default(0) @map("sort_order")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  organization Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  items        GalleryItem[]
+
+  @@unique([organizationId, slug])
+  @@index([organizationId, isActive])
+  @@map("galleries")
+  @@schema("construct")
+}
+
+model GalleryItem {
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  galleryId      String   @map("gallery_id") @db.Uuid
+  mediaId        String   @map("media_id") @db.Uuid
+  caption        String?
+  sortOrder      Int      @default(0) @map("sort_order")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  gallery Gallery @relation(fields: [galleryId], references: [id], onDelete: Cascade)
+  media   Media   @relation(fields: [mediaId], references: [id], onDelete: Restrict)
+
+  @@unique([galleryId, mediaId])
+  @@index([organizationId, galleryId])
+  @@map("gallery_items")
+  @@schema("construct")
+}
+
+model Service {
+  id               String   @id @default(uuid()) @db.Uuid
+  organizationId   String   @map("organization_id") @db.Uuid
+  title            String
+  slug             String
+  shortDescription String   @map("short_description")
+  description      String
+  imageUrl         String?  @map("image_url")
+  icon             String?
+  displayOrder     Int      @default(0) @map("display_order")
+  isActive         Boolean  @default(true) @map("is_active")
+  seoTitle         String?  @map("seo_title")
+  seoDescription   String?  @map("seo_description")
+  seoKeywords      String?  @map("seo_keywords")
+  canonicalUrl     String?  @map("canonical_url")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, slug])
+  @@index([organizationId, isActive])
+  @@map("services")
+  @@schema("construct")
+}
+
+model TeamMember {
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  name           String
+  slug           String
+  designation    String
+  shortBio       String   @map("short_bio")
+  photoUrl       String   @map("photo_url")
+  email          String?
+  phone          String?
+  linkedin       String?
+  instagram      String?
+  twitter        String?
+  displayOrder   Int      @default(0) @map("display_order")
+  showOnHomepage Boolean  @default(true) @map("show_on_homepage")
+  isActive       Boolean  @default(true) @map("is_active")
+  seoTitle       String?  @map("seo_title")
+  seoDescription String?  @map("seo_description")
+  seoKeywords    String?  @map("seo_keywords")
+  canonicalUrl   String?  @map("canonical_url")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, slug])
+  @@index([organizationId, isActive])
+  @@map("team_members")
+  @@schema("construct")
+}
+
+model Client {
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  name           String
+  slug           String
+  logoUrl        String?  @map("logo_url")
+  website        String?
+  category       String?
+  description    String?
+  displayOrder   Int      @default(0) @map("display_order")
+  featured       Boolean  @default(false)
+  isActive       Boolean  @default(true) @map("is_active")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, slug])
+  @@index([organizationId, isActive])
+  @@map("clients")
+  @@schema("construct")
+}
+
+model Testimonial {
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  clientName     String   @map("client_name")
+  company        String?
+  designation    String?
+  photoUrl       String?  @map("photo_url")
+  rating         Int      @default(5)
+  testimonial    String
+  projectName    String?  @map("project_name")
+  featured       Boolean  @default(false)
+  isActive       Boolean  @default(true) @map("is_active")
+  displayOrder   Int      @default(0) @map("display_order")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, isActive])
+  @@map("testimonials")
+  @@schema("construct")
+}
+
+model Faq {
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  question       String
+  answer         String
+  category       String?
+  displayOrder   Int      @default(0) @map("display_order")
+  featured       Boolean  @default(false)
+  isActive       Boolean  @default(true) @map("is_active")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, isActive])
+  @@map("faqs")
+  @@schema("construct")
+}
+
+model ContactMessage {
+  id              String        @id @default(uuid()) @db.Uuid
+  organizationId  String        @map("organization_id") @db.Uuid
+  name            String
+  email           String
+  phone           String?
+  subject         String?
+  message         String
+  projectInterest String?       @map("project_interest")
+  status          MessageStatus @default(NEW)
+  consentAt       DateTime?     @map("consent_at")
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, status, createdAt])
+  @@map("contact_messages")
+  @@schema("construct")
+}
+
+model SeoSettings {
+  organizationId     String   @id @map("organization_id") @db.Uuid
+  siteName           String   @map("site_name")
+  defaultTitle       String   @map("default_title")
+  defaultDescription String   @map("default_description")
+  defaultKeywords    String?  @map("default_keywords")
+  siteUrl            String   @map("site_url")
+  defaultOgImageUrl  String?  @map("default_og_image_url")
+  faviconUrl         String?  @map("favicon_url")
+  appleTouchIconUrl  String?  @map("apple_touch_icon_url")
+  twitterHandle      String?  @map("twitter_handle")
+  facebookAppId      String?  @map("facebook_app_id")
+  robotsIndex        Boolean  @default(true) @map("robots_index")
+  robotsFollow       Boolean  @default(true) @map("robots_follow")
+  googleVerification String?  @map("google_verification")
+  bingVerification   String?  @map("bing_verification")
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@map("seo_settings")
+  @@schema("construct")
+}
+
+model SeoPage {
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  pageKey        String   @map("page_key")
+  pageName       String   @map("page_name")
+  title          String
+  description    String
+  keywords       String?
+  canonicalUrl   String?  @map("canonical_url")
+  ogTitle        String?  @map("og_title")
+  ogDescription  String?  @map("og_description")
+  ogImageUrl     String?  @map("og_image_url")
+  robotsIndex    Boolean  @default(true) @map("robots_index")
+  robotsFollow   Boolean  @default(true) @map("robots_follow")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, pageKey])
+  @@map("seo_pages")
+  @@schema("construct")
+}
+
+model NavigationItem {
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  label          String
+  href           String
+  displayOrder   Int      @default(0) @map("display_order")
+  isActive       Boolean  @default(true) @map("is_active")
+  openInNewTab   Boolean  @default(false) @map("open_in_new_tab")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, displayOrder])
+  @@map("navigation_items")
+  @@schema("construct")
+}
+
+model AuditLog {
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  actorUserId    String?  @map("actor_user_id") @db.Uuid
+  module         String
+  action         String
+  recordId       String?  @map("record_id")
+  title          String
+  details        Json?
+  ipAddress      String?  @map("ip_address")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  actor        User?        @relation(fields: [actorUserId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, createdAt])
+  @@index([organizationId, module])
+  @@map("audit_logs")
+  @@schema("construct")
+}

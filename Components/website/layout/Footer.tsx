@@ -8,10 +8,10 @@ import {
 } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 
-import { getSiteSettings } from "@/lib/settings";
+import { getPublicSiteSettings } from "@/lib/public-site-data";
 
 export default async function Footer() {
-  const settings = await getSiteSettings();
+  const settings = await getPublicSiteSettings();
   const year = new Date().getFullYear();
 
   const navigation = [

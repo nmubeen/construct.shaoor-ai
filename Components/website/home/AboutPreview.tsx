@@ -6,10 +6,10 @@ import {
 import PageSection from "@/components/website/shared/PageSection";
 import SectionHeader from "@/components/website/shared/SectionHeader";
 import { websiteDesign } from "@/components/website/shared/design";
-import { getSiteSettings } from "@/lib/settings";
+import { getPublicSiteSettings } from "@/lib/public-site-data";
 
 export default async function AboutPreview() {
-  const settings = await getSiteSettings();
+  const settings = await getPublicSiteSettings();
 
   return (
     <PageSection

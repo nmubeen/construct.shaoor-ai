@@ -1,14 +1,16 @@
 import { cache } from "react";
 
 import { prisma } from "@/lib/prisma";
+import { getTenantContext } from "@/lib/tenant";
 
 export const getSiteSettings = cache(async () => {
   let settings = await prisma.settings.findFirst();
 
   if (!settings) {
+    const tenant = await getTenantContext();
     settings = await prisma.settings.create({
       data: {
-        companyName: "Company Name",
+        companyName: tenant.companyCode,
         tagline: "Building Excellence",
         description: "",
 

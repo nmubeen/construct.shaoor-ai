@@ -7,10 +7,11 @@ import Stats from "@/components/website/home/Stats";
 import AboutPreview from "@/components/website/home/AboutPreview";
 import CTA from "@/components/website/home/CTA";
 import ServicesPreview from "@/components/website/home/ServicesPreview";
+import ClientShowcase from "@/components/website/home/ClientShowcase";
+import TestimonialsSection from "@/components/website/home/TestimonialsSection";
 import LeadershipSection from "@/components/website/team/LeadershipSection";
-import { getTeamMembers } from "@/lib/actions/team.actions";
+import { getPublicClients, getPublicSiteSettings, getPublicTeamMembers, getPublicTestimonials } from "@/lib/public-site-data";
 import { getSeoPageMetadata } from "@/lib/seo";
-import { getSiteSettings } from "@/lib/settings";
 
 export async function generateMetadata(): Promise<Metadata> {
   return getSeoPageMetadata({
@@ -21,8 +22,9 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function HomePage() {
 
-  const members = await getTeamMembers();
-  const settings = await getSiteSettings();
+  const [members, settings, clients, testimonials] = await Promise.all([
+    getPublicTeamMembers(), getPublicSiteSettings(), getPublicClients({ featured: true, take: 8 }), getPublicTestimonials({ featured: true, take: 3 }),
+  ]);
   return (
     <>
       <Hero settings={settings} />
@@ -39,6 +41,8 @@ export default async function HomePage() {
         buttonHref="/team"
       />
       <Stats />
+      <ClientShowcase clients={clients} />
+      <TestimonialsSection testimonials={testimonials} />
       <WhyChooseUs />
       <CTA settings={settings} />
     </>

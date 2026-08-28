@@ -4,13 +4,13 @@ import Link from "next/link";
 import { websiteDesign } from "@/components/website/shared/design";
 
 export interface Project {
-  id: number;
+  id: string | number;
   slug: string;
   title: string;
   category: string;
   location: string;
   coverImage: string;
-  status: "Completed" | "Ongoing";
+  status: string;
 }
 
 interface Props {

@@ -4,7 +4,7 @@ import PageBanner from "@/components/shared/PageBanner";
 import ProcessTimeline from "@/components/website/process/ProcessTimeLine";
 import CTA from "@/components/website/home/CTA";
 import { getRouteMetadata } from "@/lib/seo";
-import { getSiteSettings } from "@/lib/settings";
+import { getPublicSiteSettings } from "@/lib/public-site-data";
 
 export async function generateMetadata(): Promise<Metadata> {
   return getRouteMetadata({
@@ -15,7 +15,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function ProcessPage() {
-  const settings = await getSiteSettings();
+  const settings = await getPublicSiteSettings();
 
   return (
     <>

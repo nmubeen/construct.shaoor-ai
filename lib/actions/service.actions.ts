@@ -57,10 +57,7 @@ function parseForm(formData: FormData) {
 }
 
 function revalidate() {
-  [
-    "/admin/services",
-    "/services",
-  ].forEach((path) => revalidatePath(path));
+  ["/admin/services", "/services", "/"].forEach((path) => revalidatePath(path));
 }
 
 export async function createService(formData: FormData) {
@@ -83,13 +80,9 @@ export async function createService(formData: FormData) {
   });
 
   revalidate();
-
 }
 
-export async function updateService(
-  id: number,
-  formData: FormData
-) {
+export async function updateService(id: number, formData: FormData) {
   const existing = await serviceService.getById(id);
 
   if (!existing) {
@@ -98,10 +91,7 @@ export async function updateService(
 
   const data = parseForm(formData);
 
-  const slugExists = await serviceService.exists(
-    data.slug,
-    id
-  );
+  const slugExists = await serviceService.exists(data.slug, id);
 
   if (slugExists) {
     throw new Error("A service with this slug already exists.");
@@ -114,10 +104,7 @@ export async function updateService(
     image: data.image || previousImage || "",
   });
 
-  if (
-    previousImage &&
-    updated.image !== previousImage
-  ) {
+  if (previousImage && updated.image !== previousImage) {
     await deleteFileIfOrphaned(previousImage);
   }
 
@@ -132,7 +119,6 @@ export async function updateService(
   revalidate();
 
   revalidatePath(`/admin/services/${id}`);
-
 }
 
 export async function deleteService(id: number) {
@@ -157,7 +143,6 @@ export async function deleteService(id: number) {
   });
 
   revalidate();
-
 }
 
 export async function getServices() {

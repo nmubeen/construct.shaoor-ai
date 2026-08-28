@@ -1,5 +1,5 @@
 import Image from "next/image";
-import type { TeamMember } from "@prisma/client";
+import type { PublicTeamMember } from "@/lib/public-site-data";
 import {
   FaEnvelope,
   FaInstagram,
@@ -8,13 +8,21 @@ import {
 } from "react-icons/fa6";
 
 interface LeadershipCardProps {
-  member: TeamMember;
+  member: PublicTeamMember;
 }
 
 const socialLinkClassName =
   "inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-slate-600 transition hover:-translate-y-0.5 hover:border-(--primary) hover:bg-(--primary) hover:text-white";
 
 export default function LeadershipCard({ member }: LeadershipCardProps) {
+  const photo = member.photo.trim();
+  const initials = member.name
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part.charAt(0))
+    .join("")
+    .toUpperCase();
   const socialLinks = [
     member.email && {
       href: `mailto:${member.email}`,
@@ -50,14 +58,23 @@ export default function LeadershipCard({ member }: LeadershipCardProps) {
     <article className="group rounded-2xl border border-slate-100 bg-white p-6 text-center shadow-sm transition-all duration-300 hover:-translate-y-2 hover:shadow-xl">
       <div className="flex justify-center py-6">
         <div className="relative h-36 w-36 overflow-hidden rounded-full ring-4 ring-slate-100 transition duration-300 group-hover:ring-(--primary)/20">
-          <Image
-            src={member.photo}
-            alt={member.name}
-            fill
-            className="object-cover transition duration-500 group-hover:scale-105"
-          />
+          {photo ? (
+            <Image
+              src={photo}
+              alt={member.name}
+              fill
+              className="object-cover transition duration-500 group-hover:scale-105"
+            />
+          ) : (
+            <div
+              className="flex h-full w-full items-center justify-center bg-slate-200 text-3xl font-semibold text-slate-600"
+              aria-label={`${member.name} has no profile photo`}
+            >
+              {initials || "?"}
+            </div>
+          )}
         </div>
-      </div>`
+      </div>
 
       <h3 className="mt-6 text-xl font-semibold text-slate-900">
         {member.name}
