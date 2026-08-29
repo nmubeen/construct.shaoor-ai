@@ -7,6 +7,10 @@ const RESERVED = new Set([
   "admin", "account", "auth", "dashboard", "login", "change-password", "api", "_next", "favicon.ico", "robots.txt", "sitemap.xml",
 ]);
 
+const PUBLIC_WEBSITE_ROUTES = new Set([
+  "about", "contact", "process", "projects", "services", "team",
+]);
+
 export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const segments = pathname.split("/").filter(Boolean);
@@ -16,7 +20,7 @@ export async function proxy(request: NextRequest) {
     return updateSupabaseSession(request);
   }
 
-  if (!first || RESERVED.has(first.toLowerCase()) || first.includes(".")) {
+  if (!first || RESERVED.has(first.toLowerCase()) || PUBLIC_WEBSITE_ROUTES.has(first.toLowerCase()) || first.includes(".")) {
     const headers = new Headers(request.headers);
     headers.set("x-company-id", "0");
     headers.set("x-company-code", "Shaoor-Construct");
