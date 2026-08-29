@@ -28,5 +28,11 @@ export function getConstructDatabaseUrl() {
     throw new Error("Missing CONSTRUCT_DATABASE_URL.");
   }
 
-  return url;
+  if (process.env.NODE_ENV !== "production") return url;
+
+  const productionUrl = new URL(url);
+  if (!productionUrl.searchParams.has("connection_limit")) {
+    productionUrl.searchParams.set("connection_limit", "1");
+  }
+  return productionUrl.toString();
 }

@@ -8,13 +8,11 @@ const globalForConstructPrisma = globalThis as unknown as {
 };
 
 export function getConstructPrisma() {
-  const client =
-    globalForConstructPrisma.constructPrisma ??
-    new PrismaClient({ datasourceUrl: getConstructDatabaseUrl() });
-
-  if (process.env.NODE_ENV !== "production") {
-    globalForConstructPrisma.constructPrisma = client;
+  if (!globalForConstructPrisma.constructPrisma) {
+    globalForConstructPrisma.constructPrisma = new PrismaClient({
+      datasourceUrl: getConstructDatabaseUrl(),
+    });
   }
 
-  return client;
+  return globalForConstructPrisma.constructPrisma;
 }
