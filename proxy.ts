@@ -20,7 +20,6 @@ export async function proxy(request: NextRequest) {
     const headers = new Headers(request.headers);
     headers.set("x-company-id", "0");
     headers.set("x-company-code", "Shaoor-Construct");
-    if (pathname === "/") return NextResponse.redirect(new URL("/admin/companies", request.url));
     if (pathname.startsWith("/admin") && pathname !== "/admin/companies" && pathname !== "/admin/login") {
       return NextResponse.redirect(new URL("/admin/companies", request.url));
     }

@@ -10,6 +10,15 @@ function hostnameFromHeader(value: string | null) {
   return first.split(":")[0];
 }
 
+function hostnameFromUrl(value: string | undefined) {
+  if (!value) return "";
+  try {
+    return new URL(value).hostname.toLowerCase();
+  } catch {
+    return "";
+  }
+}
+
 export async function resolvePublicConstructOrganization() {
   const requestHeaders = await headers();
   const hostname = hostnameFromHeader(requestHeaders.get("x-forwarded-host") || requestHeaders.get("host"));
@@ -33,7 +42,9 @@ export async function resolvePublicConstructOrganization() {
   }
 
   const isLocal = hostname === "localhost" || hostname === "127.0.0.1" || hostname === "::1";
-  if (!isLocal) return null;
+  const canonicalHostname = hostnameFromUrl(process.env.NEXT_PUBLIC_APP_URL);
+  const isCanonicalHost = Boolean(canonicalHostname) && hostname === canonicalHostname;
+  if (!isLocal && !isCanonicalHost) return null;
   const configuredSlug = process.env.CONSTRUCT_DEFAULT_TENANT_SLUG?.trim().toLowerCase();
   if (configuredSlug) return prisma.organization.findFirst({ where: { slug: configuredSlug, status: "ACTIVE" } });
   const activeOrganizations = await prisma.organization.findMany({ where: { status: "ACTIVE" }, take: 2 });
