@@ -8,6 +8,7 @@ const RESERVED = new Set([
   "account",
   "auth",
   "dashboard",
+  "demo",
   "login",
   "change-password",
   "api",
@@ -45,6 +46,7 @@ export async function proxy(request: NextRequest) {
   } catch {}
   const isPortalHost =
     hostname === portalHostname ||
+    hostname === "construct.shaoor-ai.com" ||
     hostname === "localhost" ||
     hostname === "127.0.0.1";
 
