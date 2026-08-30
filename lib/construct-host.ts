@@ -34,3 +34,16 @@ export async function isConstructPortalRequest() {
     hostname === "::1"
   );
 }
+
+export async function isConstructProductRequest() {
+  const hostname = await getConstructRequestHostname();
+  const canonicalHostname = configuredConstructHostname();
+
+  return (
+    hostname === canonicalHostname ||
+    hostname.endsWith(`.${canonicalHostname}`) ||
+    hostname === "localhost" ||
+    hostname === "127.0.0.1" ||
+    hostname === "::1"
+  );
+}
