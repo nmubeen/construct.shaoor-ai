@@ -10,6 +10,8 @@ const geist = Geist({
   subsets: ["latin"],
 });
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: {
     default: "Construct by Shaoor AI",
