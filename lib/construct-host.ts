@@ -2,6 +2,8 @@ import "server-only";
 
 import { headers } from "next/headers";
 
+const PRODUCTION_CONSTRUCT_HOSTNAME = "construct.shaoor-ai.com";
+
 export function hostnameFromValue(value: string | null) {
   const first = value?.split(",")[0]?.trim().toLowerCase() ?? "";
   if (first.startsWith("[")) return first.slice(1, first.indexOf("]"));
@@ -10,11 +12,11 @@ export function hostnameFromValue(value: string | null) {
 
 export function configuredConstructHostname() {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL;
-  if (!appUrl) return "construct.shaoor-ai.com";
+  if (!appUrl) return PRODUCTION_CONSTRUCT_HOSTNAME;
   try {
     return new URL(appUrl).hostname.toLowerCase();
   } catch {
-    return "construct.shaoor-ai.com";
+    return PRODUCTION_CONSTRUCT_HOSTNAME;
   }
 }
 
@@ -29,6 +31,7 @@ export async function isConstructPortalRequest() {
   const hostname = await getConstructRequestHostname();
   return (
     hostname === configuredConstructHostname() ||
+    hostname === PRODUCTION_CONSTRUCT_HOSTNAME ||
     hostname === "localhost" ||
     hostname === "127.0.0.1" ||
     hostname === "::1"
@@ -42,6 +45,8 @@ export async function isConstructProductRequest() {
   return (
     hostname === canonicalHostname ||
     hostname.endsWith(`.${canonicalHostname}`) ||
+    hostname === PRODUCTION_CONSTRUCT_HOSTNAME ||
+    hostname.endsWith(`.${PRODUCTION_CONSTRUCT_HOSTNAME}`) ||
     hostname === "localhost" ||
     hostname === "127.0.0.1" ||
     hostname === "::1"
