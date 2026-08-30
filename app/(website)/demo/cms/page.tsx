@@ -23,15 +23,16 @@ export const metadata: Metadata = {
 };
 
 const navigation = [
-  ["Dashboard", LayoutDashboard],
-  ["Site", Settings],
-  ["Services", BriefcaseBusiness],
-  ["Projects", FolderKanban],
-  ["Media", ImageIcon],
-  ["Content", Search],
-  ["Team", Users],
-  ["Messages", Mail],
-  ["SEO", BarChart3],
+  ["Dashboard", "/demo/cms", LayoutDashboard],
+  ["Website", "/demo/cms/website", Settings],
+  ["Services", "/demo/cms/services", BriefcaseBusiness],
+  ["Projects", "/demo/cms/projects", FolderKanban],
+  ["Media", "/demo/cms/media", ImageIcon],
+  ["Content", "/demo/cms/content", Search],
+  ["Team", "/demo/cms/team", Users],
+  ["Enquiries", "/demo/cms/enquiries", Mail],
+  ["SEO", "/demo/cms/seo", BarChart3],
+  ["Settings", "/demo/cms/settings", Settings],
 ] as const;
 
 export default async function DemoCmsPage() {
@@ -82,14 +83,15 @@ export default async function DemoCmsPage() {
             </p>
           </div>
           <nav className="space-y-1">
-            {navigation.map(([label, Icon], index) => (
-              <div
+            {navigation.map(([label, href, Icon], index) => (
+              <Link
                 key={label}
+                href={href}
                 className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold ${index === 0 ? "bg-teal-400/15 text-teal-200" : "text-slate-400"}`}
               >
                 <Icon className="size-4" />
                 {label}
-              </div>
+              </Link>
             ))}
           </nav>
         </aside>
@@ -168,11 +170,11 @@ export default async function DemoCmsPage() {
                 <p className="text-xs font-bold uppercase tracking-[.18em] text-teal-700">
                   Protected preview
                 </p>
-                <h2 className="mt-3 text-xl font-bold">What Phase 2 adds</h2>
+                <h2 className="mt-3 text-xl font-bold">Complete module tour</h2>
                 <p className="mt-2 text-sm leading-6 text-slate-600">
-                  The complete read-only tour will open every CMS module while
-                  enforcing mutation denial in both the interface and server
-                  actions.
+                  Explore every CMS module from the sidebar. All controls are
+                  disabled, no mutation actions are exposed, and enquiry
+                  personal data is always masked.
                 </p>
                 <Link
                   href="/account/login?next=/account/onboarding"
