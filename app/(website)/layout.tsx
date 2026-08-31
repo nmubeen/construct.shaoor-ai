@@ -8,7 +8,10 @@ import JsonLd from "@/components/shared/JsonLd";
 import { buildWebsiteSchema } from "@/lib/schema";
 import { getConstructPrisma } from "@/lib/construct-prisma";
 import { resolvePublicConstructOrganization } from "@/lib/construct-public-tenant";
-import { isConstructPortalRequest } from "@/lib/construct-host";
+import {
+  isConstructPortalRequest,
+  isConstructProductRequest,
+} from "@/lib/construct-host";
 
 import "../globals.css";
 
@@ -19,6 +22,15 @@ export async function generateMetadata(): Promise<Metadata> {
       description:
         "Launch and manage a professional construction company website with a secure, plan-controlled CMS.",
       robots: { index: true, follow: true },
+    };
+  }
+  if (
+    (await isConstructProductRequest()) &&
+    !(await resolvePublicConstructOrganization())
+  ) {
+    return {
+      title: "Workspace unavailable | Shaoor Construct",
+      robots: { index: false, follow: false },
     };
   }
   const seo = await getDefaultSEO();
@@ -77,6 +89,21 @@ export default async function WebsiteLayout({
 }) {
   if (await isConstructPortalRequest()) return <>{children}</>;
   const organization = await resolvePublicConstructOrganization();
+  if ((await isConstructProductRequest()) && !organization) {
+    return (
+      <main className="grid min-h-screen place-items-center bg-slate-950 px-6 text-center text-white">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[.22em] text-teal-400">
+            Shaoor Construct
+          </p>
+          <h1 className="mt-4 text-3xl font-bold">Workspace unavailable</h1>
+          <p className="mt-3 text-sm text-slate-400">
+            This Construct workspace does not exist or is not active.
+          </p>
+        </div>
+      </main>
+    );
+  }
   if (organization) {
     const publication = await getConstructPrisma().sitePublication.findUnique({
       where: { organizationId: organization.id },

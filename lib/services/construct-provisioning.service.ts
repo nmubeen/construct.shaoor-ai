@@ -90,8 +90,9 @@ export async function provisionConstructOrganization(
           create: {
             hostname: `${slug}.construct.shaoor-ai.com`,
             verificationToken: crypto.randomUUID(),
-            status: "PENDING",
+            status: "ACTIVE",
             isPrimary: true,
+            verifiedAt: new Date(),
           },
         },
       },

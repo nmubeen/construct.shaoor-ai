@@ -17,8 +17,12 @@ import {
   getPublicTestimonials,
 } from "@/lib/public-site-data";
 import { getSeoPageMetadata } from "@/lib/seo";
-import { isConstructPortalRequest } from "@/lib/construct-host";
+import {
+  isConstructPortalRequest,
+  isConstructProductRequest,
+} from "@/lib/construct-host";
 import { ConstructPortalHome } from "@/components/portal/ConstructPortalHome";
+import { resolvePublicConstructOrganization } from "@/lib/construct-public-tenant";
 
 export async function generateMetadata(): Promise<Metadata> {
   if (await isConstructPortalRequest()) {
@@ -36,6 +40,12 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function HomePage() {
   if (await isConstructPortalRequest()) return <ConstructPortalHome />;
+  if (
+    (await isConstructProductRequest()) &&
+    !(await resolvePublicConstructOrganization())
+  ) {
+    return null;
+  }
 
   const [members, settings, clients, testimonials] = await Promise.all([
     getPublicTeamMembers(),
