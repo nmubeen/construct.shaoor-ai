@@ -101,17 +101,18 @@ export default function AdminSidebar({
 }: AdminSidebarProps) {
   const visibleMenu = superAdmin ? [{ title: "Companies", href: "/admin/companies", icon: <FaBuilding /> }] : menu;
   return (
-    <aside className="flex min-h-screen w-44 flex-col bg-slate-900 text-white">
-      <div className="p-8">
-        <h2 className="text-2xl font-bold">{companyName} CMS</h2>
+    <aside className="sticky top-0 flex h-screen w-56 shrink-0 flex-col bg-[#094136] text-white shadow-[12px_0_35px_rgba(9,65,54,.12)]">
+      <div className="border-b border-white/10 px-5 py-7">
+        <div className="mb-3 h-1 w-12 rounded-full bg-[#7D9D76]" />
+        <h2 className="text-xl font-bold leading-tight">{companyName} CMS</h2>
       </div>
 
-      <nav className="flex-1 space-y-2 px-4">
+      <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-5">
         {visibleMenu.map((item) => (
           <Link
             key={item.href}
             href={`${prefix}${item.href}`}
-            className="flex items-center gap-3 rounded-lg px-4 py-3 transition-colors hover:bg-slate-800"
+            className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-white/80 transition hover:bg-[#7D9D76]/25 hover:text-white"
           >
             {item.icon}
             <span>{item.title}</span>
@@ -119,11 +120,11 @@ export default function AdminSidebar({
         ))}
       </nav>
 
-      <div className="border-t border-slate-800 p-4">
+      <div className="border-t border-white/10 p-4">
         <form action={logoutAction}>
           <button
             type="submit"
-            className="flex w-full items-center justify-center gap-2 rounded-lg bg-red-600 px-4 py-3 font-medium text-white transition-colors hover:bg-red-700"
+            className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/20 px-4 py-3 font-medium text-white transition-colors hover:bg-white/10"
           >
             <FaArrowRightFromBracket />
             Logout

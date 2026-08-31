@@ -29,13 +29,13 @@ export default function Button({
 }: ButtonProps) {
   const variants = {
     primary:
-      "bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500",
+      "bg-[#094136] text-white hover:bg-[#7D9D76] focus:ring-[#7D9D76]",
 
     secondary:
-      "bg-slate-700 text-white hover:bg-slate-800 focus:ring-slate-500",
+      "bg-[#7D9D76] text-white hover:bg-[#094136] focus:ring-[#7D9D76]",
 
     outline:
-      "border border-slate-300 bg-white text-slate-700 hover:bg-slate-100",
+      "border border-[#7D9D76] bg-white text-[#094136] hover:bg-[#eef3ec]",
 
     danger:
       "bg-red-600 text-white hover:bg-red-700 focus:ring-red-500",
@@ -50,7 +50,7 @@ export default function Button({
   };
 
   const classNames = cn(
-    "inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-all duration-200",
+    "inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition-all duration-200",
     "focus:outline-none focus:ring-2 focus:ring-offset-2",
     "disabled:pointer-events-none disabled:opacity-60",
 

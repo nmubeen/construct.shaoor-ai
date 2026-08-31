@@ -19,9 +19,9 @@ export default function PageHeader({
   action,
 }: PageHeaderProps) {
   return (
-    <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+    <div className="mb-8 flex flex-col gap-5 border-b border-[#dce5da] pb-6 md:flex-row md:items-end md:justify-between">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900">
+        <h1 className="text-3xl font-bold tracking-tight text-[#094136]">
           {title}
         </h1>
 
@@ -35,7 +35,7 @@ export default function PageHeader({
       {action && (
         <Link
           href={action.href}
-          className="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-5 py-2.5 text-sm font-medium !text-white transition hover:bg-slate-800"
+          className="inline-flex items-center gap-2 rounded-xl bg-[#094136] px-5 py-3 text-sm font-semibold !text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[#7D9D76] hover:shadow-md"
         >
           {action.icon}
           {action.label}

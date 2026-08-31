@@ -24,7 +24,7 @@ export default async function Footer() {
   ];
 
   return (
-    <footer className="mt-20 border-t bg-slate-900 text-white">
+    <footer className="mt-20 border-t border-white/10 bg-[#094136] text-white">
       <div className="mx-auto grid max-w-7xl gap-12 px-6 py-16 md:grid-cols-4">
 
         {/* Company */}
@@ -41,7 +41,7 @@ export default async function Footer() {
                 className="h-14 w-14 object-contain"
               />
             ) : (
-              <div className="flex h-14 w-14 items-center justify-center rounded-lg bg-[#0E4A7B] text-xl font-bold text-white">
+              <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-[#7D9D76] text-xl font-bold text-white">
                 {settings.companyName.charAt(0)}
               </div>
             )}
@@ -72,7 +72,7 @@ export default async function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Facebook"
-                className="rounded-lg bg-slate-800 p-3 transition hover:bg-[#0E4A7B]"
+                className="rounded-xl bg-white/10 p-3 transition hover:bg-[#7D9D76]"
               >
                 <FaFacebookF />
               </a>
@@ -84,7 +84,7 @@ export default async function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Instagram"
-                className="rounded-lg bg-slate-800 p-3 transition hover:bg-[#0E4A7B]"
+                className="rounded-xl bg-white/10 p-3 transition hover:bg-[#7D9D76]"
               >
                 <FaInstagram />
               </a>
@@ -96,7 +96,7 @@ export default async function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="LinkedIn"
-                className="rounded-lg bg-slate-800 p-3 transition hover:bg-[#0E4A7B]"
+                className="rounded-xl bg-white/10 p-3 transition hover:bg-[#7D9D76]"
               >
                 <FaLinkedinIn />
               </a>
@@ -108,7 +108,7 @@ export default async function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="X"
-                className="rounded-lg bg-slate-800 p-3 transition hover:bg-[#0E4A7B]"
+                className="rounded-xl bg-white/10 p-3 transition hover:bg-[#7D9D76]"
               >
                 <FaXTwitter />
               </a>
@@ -120,7 +120,7 @@ export default async function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="YouTube"
-                className="rounded-lg bg-slate-800 p-3 transition hover:bg-[#0E4A7B]"
+                className="rounded-xl bg-white/10 p-3 transition hover:bg-[#7D9D76]"
               >
                 <FaYoutube />
               </a>
@@ -230,7 +230,7 @@ export default async function Footer() {
 
           <Link
             href="/contact"
-            className="inline-block rounded-lg bg-[#0E4A7B] px-6 py-3 font-semibold text-white! transition hover:bg-[#0A365A]"
+            className="inline-block rounded-xl bg-white px-6 py-3 font-semibold text-[#094136]! transition hover:bg-[#7D9D76] hover:text-white!"
           >
             Get a Quote
           </Link>
@@ -238,7 +238,7 @@ export default async function Footer() {
 
       </div>
 
-      <div className="border-t border-slate-800">
+      <div className="border-t border-white/10">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-6 py-6 text-sm text-slate-400 md:flex-row">
 
           <div>

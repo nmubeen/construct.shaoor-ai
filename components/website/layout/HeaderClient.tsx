@@ -20,8 +20,8 @@ export default function HeaderClient({
 
   return (
     <>
-      <header className="sticky top-0 z-50 border-b bg-white/95 backdrop-blur">
-        <div className={`${websiteDesign.container} flex h-20 items-center justify-between px-4`}>
+      <header className="sticky top-0 z-50 border-b border-[#dce5da] bg-white/95 shadow-[0_4px_20px_rgba(9,65,54,.05)] backdrop-blur">
+        <div className={`${websiteDesign.container} flex h-20 items-center justify-between`}>
 
           {/* Logo */}
 
@@ -38,7 +38,7 @@ export default function HeaderClient({
                 className="h-11 w-11 object-contain"
               />
             ) : (
-              <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-[#0E4A7B] font-bold text-white">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#094136] font-bold text-white">
                 {settings.companyName.charAt(0)}
               </div>
             )}
@@ -67,7 +67,7 @@ export default function HeaderClient({
             {settings.phone && (
               <a
                 href={`tel:${settings.phone}`}
-                className="flex items-center gap-2 text-sm font-medium hover:text-[#0E4A7B]"
+                className="flex items-center gap-2 text-sm font-medium transition hover:text-[#7D9D76]"
               >
                 <FaPhone />
                 {settings.phone}

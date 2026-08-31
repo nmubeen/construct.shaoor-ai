@@ -37,10 +37,10 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="flex min-h-screen bg-slate-100">
+    <div className="flex min-h-screen bg-[#f3f6f2]">
       <AdminSidebar companyName={tenant.isSuperAdmin ? "Shaoor Construct" : settings.companyName} prefix={tenant.urlPrefix} superAdmin={tenant.isSuperAdmin} />
 
-      <main className="flex-1 p-8 overflow-y-auto">
+      <main className="min-w-0 flex-1 overflow-y-auto p-5 sm:p-8 lg:p-10">
         {children}
       </main>
     </div>
