@@ -10,6 +10,7 @@ export type ProvisionConstructOrganizationInput = {
   authUser: SupabaseUser;
   organizationName: string;
   organizationSlug: string;
+  trial?: boolean;
 };
 
 export async function provisionConstructOrganization(
@@ -26,8 +27,15 @@ export async function provisionConstructOrganization(
   if (!ORGANIZATION_SLUG_PATTERN.test(slug)) {
     throw new Error("Organization slug is invalid.");
   }
+  if (input.trial && !/^[a-z0-9]{2,32}$/.test(slug)) {
+    throw new Error(
+      "Trial workspace address must be one word using 2–32 lowercase letters or numbers.",
+    );
+  }
   if (!email) {
-    throw new Error("The authenticated account does not have an email address.");
+    throw new Error(
+      "The authenticated account does not have an email address.",
+    );
   }
 
   const fullName =
@@ -54,7 +62,7 @@ export async function provisionConstructOrganization(
       data: {
         name,
         slug,
-        status: "PENDING",
+        status: input.trial ? "ACTIVE" : "PENDING",
         memberships: {
           create: { userId: user.id, role: "OWNER" },
         },
@@ -71,7 +79,8 @@ export async function provisionConstructOrganization(
             heroTitle: "Spaces built for what comes next",
             heroSubtitle: "Quality construction, delivered with confidence.",
             ctaTitle: "Discuss your next project",
-            ctaSubtitle: "Tell us what you are planning and our team will get in touch.",
+            ctaSubtitle:
+              "Tell us what you are planning and our team will get in touch.",
             ctaButtonText: "Contact us",
             ctaButtonLink: "/contact",
           },
@@ -96,7 +105,11 @@ export async function provisionConstructOrganization(
         action: "provision",
         recordId: organization.id,
         title: "Construct organization provisioned",
-        details: { slug },
+        details: {
+          slug,
+          accessMode: input.trial ? "trial" : "offline_activation",
+          trialStartedAt: input.trial ? new Date().toISOString() : null,
+        },
       },
     });
 

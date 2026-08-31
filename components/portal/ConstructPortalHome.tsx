@@ -91,7 +91,7 @@ export function ConstructPortalHome() {
               workspace controlled by the Trial plan.
             </p>
             <Link
-              href="/account/login?next=/account/onboarding"
+              href="/account/signup"
               className="mt-8 inline-flex items-center gap-2 rounded-xl bg-teal-300 px-5 py-3 font-bold text-slate-950 transition group-hover:bg-teal-200"
             >
               Start trial setup <ArrowRight className="size-4" />

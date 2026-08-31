@@ -12,11 +12,60 @@ import { provisionConstructOrganization } from "@/lib/services/construct-provisi
 import { createClient } from "@/lib/supabase/server";
 
 function appUrl() {
+  if (process.env.VERCEL_ENV === "production") {
+    return "https://construct.shaoor-ai.com";
+  }
   return process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 }
 
+export async function constructSignUpAction(formData: FormData) {
+  const fullName = String(formData.get("fullName") ?? "").trim();
+  const email = String(formData.get("email") ?? "")
+    .trim()
+    .toLowerCase();
+  const password = String(formData.get("password") ?? "");
+  const confirmation = String(formData.get("confirmation") ?? "");
+  const validationError = validateNewPassword(password, confirmation);
+
+  if (fullName.length < 2 || fullName.length > 100) {
+    redirect("/account/signup?error=Enter your full name.");
+  }
+  if (!email) redirect("/account/signup?error=Enter a valid email address.");
+  if (validationError) {
+    redirect(`/account/signup?error=${encodeURIComponent(validationError)}`);
+  }
+
+  const callbackUrl = new URL("/auth/callback", appUrl());
+  callbackUrl.searchParams.set("next", "/account/onboarding");
+  const supabase = await createClient();
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      data: { full_name: fullName },
+      emailRedirectTo: callbackUrl.toString(),
+    },
+  });
+
+  if (error) {
+    redirect(
+      `/account/signup?error=${encodeURIComponent("We could not create this account. It may already exist.")}`,
+    );
+  }
+  if (data.session && data.user) {
+    await synchronizeConstructUser(data.user);
+    redirect("/account/onboarding");
+  }
+
+  redirect(
+    "/account/login?message=Check your email to confirm your account, then continue creating your trial workspace.",
+  );
+}
+
 export async function constructSignInAction(formData: FormData) {
-  const email = String(formData.get("email") ?? "").trim().toLowerCase();
+  const email = String(formData.get("email") ?? "")
+    .trim()
+    .toLowerCase();
   const password = String(formData.get("password") ?? "");
   const requestedNext = String(formData.get("next") ?? "");
 
@@ -25,14 +74,20 @@ export async function constructSignInAction(formData: FormData) {
   }
 
   const supabase = await createClient();
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
 
   if (error) {
     redirect("/account/login?error=Invalid email or password.");
   }
 
   await synchronizeConstructUser(data.user);
-  if (isSafeConstructRedirect(requestedNext) && requestedNext.startsWith("/account/invitations/")) {
+  if (
+    isSafeConstructRedirect(requestedNext) &&
+    requestedNext.startsWith("/account/invitations/")
+  ) {
     redirect(requestedNext);
   }
   const context = await getOptionalConstructContext();
@@ -49,7 +104,9 @@ export async function constructSignOutAction() {
 }
 
 export async function requestConstructPasswordResetAction(formData: FormData) {
-  const email = String(formData.get("email") ?? "").trim().toLowerCase();
+  const email = String(formData.get("email") ?? "")
+    .trim()
+    .toLowerCase();
 
   if (email) {
     const callbackUrl = new URL("/auth/callback", appUrl());
@@ -75,7 +132,9 @@ export async function updateConstructPasswordAction(formData: FormData) {
   const validationError = validateNewPassword(password, confirmation);
 
   if (validationError) {
-    redirect(`/account/reset-password?error=${encodeURIComponent(validationError)}`);
+    redirect(
+      `/account/reset-password?error=${encodeURIComponent(validationError)}`,
+    );
   }
 
   const supabase = await createClient();
@@ -84,12 +143,16 @@ export async function updateConstructPasswordAction(formData: FormData) {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect("/account/forgot-password?error=This reset link is invalid or has expired.");
+    redirect(
+      "/account/forgot-password?error=This reset link is invalid or has expired.",
+    );
   }
 
   const { error } = await supabase.auth.updateUser({ password });
   if (error) {
-    redirect(`/account/reset-password?error=${encodeURIComponent(error.message)}`);
+    redirect(
+      `/account/reset-password?error=${encodeURIComponent(error.message)}`,
+    );
   }
 
   await supabase.auth.signOut();
@@ -109,11 +172,13 @@ export async function provisionConstructOrganizationAction(formData: FormData) {
       authUser: user,
       organizationName: String(formData.get("organizationName") ?? ""),
       organizationSlug: String(formData.get("organizationSlug") ?? ""),
+      trial: String(formData.get("trial") ?? "") === "1",
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Provisioning failed.";
+    const message =
+      error instanceof Error ? error.message : "Provisioning failed.";
     redirect(`/account/onboarding?error=${encodeURIComponent(message)}`);
   }
 
-  redirect("/account/pending");
+  redirect("/dashboard");
 }

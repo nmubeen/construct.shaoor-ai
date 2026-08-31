@@ -177,7 +177,7 @@ export default async function DemoCmsPage() {
                   personal data is always masked.
                 </p>
                 <Link
-                  href="/account/login?next=/account/onboarding"
+                  href="/account/signup"
                   className="mt-5 inline-flex rounded-lg bg-slate-950 px-4 py-2.5 text-sm font-bold text-white"
                 >
                   Start your workspace
