@@ -31,8 +31,8 @@ export default async function ConstructDashboardPage() {
 
   return (
     <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
-      <header className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-        <p className="text-xs font-bold uppercase tracking-[0.2em] text-teal-700">
+      <header className="construct-card p-6">
+        <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#7D9D76]">
           Construct workspace
         </p>
         <div className="mt-2 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -44,7 +44,7 @@ export default async function ConstructDashboardPage() {
               Your PostgreSQL-backed CMS workspace is active.
             </p>
           </div>
-          <span className="w-fit rounded-full bg-teal-50 px-3 py-1 text-xs font-bold uppercase text-teal-700">
+          <span className="w-fit rounded-full bg-[#eef3ec] px-3 py-1 text-xs font-bold uppercase text-[#094136]">
             {publication?.status.toLowerCase() ?? "draft"}
           </span>
         </div>
@@ -53,11 +53,11 @@ export default async function ConstructDashboardPage() {
         {cards.map(({ label, value, icon: Icon }) => (
           <article
             key={label}
-            className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+            className="construct-card p-5"
           >
             <div className="flex items-center justify-between">
               <p className="text-sm font-medium text-slate-600">{label}</p>
-              <span className="grid size-10 place-items-center rounded-xl bg-teal-50 text-teal-700">
+              <span className="grid size-10 place-items-center rounded-xl bg-[#eef3ec] text-[#094136]">
                 <Icon className="size-5" />
               </span>
             </div>
@@ -66,7 +66,7 @@ export default async function ConstructDashboardPage() {
         ))}
       </section>
       <section className="grid gap-5 xl:grid-cols-[1.3fr_0.7fr]">
-        <article className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+        <article className="construct-card p-6">
           <h2 className="text-lg font-bold text-slate-950">
             CMS migration status
           </h2>
@@ -76,14 +76,14 @@ export default async function ConstructDashboardPage() {
             use Supabase PostgreSQL.
           </p>
           <div className="mt-5 h-2 overflow-hidden rounded-full bg-slate-100">
-            <div className="h-full w-full rounded-full bg-gradient-to-r from-[#0E4A7B] to-teal-500" />
+            <div className="h-full w-full rounded-full bg-gradient-to-r from-[#094136] to-[#7D9D76]" />
           </div>
-          <p className="mt-2 text-xs font-medium text-teal-700">
+          <p className="mt-2 text-xs font-medium text-[#094136]">
             Core tenant CMS migration complete
           </p>
         </article>
-        <article className="rounded-3xl border border-slate-200 bg-slate-950 p-6 text-white shadow-sm">
-          <p className="text-xs font-bold uppercase tracking-[0.18em] text-teal-400">
+        <article className="rounded-3xl border border-[#094136] bg-[#094136] p-6 text-white shadow-[0_12px_30px_rgba(9,65,54,.18)]">
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#b9cdb5]">
             Website address
           </p>
           <p className="mt-3 break-all font-semibold">

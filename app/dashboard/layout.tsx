@@ -7,5 +7,5 @@ export const metadata: Metadata = { title: "Dashboard | Shaoor Construct", robot
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const context = await requireActiveConstructContext();
-  return <div className="min-h-screen bg-slate-100"><ConstructDashboardSidebar organizationName={context.organization.name} role={context.role} organizationStatus={context.organization.status} /><main className="min-w-0 lg:ml-72">{children}</main></div>;
+  return <div className="construct-app-surface construct-admin-surface min-h-screen"><ConstructDashboardSidebar organizationName={context.organization.name} role={context.role} organizationStatus={context.organization.status} /><main className="dashboard-content min-w-0 lg:ml-72">{children}</main></div>;
 }

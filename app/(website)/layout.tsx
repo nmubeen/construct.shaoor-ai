@@ -91,9 +91,9 @@ export default async function WebsiteLayout({
   const organization = await resolvePublicConstructOrganization();
   if ((await isConstructProductRequest()) && !organization) {
     return (
-      <main className="grid min-h-screen place-items-center bg-slate-950 px-6 text-center text-white">
+      <main className="grid min-h-screen place-items-center bg-[#094136] px-6 text-center text-white">
         <div>
-          <p className="text-xs font-bold uppercase tracking-[.22em] text-teal-400">
+          <p className="text-xs font-bold uppercase tracking-[.22em] text-[#b9cdb5]">
             Shaoor Construct
           </p>
           <h1 className="mt-4 text-3xl font-bold">Workspace unavailable</h1>
@@ -110,9 +110,9 @@ export default async function WebsiteLayout({
     });
     if (publication?.status !== "PUBLISHED") {
       return (
-        <main className="grid min-h-screen place-items-center bg-slate-950 px-6 text-center text-white">
+        <main className="grid min-h-screen place-items-center bg-[#094136] px-6 text-center text-white">
           <div>
-            <p className="text-xs font-bold uppercase tracking-[.22em] text-teal-400">
+            <p className="text-xs font-bold uppercase tracking-[.22em] text-[#b9cdb5]">
               Shaoor Construct
             </p>
             <h1 className="mt-4 text-3xl font-bold">Website coming soon</h1>
@@ -127,7 +127,7 @@ export default async function WebsiteLayout({
       <>
         <Header />
         <WebsiteStructuredData />
-        <main className="min-h-screen">{children}</main>
+        <main className="min-h-screen bg-[#f5f7f4]">{children}</main>
         <Footer />
       </>
     );
@@ -138,7 +138,7 @@ export default async function WebsiteLayout({
 
       <WebsiteStructuredData />
 
-      <main className="min-h-screen">{children}</main>
+      <main className="min-h-screen bg-[#f5f7f4]">{children}</main>
 
       <Footer />
     </>

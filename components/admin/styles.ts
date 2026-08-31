@@ -11,10 +11,10 @@ text-slate-900
 placeholder:text-slate-400
 shadow-sm
 transition
-focus:border-blue-600
+focus:border-[#7D9D76]
 focus:outline-none
 focus:ring-2
-focus:ring-blue-100
+focus:ring-[#7D9D76]/20
 disabled:bg-slate-100
 disabled:text-slate-500
 `;

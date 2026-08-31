@@ -74,6 +74,62 @@ body {
   accent-color: var(--primary);
 }
 
+/* Construct-wide application surfaces. These normalize legacy CMS and portal
+   modules while preserving intentional status colors. */
+.construct-app-surface {
+  min-height: 100vh;
+  background-color: #f5f7f4;
+  background-image:
+    radial-gradient(circle at 92% 8%, rgb(125 157 118 / 14%), transparent 28rem),
+    radial-gradient(circle at 4% 45%, rgb(9 65 54 / 7%), transparent 30rem);
+}
+
+.construct-admin-surface section { padding-block: 0; }
+.construct-admin-surface main { color: #15352f; }
+.construct-admin-surface :where(h1, h2, h3) { color: #094136; letter-spacing: -.02em; }
+.construct-admin-surface :where(input, textarea, select) {
+  border-color: #cdd9ca;
+  background-color: #fff;
+}
+.construct-admin-surface :where(input, textarea, select):focus {
+  border-color: #7d9d76;
+  --tw-ring-color: rgb(125 157 118 / 25%);
+}
+.construct-admin-surface :where(.bg-slate-50, .bg-slate-100) { background-color: #f5f7f4; }
+.construct-admin-surface :where(.border-slate-200, .border-slate-300) { border-color: #dce5da; }
+.construct-admin-surface :where(.text-blue-600, .text-blue-700, .text-teal-600, .text-teal-700) { color: #094136; }
+.construct-admin-surface :where(.bg-blue-600, .bg-blue-700, .bg-teal-500, .bg-teal-600, .bg-slate-900) {
+  background-color: #094136;
+  color: #fff;
+}
+.construct-admin-surface :where(.hover\:bg-blue-700:hover, .hover\:bg-teal-600:hover, .hover\:bg-slate-800:hover) {
+  background-color: #7d9d76;
+}
+
+.construct-card {
+  border: 1px solid #dce5da;
+  border-radius: 1.25rem;
+  background: #fff;
+  box-shadow: 0 8px 24px rgb(9 65 54 / 7%);
+}
+
+.construct-brand-button {
+  border-radius: .75rem;
+  background: #094136;
+  color: #fff;
+  box-shadow: 0 6px 16px rgb(9 65 54 / 14%);
+  transition: background-color .2s ease, transform .2s ease, box-shadow .2s ease;
+}
+.construct-brand-button:hover {
+  background: #7d9d76;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgb(9 65 54 / 16%);
+}
+
+@media (min-width: 1024px) {
+  .construct-admin-surface .dashboard-content { padding: 1.5rem; }
+}
+
 a {
   text-decoration: none;
   color: inherit;
@@ -203,14 +259,14 @@ section {
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
+  --background: #062f27;
+  --foreground: #f5f7f4;
+  --card: #094136;
+  --card-foreground: #ffffff;
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
+  --primary: #7d9d76;
+  --primary-foreground: #ffffff;
   --secondary: oklch(0.269 0 0);
   --secondary-foreground: oklch(0.985 0 0);
   --muted: oklch(0.269 0 0);

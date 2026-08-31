@@ -28,15 +28,15 @@ export default function Button(props: ButtonProps) {
   } = props;
 
   const baseClasses =
-    "inline-flex items-center justify-center rounded-lg px-6 py-3 font-semibold transition duration-300";
+    "inline-flex items-center justify-center rounded-xl px-6 py-3 font-semibold shadow-sm transition duration-300";
 
   const variantClasses: Record<Variant, string> = {
     primary:
-      "bg-[#0E4A7B] text-white hover:bg-[#0b3b63]",
+      "bg-[#094136] text-white hover:-translate-y-0.5 hover:bg-[#7D9D76] hover:shadow-md",
     secondary:
-      "bg-yellow-500 text-white hover:bg-yellow-400",
+      "bg-[#7D9D76] text-white hover:-translate-y-0.5 hover:bg-[#094136]",
     outline:
-      "border-2 border-white bg-transparent text-white hover:bg-white hover:text-[#0E4A7B]",
+      "border-2 border-[#7D9D76] bg-transparent text-[#094136] hover:bg-[#eef3ec]",
   };
 
   const classes = `${baseClasses} ${variantClasses[variant]} ${className}`;

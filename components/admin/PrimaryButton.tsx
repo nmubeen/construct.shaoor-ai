@@ -10,7 +10,7 @@ export default function PrimaryButton({
   return (
     <button
       {...props}
-      className={`rounded-lg bg-[#0E4A7B] px-5 py-3 font-semibold text-white transition hover:bg-[#0B3A61] disabled:opacity-50 ${className}`}
+      className={`rounded-xl bg-[#094136] px-5 py-3 font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[#7D9D76] hover:shadow-md disabled:opacity-50 ${className}`}
     >
       {children}
     </button>

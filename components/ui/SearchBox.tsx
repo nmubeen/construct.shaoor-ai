@@ -18,7 +18,7 @@ export default function SearchBox({
       <input
         type="search"
         className={clsx(
-          "w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-900 outline-none transition focus:border-[#0E4A7B] focus:ring-2 focus:ring-[#0E4A7B]/15",
+          "w-full rounded-xl border border-[#cdd9ca] bg-white px-4 py-3 text-slate-900 outline-none transition focus:border-[#7D9D76] focus:ring-2 focus:ring-[#7D9D76]/20",
           className
         )}
         placeholder={placeholder}
