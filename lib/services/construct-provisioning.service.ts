@@ -1,6 +1,7 @@
 import "server-only";
 
 import type { User as SupabaseUser } from "@supabase/supabase-js";
+import { Prisma } from "@prisma/construct-client";
 
 import { getConstructPrisma } from "@/lib/construct-prisma";
 
@@ -98,6 +99,45 @@ export async function provisionConstructOrganization(
       },
     });
 
+    let trialSubscriptionId: string | null = null;
+
+    if (input.trial) {
+      const periodStart = new Date();
+      const correlationId = `construct-self-service-trial-${organization.id}`;
+      const rows = await transaction.$queryRaw<
+        Array<{
+          result: {
+            accountId: string;
+            subscriptionId: string;
+            productInstanceId: string;
+            status: string;
+            idempotentReplay: boolean;
+          };
+        }>
+      >(Prisma.sql`
+        SELECT control.activate_shaoor_construct_account(
+          ${name},
+          ${slug},
+          ${user.id}::uuid,
+          ${email},
+          'TRIAL',
+          ${organization.id}::uuid,
+          ${periodStart}::timestamptz,
+          ${null}::timestamptz,
+          ${null},
+          'Self-service Construct trial signup',
+          ${`construct-self-service:${user.id}`},
+          ${correlationId},
+          'Created automatically by the Construct trial onboarding flow.'
+        ) AS result
+      `);
+
+      if (!rows[0]?.result?.subscriptionId) {
+        throw new Error("The Construct trial subscription could not be created.");
+      }
+      trialSubscriptionId = rows[0].result.subscriptionId;
+    }
+
     await transaction.auditLog.create({
       data: {
         organizationId: organization.id,
@@ -110,6 +150,7 @@ export async function provisionConstructOrganization(
           slug,
           accessMode: input.trial ? "trial" : "offline_activation",
           trialStartedAt: input.trial ? new Date().toISOString() : null,
+          trialSubscriptionId,
         },
       },
     });
