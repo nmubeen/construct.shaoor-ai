@@ -57,8 +57,8 @@ export async function enforceConstructBooleanEntitlement(organizationId:string,f
 
 export async function getConstructPlanUsage(organizationId:string):Promise<ConstructPlanUsage|null>{
  const state=await getConstructEntitlements(organizationId);if(!state)return null;const prisma=getConstructPrisma();
- const [projects,members,pendingInvitations,media]=await Promise.all([prisma.project.count({where:{organizationId}}),prisma.membership.count({where:{organizationId}}),prisma.invitation.count({where:{organizationId,status:"PENDING",expiresAt:{gt:new Date()}}}),prisma.media.count({where:{organizationId}})]);
- const current:Record<string,number>={MAX_PROJECTS:projects,MAX_TEAM_MEMBERS:members+pendingInvitations,MAX_MEDIA_ITEMS:media};
+ const [projects,members,media]=await Promise.all([prisma.project.count({where:{organizationId}}),prisma.membership.count({where:{organizationId,status:{in:["ACTIVE","INVITED"]}}}),prisma.media.count({where:{organizationId}})]);
+ const current:Record<string,number>={MAX_PROJECTS:projects,MAX_TEAM_MEMBERS:members,MAX_MEDIA_ITEMS:media};
  const labels:Record<string,string>={MAX_PROJECTS:"Projects",MAX_TEAM_MEMBERS:"Team seats",MAX_MEDIA_ITEMS:"Media items"};
  const items=state.entitlements.filter(item=>item.valueType==="NUMBER"&&item.numericValue!==null&&item.featureCode in current).map(item=>({featureCode:item.featureCode,label:labels[item.featureCode],used:current[item.featureCode],limit:item.numericValue!}));
  return{access:state.access,items,customDomain:Boolean(state.entitlements.find(item=>item.featureCode==="CUSTOM_DOMAIN")?.booleanValue)};

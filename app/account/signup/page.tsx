@@ -11,13 +11,12 @@ export default async function ConstructSignupPage({
 }) {
   const context = await getOptionalConstructContext();
   if (context?.membership) redirect("/dashboard");
-  if (context?.authUser) redirect("/account/onboarding");
   const { error } = await searchParams;
   return (
     <ConstructAuthShell
       eyebrow="Free trial"
       title="Create your account"
-      description="Create a secure login, then choose the one-word address for your construction website workspace."
+      description="Your trial workspace is created immediately — no separate setup step."
     >
       <form action={constructSignUpAction} className="space-y-5">
         {error && (
@@ -72,8 +71,39 @@ export default async function ConstructSignupPage({
             className="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-teal-600 focus:ring-4 focus:ring-teal-100"
           />
         </label>
+        <label className="block text-sm font-semibold text-slate-700">
+          Company name
+          <input
+            name="organizationName"
+            required
+            minLength={2}
+            maxLength={100}
+            className="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-teal-600 focus:ring-4 focus:ring-teal-100"
+          />
+        </label>
+        <label className="block text-sm font-semibold text-slate-700">
+          Workspace address
+          <div className="mt-2 flex overflow-hidden rounded-xl border border-slate-300 focus-within:border-teal-600 focus-within:ring-4 focus-within:ring-teal-100">
+            <input
+              name="organizationSlug"
+              required
+              minLength={2}
+              maxLength={32}
+              pattern="[a-z0-9]+"
+              placeholder="acme"
+              className="min-w-0 flex-1 px-4 py-3 lowercase outline-none"
+            />
+            <span className="flex items-center bg-slate-100 px-3 text-xs text-slate-500">
+              .construct.shaoor-ai.com
+            </span>
+          </div>
+          <span className="mt-2 block text-xs font-normal text-slate-500">
+            One word using lowercase letters or numbers. This address must be
+            unique.
+          </span>
+        </label>
         <button className="w-full rounded-xl bg-[#0E4A7B] px-4 py-3 font-semibold text-white hover:bg-[#0A365A]">
-          Continue to workspace setup
+          Start trial workspace
         </button>
         <p className="text-center text-sm text-slate-600">
           Already have an account?{" "}

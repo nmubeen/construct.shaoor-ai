@@ -8,8 +8,9 @@ import {
   synchronizeConstructUser,
 } from "@/lib/auth/construct-context";
 import { isSafeConstructRedirect } from "@/lib/auth/construct-redirect";
-import { provisionConstructOrganization } from "@/lib/services/construct-provisioning.service";
 import { createClient } from "@/lib/supabase/server";
+
+const ORGANIZATION_SLUG_PATTERN = /^[a-z0-9]{2,32}$/;
 
 function appUrl() {
   if (process.env.VERCEL_ENV === "production") {
@@ -26,6 +27,8 @@ export async function constructSignUpAction(formData: FormData) {
   const password = String(formData.get("password") ?? "");
   const confirmation = String(formData.get("confirmation") ?? "");
   const validationError = validateNewPassword(password, confirmation);
+  const organizationName = String(formData.get("organizationName") ?? "").trim();
+  const organizationSlug = String(formData.get("organizationSlug") ?? "").trim().toLowerCase();
 
   if (fullName.length < 2 || fullName.length > 100) {
     redirect("/account/signup?error=Enter your full name.");
@@ -34,15 +37,33 @@ export async function constructSignUpAction(formData: FormData) {
   if (validationError) {
     redirect(`/account/signup?error=${encodeURIComponent(validationError)}`);
   }
+  if (organizationName.length < 2 || organizationName.length > 100) {
+    redirect("/account/signup?error=Enter your company name.");
+  }
+  if (!ORGANIZATION_SLUG_PATTERN.test(organizationSlug)) {
+    redirect(
+      "/account/signup?error=Workspace address must be 2-32 lowercase letters or numbers.",
+    );
+  }
 
+  // The org name/slug ride along as auth.signUp() metadata — a database
+  // trigger (construct.handle_new_user(), fired on auth.users insert)
+  // creates the organization, owner membership and trial subscription
+  // immediately, before this request even completes. Mirrors Pets' own
+  // signup flow exactly (menagerie.handle_new_user() does the same from
+  // workspace_name metadata) — no separate onboarding step needed.
   const callbackUrl = new URL("/auth/callback", appUrl());
-  callbackUrl.searchParams.set("next", "/account/onboarding");
+  callbackUrl.searchParams.set("next", "/dashboard");
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
-      data: { full_name: fullName },
+      data: {
+        full_name: fullName,
+        construct_organization_name: organizationName,
+        construct_organization_slug: organizationSlug,
+      },
       emailRedirectTo: callbackUrl.toString(),
     },
   });
@@ -54,11 +75,11 @@ export async function constructSignUpAction(formData: FormData) {
   }
   if (data.session && data.user) {
     await synchronizeConstructUser(data.user);
-    redirect("/account/onboarding");
+    redirect("/dashboard");
   }
 
   redirect(
-    "/account/login?message=Check your email to confirm your account, then continue creating your trial workspace.",
+    "/account/login?message=Check your email to confirm your account — your trial workspace is already set up and waiting.",
   );
 }
 
@@ -92,7 +113,10 @@ export async function constructSignInAction(formData: FormData) {
   }
   const context = await getOptionalConstructContext();
 
-  if (!context?.membership) redirect("/account/onboarding");
+  // No membership at all here is unexpected now that signup always
+  // provisions one via the DB trigger — /account/pending explains the
+  // state and offers a way out rather than a dead onboarding link.
+  if (!context?.membership) redirect("/account/pending");
   if (context.organization?.status !== "ACTIVE") redirect("/account/pending");
   redirect("/dashboard");
 }
@@ -157,28 +181,4 @@ export async function updateConstructPasswordAction(formData: FormData) {
 
   await supabase.auth.signOut();
   redirect("/account/login?message=Your password has been updated.");
-}
-
-export async function provisionConstructOrganizationAction(formData: FormData) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) redirect("/account/login");
-
-  try {
-    await provisionConstructOrganization({
-      authUser: user,
-      organizationName: String(formData.get("organizationName") ?? ""),
-      organizationSlug: String(formData.get("organizationSlug") ?? ""),
-      trial: String(formData.get("trial") ?? "") === "1",
-    });
-  } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Provisioning failed.";
-    redirect(`/account/onboarding?error=${encodeURIComponent(message)}`);
-  }
-
-  redirect("/dashboard");
 }

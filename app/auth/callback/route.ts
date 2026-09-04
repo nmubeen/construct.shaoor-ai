@@ -8,7 +8,7 @@ export async function GET(request: Request) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get("code");
   const requestedNext = requestUrl.searchParams.get("next");
-  const nextPath = isSafeConstructRedirect(requestedNext) ? requestedNext : "/account/onboarding";
+  const nextPath = isSafeConstructRedirect(requestedNext) ? requestedNext : "/dashboard";
 
   if (code) {
     const supabase = await createClient();

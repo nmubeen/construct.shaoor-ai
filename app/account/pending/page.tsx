@@ -8,7 +8,7 @@ import { getConstructCommercialAccess } from "@/lib/control/construct-subscripti
 export default async function ActivationPendingPage() {
   const context = await getOptionalConstructContext();
   if (!context) redirect("/account/login");
-  if (!context.membership) redirect("/account/onboarding");
+  if (!context.membership) redirect("/account/signup");
   const commercial=context.organization?await getConstructCommercialAccess(context.organization.id):null;
   const commerciallyBlocked=Boolean(commercial&&!commercial.accessAllowed);
   if (context.organization?.status === "ACTIVE"&&!commerciallyBlocked) redirect("/dashboard");

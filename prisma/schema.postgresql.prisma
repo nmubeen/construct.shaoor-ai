@@ -36,6 +36,18 @@ enum InvitationStatus {
   @@schema("construct")
 }
 
+// New invites go through Membership.status/invitedEmail (below), mirroring
+// Pets' plain email-reconciliation pattern — no token/link. This enum and
+// the Invitation model stay only for already-emailed accept links from
+// before this change; see construct-team.actions.ts.
+enum MembershipStatus {
+  INVITED
+  ACTIVE
+  REMOVED
+
+  @@schema("construct")
+}
+
 enum DomainStatus {
   PENDING
   VERIFYING
@@ -72,14 +84,33 @@ enum MessageStatus {
   @@schema("construct")
 }
 
-model Organization {
-  id        String             @id @default(uuid()) @db.Uuid
-  name      String
-  slug      String             @unique
-  status    OrganizationStatus @default(PENDING)
-  createdAt DateTime           @default(now()) @map("created_at")
-  updatedAt DateTime           @updatedAt @map("updated_at")
+enum SubscriptionStatus {
+  TRIALING
+  ACTIVE
+  PAST_DUE
+  CANCELED
 
+  @@schema("construct")
+}
+
+model Organization {
+  id          String             @id @default(uuid()) @db.Uuid
+  name        String
+  slug        String             @unique
+  status      OrganizationStatus @default(PENDING)
+  // Construct's own local source of truth for gating (mirrors Pets'
+  // tenants.plan_code/trial_ends_at) — set by the signup trigger, kept
+  // current by the self-serve checkout webhook and the trial-expiry cron,
+  // read live on every request by getConstructCommercialAccess(). Also
+  // pushed to the shared control schema for the admin dashboard, but that
+  // copy is not what this app itself reads.
+  planCode    String             @default("TRIAL") @map("plan_code")
+  trialEndsAt DateTime?          @map("trial_ends_at")
+  createdAt   DateTime           @default(now()) @map("created_at")
+  updatedAt   DateTime           @updatedAt @map("updated_at")
+
+  plan            Plan             @relation(fields: [planCode], references: [code])
+  subscription    Subscription?
   memberships     Membership[]
   invitations     Invitation[]
   domains         Domain[]
@@ -103,6 +134,64 @@ model Organization {
   @@schema("construct")
 }
 
+// Construct's own local plan catalog — mirrors menagerie.plans. Limits
+// are enforced from here (construct-subscription.service.ts), not from
+// the shared control.plan_entitlements — each product's local plan table
+// is its own enforcement source, kept in sync with control.plans (the
+// admin-editable copy) by whoever edits /admin/plans on shaoor-ai.com.
+model Plan {
+  code            String   @id
+  name            String
+  priceAmount     Int?     @map("price_amount")
+  priceCurrency   String   @default("INR") @map("price_currency")
+  billingInterval String?  @map("billing_interval")
+  isTrial         Boolean  @default(false) @map("is_trial")
+  isFreeForever   Boolean  @default(false) @map("is_free_forever")
+  seatLimit       Int?     @map("seat_limit")
+  projectLimit    Int?     @map("project_limit")
+  mediaLimit      Int?     @map("media_limit")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  organizations Organization[]
+
+  @@map("plans")
+  @@schema("construct")
+}
+
+// Billing/payment status only — "which plan" lives on Organization.planCode
+// (matches menagerie.subscriptions carrying no plan_code of its own
+// either). Absence of a row means "still on the initial trial, or on the
+// free tier with nothing ever billed" — same convention as Pets.
+model Subscription {
+  id                     String             @id @default(uuid()) @db.Uuid
+  organizationId         String             @unique @map("organization_id") @db.Uuid
+  status                 SubscriptionStatus
+  currentPeriodEnd       DateTime?          @map("current_period_end")
+  razorpayCustomerId     String?            @map("razorpay_customer_id")
+  razorpaySubscriptionId String?            @map("razorpay_subscription_id")
+  createdAt              DateTime           @default(now()) @map("created_at")
+  updatedAt              DateTime           @updatedAt @map("updated_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@map("subscriptions")
+  @@schema("construct")
+}
+
+// Records a failed best-effort control-plane sync (e.g. from the signup
+// trigger) for manual/cron reconciliation — a sync failure must never
+// block the operation that triggered it. Mirrors the reasoning behind
+// lib/control-sync.ts's non-throwing behavior on the Pets side.
+model ControlSyncFailure {
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  error          String?
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  @@map("control_sync_failures")
+  @@schema("construct")
+}
+
 model User {
   id        String   @id @db.Uuid
   email     String   @unique
@@ -120,18 +209,27 @@ model User {
 }
 
 model Membership {
-  id             String         @id @default(uuid()) @db.Uuid
-  organizationId String         @map("organization_id") @db.Uuid
-  userId         String         @map("user_id") @db.Uuid
-  role           MembershipRole @default(EDITOR)
-  createdAt      DateTime       @default(now()) @map("created_at")
-  updatedAt      DateTime       @updatedAt @map("updated_at")
+  id             String           @id @default(uuid()) @db.Uuid
+  organizationId String           @map("organization_id") @db.Uuid
+  // Nullable — an invited-but-not-yet-signed-up member has no user yet
+  // (mirrors menagerie.memberships.user_id). Filled in and status flips
+  // to ACTIVE when invitedEmail matches a new or existing signup.
+  userId         String?          @map("user_id") @db.Uuid
+  invitedEmail   String?          @map("invited_email")
+  status         MembershipStatus @default(ACTIVE)
+  role           MembershipRole   @default(EDITOR)
+  createdAt      DateTime         @default(now()) @map("created_at")
+  updatedAt      DateTime         @updatedAt @map("updated_at")
 
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User?        @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  // Partial unique index on (organization_id, invited_email) WHERE
+  // user_id IS NULL is created via raw SQL in the migration — Prisma's
+  // schema DSL doesn't support a WHERE clause on @@unique.
   @@unique([organizationId, userId])
   @@index([userId])
+  @@index([organizationId, invitedEmail])
   @@map("memberships")
   @@schema("construct")
 }

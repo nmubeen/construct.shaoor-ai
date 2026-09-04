@@ -70,7 +70,11 @@ export async function requireActiveConstructContext(organizationSlug?: string) {
 
   if (!context) redirect("/account/login");
   if (!context.user || !context.membership || !context.organization) {
-    redirect("/account/onboarding");
+    // Signup always provisions a membership via the DB trigger now — this
+    // means something didn't complete (or this is a pre-existing account
+    // from before this change). /account/signup is the honest way back in
+    // rather than a now-deleted onboarding step.
+    redirect("/account/signup");
   }
   if (context.organization.status !== "ACTIVE") {
     redirect("/account/pending");
