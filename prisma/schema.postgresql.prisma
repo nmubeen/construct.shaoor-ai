@@ -150,6 +150,11 @@ model Plan {
   seatLimit       Int?     @map("seat_limit")
   projectLimit    Int?     @map("project_limit")
   mediaLimit      Int?     @map("media_limit")
+  // Pre-created in the Razorpay dashboard, same as Pets' equivalent
+  // columns — NULL means this plan isn't purchasable through self-serve
+  // checkout yet (see app/api/razorpay/subscription's guard).
+  razorpayPlanIdMonthly String? @map("razorpay_plan_id_monthly")
+  razorpayPlanIdAnnual  String? @map("razorpay_plan_id_annual")
   createdAt       DateTime @default(now()) @map("created_at")
 
   organizations Organization[]

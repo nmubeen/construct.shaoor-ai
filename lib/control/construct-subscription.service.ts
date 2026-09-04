@@ -4,7 +4,7 @@ import { Prisma } from "@prisma/construct-client";
 import { getConstructPrisma } from "@/lib/construct-prisma";
 
 export type ConstructCommercialAccess = {
-  subscriptionId: string;
+  subscriptionId: string | null;
   accountName: string;
   planCode: string;
   planName: string;
@@ -17,27 +17,45 @@ export type ConstructEntitlement={featureCode:string;valueType:"BOOLEAN"|"NUMBER
 export type ConstructPlanUsage={access:ConstructCommercialAccess;items:Array<{featureCode:string;label:string;used:number;limit:number}>;customDomain:boolean};
 export class ConstructEntitlementError extends Error { constructor(message:string){super(message);this.name="ConstructEntitlementError";} }
 
+// Reads Construct's OWN local tables (organizations.plan_code/trial_ends_at
+// + subscriptions), not the shared control schema — mirrors Pets'
+// getPetsCommercialAccess() exactly. Each product's local state is its own
+// fast source of truth for gating; control.* is still kept in sync (see
+// the signup trigger and the Razorpay webhook) purely for shaoor-ai.com's
+// admin dashboard, which this app itself never reads from.
 export async function getConstructCommercialAccess(organizationId: string): Promise<ConstructCommercialAccess | null> {
-  try {
-    const rows = await getConstructPrisma().$queryRaw<ConstructCommercialAccess[]>(Prisma.sql`
-      SELECT s.id AS "subscriptionId", account.name AS "accountName", plan.code AS "planCode",
-        plan.name AS "planName", s.status::text, instance.provisioning_status::text AS "provisioningStatus",
-        s.current_period_end AS "periodEnd",
-        ((s.status IN ('TRIALING','ACTIVE','PAST_DUE') OR (s.status='CANCELLED' AND s.current_period_end>now()))
-          AND instance.provisioning_status='READY') AS "accessAllowed"
-      FROM control.product_instances instance
-      JOIN control.products product ON product.id=instance.product_id AND product.code='SHAOOR_CONSTRUCT'
-      JOIN control.accounts account ON account.id=instance.account_id
-      JOIN control.subscriptions s ON s.id=instance.subscription_id
-      JOIN control.plans plan ON plan.id=s.plan_id
-      WHERE instance.tenant_schema='construct' AND instance.tenant_organization_id=${organizationId}::uuid
-      LIMIT 1
-    `);
-    return rows[0] ?? null;
-  } catch {
-    // Allows Construct to run before the shared-control migration is deployed.
-    return null;
+  const org = await getConstructPrisma().organization.findUnique({
+    where: { id: organizationId },
+    include: { plan: true, subscription: true },
+  });
+  if (!org) return null;
+
+  const { plan, subscription } = org;
+  let accessAllowed: boolean;
+  let status: string;
+  if (plan.isFreeForever) {
+    accessAllowed = true;
+    status = subscription?.status ?? "ACTIVE";
+  } else if (subscription) {
+    status = subscription.status;
+    accessAllowed =
+      subscription.status === "TRIALING" || subscription.status === "ACTIVE" || subscription.status === "PAST_DUE" ||
+      (subscription.status === "CANCELED" && Boolean(subscription.currentPeriodEnd) && subscription.currentPeriodEnd! > new Date());
+  } else {
+    status = "TRIALING";
+    accessAllowed = Boolean(org.trialEndsAt && org.trialEndsAt > new Date());
   }
+
+  return {
+    subscriptionId: subscription?.id ?? null,
+    accountName: org.name,
+    planCode: plan.code,
+    planName: plan.name,
+    status,
+    provisioningStatus: accessAllowed ? "READY" : "SUSPENDED",
+    periodEnd: subscription?.currentPeriodEnd ?? null,
+    accessAllowed,
+  };
 }
 
 export async function getConstructEntitlements(organizationId:string):Promise<{access:ConstructCommercialAccess;entitlements:ConstructEntitlement[]}|null>{
