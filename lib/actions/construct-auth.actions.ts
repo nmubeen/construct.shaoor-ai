@@ -9,15 +9,9 @@ import {
 } from "@/lib/auth/construct-context";
 import { isSafeConstructRedirect } from "@/lib/auth/construct-redirect";
 import { createClient } from "@/lib/supabase/server";
+import { appUrl } from "@/lib/construct-app-url";
 
 const ORGANIZATION_SLUG_PATTERN = /^[a-z0-9]{2,32}$/;
-
-function appUrl() {
-  if (process.env.VERCEL_ENV === "production") {
-    return "https://construct.shaoor-ai.com";
-  }
-  return process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
-}
 
 export async function constructSignUpAction(formData: FormData) {
   const fullName = String(formData.get("fullName") ?? "").trim();
@@ -27,23 +21,37 @@ export async function constructSignUpAction(formData: FormData) {
   const password = String(formData.get("password") ?? "");
   const confirmation = String(formData.get("confirmation") ?? "");
   const validationError = validateNewPassword(password, confirmation);
+  // Set when this signup came from an invite link (a hidden field on
+  // /account/signup's invited-mode form) — an invited person is joining
+  // an *existing* organization, so no org name/slug should be collected
+  // or sent as signUp() metadata at all. Same bug class as Pets' own
+  // 2026-09-04 fix: construct.handle_new_user() already reconciles a
+  // pending invite unconditionally (regardless of whether org metadata is
+  // present), but the signup form used to force org fields on everyone,
+  // so an invited-but-new person had no way to just join — they'd either
+  // hit a dead end or accidentally create a second, unrelated org.
+  const invited = String(formData.get("invited") ?? "") === "1";
   const organizationName = String(formData.get("organizationName") ?? "").trim();
   const organizationSlug = String(formData.get("organizationSlug") ?? "").trim().toLowerCase();
 
+  const invitedQuery = invited ? `&invited=1&email=${encodeURIComponent(email)}` : "";
+
   if (fullName.length < 2 || fullName.length > 100) {
-    redirect("/account/signup?error=Enter your full name.");
+    redirect(`/account/signup?error=Enter your full name.${invitedQuery}`);
   }
-  if (!email) redirect("/account/signup?error=Enter a valid email address.");
+  if (!email) redirect(`/account/signup?error=Enter a valid email address.${invitedQuery}`);
   if (validationError) {
-    redirect(`/account/signup?error=${encodeURIComponent(validationError)}`);
+    redirect(`/account/signup?error=${encodeURIComponent(validationError)}${invitedQuery}`);
   }
-  if (organizationName.length < 2 || organizationName.length > 100) {
-    redirect("/account/signup?error=Enter your company name.");
-  }
-  if (!ORGANIZATION_SLUG_PATTERN.test(organizationSlug)) {
-    redirect(
-      "/account/signup?error=Workspace address must be 2-32 lowercase letters or numbers.",
-    );
+  if (!invited) {
+    if (organizationName.length < 2 || organizationName.length > 100) {
+      redirect("/account/signup?error=Enter your company name.");
+    }
+    if (!ORGANIZATION_SLUG_PATTERN.test(organizationSlug)) {
+      redirect(
+        "/account/signup?error=Workspace address must be 2-32 lowercase letters or numbers.",
+      );
+    }
   }
 
   // The org name/slug ride along as auth.signUp() metadata — a database
@@ -51,7 +59,9 @@ export async function constructSignUpAction(formData: FormData) {
   // creates the organization, owner membership and trial subscription
   // immediately, before this request even completes. Mirrors Pets' own
   // signup flow exactly (menagerie.handle_new_user() does the same from
-  // workspace_name metadata) — no separate onboarding step needed.
+  // workspace_name metadata) — no separate onboarding step needed. In
+  // invited mode, no org metadata is sent at all, so only that trigger's
+  // unconditional invite-reconciliation step fires.
   const callbackUrl = new URL("/auth/callback", appUrl());
   callbackUrl.searchParams.set("next", "/dashboard");
   const supabase = await createClient();
@@ -59,18 +69,25 @@ export async function constructSignUpAction(formData: FormData) {
     email,
     password,
     options: {
-      data: {
-        full_name: fullName,
-        construct_organization_name: organizationName,
-        construct_organization_slug: organizationSlug,
-      },
+      data: invited
+        ? { full_name: fullName }
+        : {
+            full_name: fullName,
+            construct_organization_name: organizationName,
+            construct_organization_slug: organizationSlug,
+          },
       emailRedirectTo: callbackUrl.toString(),
     },
   });
 
   if (error) {
+    // An invited person who already has a Construct account elsewhere
+    // hits this — send them to sign in instead of a dead-end error.
+    if (invited && /already|registered|exists/i.test(error.message)) {
+      redirect(`/account/login?email=${encodeURIComponent(email)}`);
+    }
     redirect(
-      `/account/signup?error=${encodeURIComponent("We could not create this account. It may already exist.")}`,
+      `/account/signup?error=${encodeURIComponent("We could not create this account. It may already exist.")}${invitedQuery}`,
     );
   }
   if (data.session && data.user) {
@@ -79,7 +96,9 @@ export async function constructSignUpAction(formData: FormData) {
   }
 
   redirect(
-    "/account/login?message=Check your email to confirm your account — your trial workspace is already set up and waiting.",
+    invited
+      ? "/account/login?message=Check your email to confirm your account, then sign in to start using this workspace."
+      : "/account/login?message=Check your email to confirm your account — your trial workspace is already set up and waiting.",
   );
 }
 

@@ -6,9 +6,9 @@ import { constructSignInAction } from "@/lib/actions/construct-auth.actions";
 export default async function ConstructLoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; message?: string; next?: string }>;
+  searchParams: Promise<{ error?: string; message?: string; next?: string; email?: string }>;
 }) {
-  const { error, message, next } = await searchParams;
+  const { error, message, next, email } = await searchParams;
 
   return (
     <ConstructAuthShell
@@ -35,6 +35,7 @@ export default async function ConstructLoginPage({
             type="email"
             autoComplete="email"
             required
+            defaultValue={email}
             className="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition focus:border-teal-600 focus:ring-4 focus:ring-teal-100"
           />
         </label>
