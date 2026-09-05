@@ -8,6 +8,11 @@ const RESERVED = new Set([
   "account",
   "auth",
   "dashboard",
+  // No longer a real Construct route (the /demo showcase was removed), but
+  // kept reserved: a legacy SQLite Company row still exists with code
+  // "demo" (prisma/dev.db, the pre-Postgres multi-tenant system) — without
+  // this, "/demo" falls through to that company-code lookup and gets
+  // silently rewritten to "/" instead of 404ing. Confirmed live.
   "demo",
   "login",
   "change-password",

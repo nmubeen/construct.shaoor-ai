@@ -3,7 +3,6 @@ import {
   ArrowRight,
   Building2,
   Check,
-  Eye,
   LayoutDashboard,
   ShieldCheck,
   Sparkles,
@@ -52,32 +51,12 @@ export function ConstructPortalHome() {
             A professional website and CMS built for construction companies.
           </h1>
           <p className="mt-7 max-w-2xl text-lg leading-8 text-slate-300">
-            Explore the complete experience through our Demo, or create a trial
-            workspace with your own company address.
+            Create a trial workspace with your own company address and start
+            managing your website right away.
           </p>
         </div>
 
-        <div className="mt-12 grid gap-5 lg:grid-cols-2">
-          <article className="group rounded-3xl border border-white/12 bg-white/8 p-7 shadow-2xl backdrop-blur-md sm:p-9">
-            <div className="flex size-13 items-center justify-center rounded-2xl bg-teal-400/15 text-teal-300">
-              <Eye className="size-6" />
-            </div>
-            <p className="mt-7 text-xs font-bold uppercase tracking-[.2em] text-[#b9cdb5]">
-              Explore without signing up
-            </p>
-            <h2 className="mt-2 text-3xl font-bold">See the Demo</h2>
-            <p className="mt-4 leading-7 text-slate-300">
-              Browse the public construction website or take a read-only tour of
-              the administration CMS.
-            </p>
-            <Link
-              href="/demo"
-              className="mt-8 inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 font-bold text-[#094136] transition group-hover:bg-[#dce7d9]"
-            >
-              Choose a Demo <ArrowRight className="size-4" />
-            </Link>
-          </article>
-
+        <div className="mt-12 max-w-xl">
           <article className="group rounded-3xl border border-[#b9cdb5]/30 bg-gradient-to-br from-[#7D9D76]/75 to-[#062f27]/80 p-7 shadow-2xl sm:p-9">
             <div className="flex size-13 items-center justify-center rounded-2xl bg-white/12 text-white">
               <Building2 className="size-6" />
