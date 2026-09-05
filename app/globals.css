@@ -57,162 +57,173 @@
   --sidebar-ring: #7d9d76;
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+/* Everything below lives in Tailwind's `base` layer (not left unlayered)
+   so that component-level Tailwind utility classes — which Tailwind v4
+   emits into `@layer utilities` — can still override these sitewide
+   defaults. Unlayered CSS always wins over ANY layered rule regardless of
+   specificity, so leaving these unlayered previously meant, e.g., the
+   plain `section { padding: ... }` rule below silently beat every
+   dashboard `<section className="... py-6 ...">`'s own Tailwind padding
+   utility — collapsing intended spacing and causing cards to visually
+   overlap. Confirmed live on /dashboard: fixed by layering this block. */
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
 
-html {
-  scroll-behavior: smooth;
-}
+  html {
+    scroll-behavior: smooth;
+  }
 
-body {
-  line-height: 1.6;
-  color: var(--foreground);
-  background: var(--background);
-  accent-color: var(--primary);
-}
+  body {
+    line-height: 1.6;
+    color: var(--foreground);
+    background: var(--background);
+    accent-color: var(--primary);
+  }
 
-/* Construct-wide application surfaces. These normalize legacy CMS and portal
-   modules while preserving intentional status colors. */
-.construct-app-surface {
-  min-height: 100vh;
-  background-color: #f5f7f4;
-  background-image:
-    radial-gradient(circle at 92% 8%, rgb(125 157 118 / 14%), transparent 28rem),
-    radial-gradient(circle at 4% 45%, rgb(9 65 54 / 7%), transparent 30rem);
-}
+  /* Construct-wide application surfaces. These normalize legacy CMS and
+     portal modules while preserving intentional status colors. */
+  .construct-app-surface {
+    min-height: 100vh;
+    background-color: #f5f7f4;
+    background-image:
+      radial-gradient(circle at 92% 8%, rgb(125 157 118 / 14%), transparent 28rem),
+      radial-gradient(circle at 4% 45%, rgb(9 65 54 / 7%), transparent 30rem);
+  }
 
-.construct-admin-surface section { padding-block: 0; }
-.construct-admin-surface main { color: #15352f; }
-.construct-admin-surface :where(h1, h2, h3) { color: #094136; letter-spacing: -.02em; }
-.construct-admin-surface :where(input, textarea, select) {
-  border-color: #cdd9ca;
-  background-color: #fff;
-}
-.construct-admin-surface :where(input, textarea, select):focus {
-  border-color: #7d9d76;
-  --tw-ring-color: rgb(125 157 118 / 25%);
-}
-.construct-admin-surface :where(.bg-slate-50, .bg-slate-100) { background-color: #f5f7f4; }
-.construct-admin-surface :where(.border-slate-200, .border-slate-300) { border-color: #dce5da; }
-.construct-admin-surface :where(.text-blue-600, .text-blue-700, .text-teal-600, .text-teal-700) { color: #094136; }
-.construct-admin-surface :where(.bg-blue-600, .bg-blue-700, .bg-teal-500, .bg-teal-600, .bg-slate-900) {
-  background-color: #094136;
-  color: #fff;
-}
-.construct-admin-surface :where(.hover\:bg-blue-700:hover, .hover\:bg-teal-600:hover, .hover\:bg-slate-800:hover) {
-  background-color: #7d9d76;
-}
+  .construct-admin-surface section { padding-block: 0; }
+  .construct-admin-surface main { color: #15352f; }
+  .construct-admin-surface :where(h1, h2, h3) { color: #094136; letter-spacing: -.02em; }
+  .construct-admin-surface :where(input, textarea, select) {
+    border-color: #cdd9ca;
+    background-color: #fff;
+  }
+  .construct-admin-surface :where(input, textarea, select):focus {
+    border-color: #7d9d76;
+    --tw-ring-color: rgb(125 157 118 / 25%);
+  }
+  .construct-admin-surface :where(.bg-slate-50, .bg-slate-100) { background-color: #f5f7f4; }
+  .construct-admin-surface :where(.border-slate-200, .border-slate-300) { border-color: #dce5da; }
+  .construct-admin-surface :where(.text-blue-600, .text-blue-700, .text-teal-600, .text-teal-700) { color: #094136; }
+  .construct-admin-surface :where(.bg-blue-600, .bg-blue-700, .bg-teal-500, .bg-teal-600, .bg-slate-900) {
+    background-color: #094136;
+    color: #fff;
+  }
+  .construct-admin-surface :where(.hover\:bg-blue-700:hover, .hover\:bg-teal-600:hover, .hover\:bg-slate-800:hover) {
+    background-color: #7d9d76;
+  }
 
-.construct-card {
-  border: 1px solid #dce5da;
-  border-radius: 1.25rem;
-  background: #fff;
-  box-shadow: 0 8px 24px rgb(9 65 54 / 7%);
-}
+  .construct-card {
+    border: 1px solid #dce5da;
+    border-radius: 1.25rem;
+    background: #fff;
+    box-shadow: 0 8px 24px rgb(9 65 54 / 7%);
+  }
 
-.construct-brand-button {
-  border-radius: .75rem;
-  background: #094136;
-  color: #fff;
-  box-shadow: 0 6px 16px rgb(9 65 54 / 14%);
-  transition: background-color .2s ease, transform .2s ease, box-shadow .2s ease;
-}
-.construct-brand-button:hover {
-  background: #7d9d76;
-  transform: translateY(-1px);
-  box-shadow: 0 10px 22px rgb(9 65 54 / 16%);
-}
+  .construct-brand-button {
+    border-radius: .75rem;
+    background: #094136;
+    color: #fff;
+    box-shadow: 0 6px 16px rgb(9 65 54 / 14%);
+    transition: background-color .2s ease, transform .2s ease, box-shadow .2s ease;
+  }
+  .construct-brand-button:hover {
+    background: #7d9d76;
+    transform: translateY(-1px);
+    box-shadow: 0 10px 22px rgb(9 65 54 / 16%);
+  }
 
-@media (min-width: 1024px) {
-  .construct-admin-surface .dashboard-content { padding: 1.5rem; }
-}
+  @media (min-width: 1024px) {
+    .construct-admin-surface .dashboard-content { padding: 1.5rem; }
+  }
 
-a {
-  text-decoration: none;
-  color: inherit;
-}
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
 
-img {
-  display: block;
-  max-width: 100%;
-}
+  img {
+    display: block;
+    max-width: 100%;
+  }
 
-button {
-  cursor: pointer;
-}
+  button {
+    cursor: pointer;
+  }
 
-section {
-  padding: clamp(4rem, 8vw, 6.5rem) 0;
-}
+  section {
+    padding: clamp(4rem, 8vw, 6.5rem) 0;
+  }
 
-.container {
-  width: min(1240px, calc(100% - 2.5rem));
-  margin-inline: auto;
-}
+  .container {
+    width: min(1240px, calc(100% - 2.5rem));
+    margin-inline: auto;
+  }
 
-.section-title {
-  font-size: clamp(2rem, 4vw, 2.75rem);
-  font-weight: 700;
-  color: var(--foreground);
-}
+  .section-title {
+    font-size: clamp(2rem, 4vw, 2.75rem);
+    font-weight: 700;
+    color: var(--foreground);
+  }
 
-.section-subtitle {
-  color: var(--primary);
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  font-size: 14px;
-  margin-bottom: 12px;
-}
+  .section-subtitle {
+    color: var(--primary);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 14px;
+    margin-bottom: 12px;
+  }
 
-.btn-primary {
-  background: var(--primary);
-  color: white;
-  padding: 14px 28px;
-  border-radius: var(--button-radius);
-  font-weight: 600;
-  transition:
-  background-color .25s ease,
-  color .25s ease,
-  transform .25s ease,
-  box-shadow .25s ease;
-}
+  .btn-primary {
+    background: var(--primary);
+    color: white;
+    padding: 14px 28px;
+    border-radius: var(--button-radius);
+    font-weight: 600;
+    transition:
+    background-color .25s ease,
+    color .25s ease,
+    transform .25s ease,
+    box-shadow .25s ease;
+  }
 
-.btn-primary:hover {
-  background: var(--brand-sage);
-  transform: translateY(-2px);
-}
+  .btn-primary:hover {
+    background: var(--brand-sage);
+    transform: translateY(-2px);
+  }
 
-.btn-outline {
-  border: 2px solid white;
-  color: white;
-  padding: 14px 28px;
-  border-radius: 8px;
-}
+  .btn-outline {
+    border: 2px solid white;
+    color: white;
+    padding: 14px 28px;
+    border-radius: 8px;
+  }
 
-.card {
-  background: var(--white);
-  border: 1px solid var(--border);
-  border-radius: var(--card-radius);
-  box-shadow: var(--shadow-sm);
-}
+  .card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--card-radius);
+    box-shadow: var(--shadow-sm);
+  }
 
-::selection {
-  background: #7d9d76;
-  color: #ffffff;
-}
+  ::selection {
+    background: #7d9d76;
+    color: #ffffff;
+  }
 
-:where(input, textarea, select):focus-visible {
-  border-color: #7d9d76 !important;
-  outline: 3px solid rgba(125, 157, 118, .2) !important;
-  outline-offset: 1px;
-}
+  :where(input, textarea, select):focus-visible {
+    border-color: #7d9d76 !important;
+    outline: 3px solid rgba(125, 157, 118, .2) !important;
+    outline-offset: 1px;
+  }
 
-@media (max-width: 640px) {
-  section { padding-block: 3.5rem; }
-  .container { width: min(100% - 1.5rem, 1240px); }
+  @media (max-width: 640px) {
+    section { padding-block: 3.5rem; }
+    .container { width: min(100% - 1.5rem, 1240px); }
+  }
 }
 
 @theme inline {
