@@ -10,6 +10,7 @@ import {
 import { isSafeConstructRedirect } from "@/lib/auth/construct-redirect";
 import { createClient } from "@/lib/supabase/server";
 import { appUrl } from "@/lib/construct-app-url";
+import { getConstructPrisma } from "@/lib/construct-prisma";
 
 const ORGANIZATION_SLUG_PATTERN = /^[a-z0-9]{2,32}$/;
 
@@ -52,6 +53,32 @@ export async function constructSignUpAction(formData: FormData) {
         "/account/signup?error=Workspace address must be 2-32 lowercase letters or numbers.",
       );
     }
+  }
+
+  // This Supabase project's auth.users table is shared across Pets/Chat/
+  // Construct, and deliberately allows the same email to sign up again as
+  // a brand-new, distinct auth identity (so one person can hold separate
+  // accounts per product). construct.users.email is unique, though — one
+  // Construct account per email — so a second Construct signup with an
+  // email that already has one must be stopped here, before signUp() ever
+  // runs. Relying on signUp() itself to reject the duplicate (as the
+  // invited-mode branch below still does, for whatever error message
+  // Supabase happens to return) is NOT sufficient: signUp() succeeds and
+  // hands back a real session for the new duplicate identity, and neither
+  // the DB trigger (its ON CONFLICT only covers the id column) nor
+  // synchronizeConstructUser() below can reconcile the resulting email
+  // clash — confirmed live, it throws an uncaught P2002 and the signup
+  // ends on Next's generic error page instead of a readable message.
+  const existingConstructUser = await getConstructPrisma().user.findUnique({
+    where: { email },
+    select: { id: true },
+  });
+  if (existingConstructUser) {
+    redirect(
+      invited
+        ? `/account/login?email=${encodeURIComponent(email)}`
+        : `/account/signup?error=${encodeURIComponent("An account with this email already exists. Sign in instead.")}`,
+    );
   }
 
   // The org name/slug ride along as auth.signUp() metadata — a database
