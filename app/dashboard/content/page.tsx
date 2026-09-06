@@ -49,7 +49,7 @@ export default async function ContentPage({ searchParams }: { searchParams: Prom
     prisma.faq.findMany({ where: { organizationId: context.organizationId }, orderBy: [{ displayOrder: "asc" }, { question: "asc" }] }),
   ]);
   const canEdit = context.role !== "VIEWER"; const canDelete = context.role === "OWNER" || context.role === "ADMIN";
-  return <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8"><header className="mb-6"><p className="text-xs font-bold uppercase tracking-[0.2em] text-teal-700">Website CMS</p><h1 className="mt-2 text-3xl font-bold">Content</h1><p className="mt-2 text-sm text-slate-600">Manage reusable people, customer proof, and help content across the public website.</p></header>
+  return <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8"><header className="mb-6"><p className="text-xs font-bold uppercase tracking-[0.2em] text-[#7D9D76]">Website CMS</p><h1 className="mt-2 text-3xl font-bold">Content</h1><p className="mt-2 text-sm text-slate-600">Manage reusable people, customer proof, and help content across the public website.</p></header>
     {(query.saved || query.deleted) && <p className="mb-5 rounded-md border border-teal-200 bg-teal-50 p-3 text-sm text-teal-800">Content updated successfully.</p>}{query.error && <p className="mb-5 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">{query.error}</p>}
     {!canEdit && <p className="mb-5 rounded-md border border-blue-200 bg-blue-50 p-3 text-sm text-blue-800">You have read-only access to this content.</p>}
     <div className="grid gap-5">

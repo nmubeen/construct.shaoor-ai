@@ -21,7 +21,7 @@ export default async function MediaPage({ searchParams }: { searchParams: Promis
   const query = await searchParams;
 
   return <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
-    <header className="mb-6"><p className="text-xs font-bold uppercase tracking-[0.2em] text-teal-700">Website CMS</p><h1 className="mt-2 text-3xl font-bold">Media Library</h1><p className="mt-2 text-sm text-slate-600">Upload reusable images and documents for this tenant&apos;s website.</p></header>
+    <header className="mb-6"><p className="text-xs font-bold uppercase tracking-[0.2em] text-[#7D9D76]">Website CMS</p><h1 className="mt-2 text-3xl font-bold">Media Library</h1><p className="mt-2 text-sm text-slate-600">Upload reusable images and documents for this tenant&apos;s website.</p></header>
     {query.deleted && <p className="mb-5 rounded-md border border-teal-200 bg-teal-50 p-3 text-sm text-teal-800">Media deleted successfully.</p>}
     {query.error && <p className="mb-5 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">{query.error}</p>}
     {context.role !== "VIEWER" && <div className="mb-6"><MediaUploadForm /></div>}

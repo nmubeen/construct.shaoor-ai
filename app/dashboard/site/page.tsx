@@ -17,7 +17,7 @@ export default async function SiteSettingsPage({ searchParams }: { searchParams:
   const disabled = context.role === "VIEWER";
   return (
     <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
-      <header className="mb-6"><p className="text-xs font-bold uppercase tracking-[0.2em] text-teal-700">Website CMS</p><h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-950">Site settings</h1><p className="mt-2 text-sm text-slate-600">Manage the identity and core website content for {context.organization.name}.</p></header>
+      <header className="mb-6"><p className="text-xs font-bold uppercase tracking-[0.2em] text-[#7D9D76]">Website CMS</p><h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-950">Site settings</h1><p className="mt-2 text-sm text-slate-600">Manage the identity and core website content for {context.organization.name}.</p></header>
       {saved && <p className="mb-5 rounded-md border border-teal-200 bg-teal-50 p-3 text-sm text-teal-800">Site settings saved successfully.</p>}
       {error && <p className="mb-5 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</p>}
       <form action={updateConstructSiteSettingsAction} className="space-y-5">
