@@ -7,12 +7,6 @@ import { getSiteSettings } from "@/lib/settings";
 
 export type PublicSiteSettings = Awaited<ReturnType<typeof getSiteSettings>> & {
   // Per-tenant public-website theme — null means "use Shaoor's defaults".
-  // Queried raw rather than through the typed Prisma client: the columns
-  // exist in Postgres (see the theme_primary_color/theme_accent_color
-  // migration) but the generated client on this machine couldn't be
-  // regenerated to know about them (the dev server holds the query engine
-  // binary locked on Windows) — safe to drop this raw query for a normal
-  // typed `settings.themePrimaryColor` once a client regen picks it up.
   themePrimaryColor: string | null;
   themeAccentColor: string | null;
 };
@@ -35,9 +29,6 @@ export async function getPublicSiteSettings(): Promise<PublicSiteSettings> {
   }
   const settings = await getConstructPrisma().siteSettings.findUnique({ where: { organizationId: organization.id } });
   if (!settings) throw new Error("Tenant site settings are missing.");
-  const theme = await getConstructPrisma().$queryRaw<{ theme_primary_color: string | null; theme_accent_color: string | null }[]>`
-    SELECT theme_primary_color, theme_accent_color FROM construct.site_settings WHERE organization_id = ${organization.id}::uuid
-  `;
   return {
     id: 0, companyId: 0, companyName: settings.companyName, tagline: settings.tagline, description: settings.description, logo: settings.logoUrl, favicon: settings.faviconUrl,
     phone: settings.phone, email: settings.email, website: settings.website, addressLine1: settings.addressLine1, addressLine2: settings.addressLine2, city: settings.city, state: settings.state, country: settings.country, postalCode: settings.postalCode,
@@ -47,7 +38,7 @@ export async function getPublicSiteSettings(): Promise<PublicSiteSettings> {
     seoTitle: "", seoDescription: "", seoKeywords: "", whatsApp: settings.whatsApp, googleMapsUrl: settings.googleMapsUrl, aboutTitle: settings.aboutTitle, aboutSubtitle: settings.aboutSubtitle, aboutStory: settings.aboutStory,
     missionTitle: settings.missionTitle, missionDescription: settings.missionDescription, visionTitle: settings.visionTitle, visionDescription: settings.visionDescription, aboutImage: settings.aboutImageUrl,
     createdAt: settings.createdAt, updatedAt: settings.updatedAt,
-    themePrimaryColor: theme[0]?.theme_primary_color ?? null, themeAccentColor: theme[0]?.theme_accent_color ?? null,
+    themePrimaryColor: settings.themePrimaryColor, themeAccentColor: settings.themeAccentColor,
   };
 }
 

@@ -74,13 +74,7 @@ export async function removeConstructDomainAction(formData: FormData) {
   revalidatePath("/dashboard/settings"); redirect("/dashboard/settings?saved=domain-removed");
 }
 
-// Written via $executeRaw rather than the typed client's siteSettings.update:
-// theme_primary_color/theme_accent_color exist in Postgres (see the
-// theme_primary_color migration) but the generated Postgres client on this
-// machine couldn't be regenerated (the dev server holds its query engine
-// binary locked on Windows) — safe to switch to a normal typed update once
-// a client regen picks the columns up. Reset (blank field) clears back to
-// null, i.e. "use Shaoor's defaults".
+// Reset (blank field) clears back to null, i.e. "use Shaoor's defaults".
 export async function updateConstructThemeAction(formData: FormData) {
   const context = await requireActiveConstructContext(); requireAdmin(context.role);
   const primaryRaw = String(formData.get("themePrimaryColor") ?? "").trim();
@@ -91,7 +85,7 @@ export async function updateConstructThemeAction(formData: FormData) {
   const accent = accentRaw || null;
   const prisma = getConstructPrisma();
   await prisma.$transaction([
-    prisma.$executeRaw`UPDATE construct.site_settings SET theme_primary_color = ${primary}, theme_accent_color = ${accent}, updated_at = now() WHERE organization_id = ${context.organizationId}::uuid`,
+    prisma.siteSettings.update({ where: { organizationId: context.organizationId }, data: { themePrimaryColor: primary, themeAccentColor: accent } }),
     prisma.auditLog.create({ data: { organizationId: context.organizationId, actorUserId: context.userId, module: "settings", action: "theme_update", recordId: context.organizationId, title: "Website theme updated", details: { primary, accent } } }),
   ]);
   revalidatePath("/dashboard/settings"); revalidatePath("/", "layout"); redirect("/dashboard/settings?saved=theme");
