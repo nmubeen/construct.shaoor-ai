@@ -30,9 +30,19 @@ export function getConstructDatabaseUrl() {
 
   if (process.env.NODE_ENV !== "production") return url;
 
+  // A single tenant page render fires ~8-10 distinct queries concurrently
+  // (site settings, services, projects, team, stats, SEO...). At
+  // connection_limit=1 they all queue behind one connection and several
+  // throw P2024 ("Timed out fetching a new connection from the pool")
+  // once the 10s pool timeout is exceeded — confirmed live in production
+  // logs for test4.construct.shaoor-ai.com. 3 gives enough headroom for
+  // that per-request fan-out without meaningfully raising the shared
+  // Postgres instance's total connection load (this DB also serves
+  // Pets and Chat) — each Lambda instance still holds only a handful of
+  // connections, not dozens.
   const productionUrl = new URL(url);
   if (!productionUrl.searchParams.has("connection_limit")) {
-    productionUrl.searchParams.set("connection_limit", "1");
+    productionUrl.searchParams.set("connection_limit", "3");
   }
   return productionUrl.toString();
 }
