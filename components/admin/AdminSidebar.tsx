@@ -112,7 +112,7 @@ export default function AdminSidebar({
           <Link
             key={item.href}
             href={`${prefix}${item.href}`}
-            className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-white/80 transition hover:bg-[#7D9D76]/25 hover:text-white"
+            className="flex items-center gap-3 rounded-md px-4 py-2.5 text-sm font-medium text-white/80 transition hover:bg-[#7D9D76]/25 hover:text-white"
           >
             {item.icon}
             <span>{item.title}</span>
@@ -124,7 +124,7 @@ export default function AdminSidebar({
         <form action={logoutAction}>
           <button
             type="submit"
-            className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/20 px-4 py-3 font-medium text-white transition-colors hover:bg-white/10"
+            className="flex w-full items-center justify-center gap-2 rounded-md border border-white/20 px-4 py-3 font-medium text-white transition-colors hover:bg-white/10"
           >
             <FaArrowRightFromBracket />
             Logout

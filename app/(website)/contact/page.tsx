@@ -62,7 +62,7 @@ export default async function ContactPage() {
       {settings.googleMapsUrl && (
         <section className={`bg-slate-200 ${websiteDesign.sectionY}`}>
           <Container>
-            <div className="overflow-hidden rounded-2xl shadow-lg">
+            <div className="overflow-hidden rounded-lg shadow-lg">
               {mapsEmbedUrl ? (
                 <iframe
                   src={mapsEmbedUrl}

@@ -12,7 +12,7 @@ export default function Card({
   return (
     <div
       className={`
-        rounded-2xl
+        rounded-lg
         border
         border-[#dce5da]
         bg-white

@@ -26,7 +26,7 @@ export default function DashboardCard({
 }: DashboardCardProps) {
   return (
     <div
-      className={`rounded-xl border bg-white shadow-sm ${className}`}
+      className={`rounded-md border bg-white shadow-sm ${className}`}
     >
       <header className="flex items-center justify-between border-b px-6 py-4">
 

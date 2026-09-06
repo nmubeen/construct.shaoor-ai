@@ -50,7 +50,7 @@ export default function MediaToolbar({
   return (
     <form
       action="/admin/media"
-      className="space-y-4 rounded-xl border border-slate-200 bg-white p-5 shadow-sm"
+      className="space-y-4 rounded-md border border-slate-200 bg-white p-5 shadow-sm"
     >
       <input type="hidden" name="view" value={view} />
       {folder && <input type="hidden" name="folder" value={folder} />}
@@ -67,7 +67,7 @@ export default function MediaToolbar({
             name="q"
             defaultValue={query}
             placeholder="Search by filename, title, alt text, description or folder"
-            className="w-full rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm text-slate-700 focus:border-[#0E4A7B] focus:outline-none focus:ring-2 focus:ring-[#0E4A7B]/15"
+            className="w-full rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm text-slate-700 focus:border-[#094136] focus:outline-none focus:ring-2 focus:ring-[#094136]/15"
           />
         </div>
 
@@ -76,7 +76,7 @@ export default function MediaToolbar({
             href={gridHref}
             className={`inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm transition ${
               view === "grid"
-                ? "border-[#0E4A7B] bg-[#0E4A7B] text-white"
+                ? "border-[#094136] bg-[#094136] text-white"
                 : "border-slate-300 text-slate-700 hover:bg-slate-100"
             }`}
             aria-label="Grid view"
@@ -89,7 +89,7 @@ export default function MediaToolbar({
             href={listHref}
             className={`inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm transition ${
               view === "list"
-                ? "border-[#0E4A7B] bg-[#0E4A7B] text-white"
+                ? "border-[#094136] bg-[#094136] text-white"
                 : "border-slate-300 text-slate-700 hover:bg-slate-100"
             }`}
             aria-label="List view"
@@ -100,7 +100,7 @@ export default function MediaToolbar({
 
           <button
             type="submit"
-            className="rounded-lg bg-[#0E4A7B] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#0A365A]"
+            className="rounded-lg bg-[#094136] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#7D9D76]"
           >
             Apply
           </button>

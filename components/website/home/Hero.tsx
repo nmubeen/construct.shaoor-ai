@@ -40,7 +40,7 @@ export default function Hero({ settings }: HeroProps) {
 
             <Link
               href="/contact"
-              className="rounded-xl border border-white/80 bg-white px-8 py-4 font-semibold text-[#094136] shadow-lg transition hover:-translate-y-0.5 hover:border-[#7D9D76] hover:bg-[#7D9D76] hover:text-white"
+              className="rounded-md border border-white/80 bg-white px-8 py-4 font-semibold text-[#094136] shadow-lg transition hover:-translate-y-0.5 hover:border-[#7D9D76] hover:bg-[#7D9D76] hover:text-white"
             >
               Get a Quote
             </Link>

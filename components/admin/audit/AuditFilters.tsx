@@ -20,7 +20,7 @@ const MODULE_OPTIONS = [
 
 export default function AuditFilters({ query, module }: AuditFiltersProps) {
   return (
-    <form action="/admin/audit" className="space-y-4 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+    <form action="/admin/audit" className="space-y-4 rounded-md border border-slate-200 bg-white p-5 shadow-sm">
       <div className="grid gap-3 md:grid-cols-[2fr_1fr_auto] md:items-end">
         <div>
           <label htmlFor="audit-search" className="mb-2 block text-sm font-medium text-slate-700">
@@ -32,7 +32,7 @@ export default function AuditFilters({ query, module }: AuditFiltersProps) {
             name="q"
             defaultValue={query}
             placeholder="Search title or details"
-            className="w-full rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm text-slate-700 focus:border-[#0E4A7B] focus:outline-none focus:ring-2 focus:ring-[#0E4A7B]/15"
+            className="w-full rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm text-slate-700 focus:border-[#094136] focus:outline-none focus:ring-2 focus:ring-[#094136]/15"
           />
         </div>
 
@@ -44,7 +44,7 @@ export default function AuditFilters({ query, module }: AuditFiltersProps) {
             id="audit-module"
             name="module"
             defaultValue={module || "ALL"}
-            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-700 focus:border-[#0E4A7B] focus:outline-none focus:ring-2 focus:ring-[#0E4A7B]/15"
+            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-700 focus:border-[#094136] focus:outline-none focus:ring-2 focus:ring-[#094136]/15"
           >
             {MODULE_OPTIONS.map((option) => (
               <option key={option} value={option}>
@@ -56,7 +56,7 @@ export default function AuditFilters({ query, module }: AuditFiltersProps) {
 
         <button
           type="submit"
-          className="rounded-lg bg-[#0E4A7B] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[#0A365A]"
+          className="rounded-lg bg-[#094136] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[#7D9D76]"
         >
           Apply
         </button>

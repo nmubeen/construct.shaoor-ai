@@ -107,7 +107,7 @@ export default async function MessageDetailsPage({
 
         <a
           href={`mailto:${message.email}?subject=Re: ${message.subject ?? ""}`}
-          className="rounded-lg bg-[#0E4A7B] px-4 py-2 text-white hover:bg-[#0B3C64]"
+          className="rounded-lg bg-[#094136] px-4 py-2 text-white hover:bg-[#0B3C64]"
         >
           Reply
         </a>

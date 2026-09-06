@@ -80,7 +80,7 @@ export default async function EditProjectPage({
         description="Displayed on project listings and homepage."
       >
         <div className="py-6">
-          <div className="relative aspect-video max-w-4xl overflow-hidden rounded-xl border">
+          <div className="relative aspect-video max-w-4xl overflow-hidden rounded-md border">
             <Image
               src={currentCover}
               alt={project.title}

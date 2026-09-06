@@ -67,7 +67,7 @@ export default function ServiceTable({ services }: Props) {
               <div className="flex justify-end gap-4">
                 <Link
                   href={`/admin/services/${service.id}`}
-                  className="text-slate-600 transition hover:text-[#0E4A7B]"
+                  className="text-slate-600 transition hover:text-[#094136]"
                   title="Edit"
                 >
                   <FaPenToSquare size={18} />

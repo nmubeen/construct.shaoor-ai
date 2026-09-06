@@ -8,7 +8,7 @@ export default function AdminCard({
   children,
 }: AdminCardProps) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white shadow-sm">
+    <div className="rounded-md border border-slate-200 bg-white shadow-sm">
       {children}
     </div>
   );

@@ -55,7 +55,7 @@ export default function LeadershipCard({ member }: LeadershipCardProps) {
   );
 
   return (
-    <article className="group rounded-2xl border border-slate-100 bg-white p-6 text-center shadow-sm transition-all duration-300 hover:-translate-y-2 hover:shadow-xl">
+    <article className="group rounded-lg border border-slate-100 bg-white p-6 text-center shadow-sm transition-all duration-300 hover:-translate-y-2 hover:shadow-xl">
       <div className="flex justify-center py-6">
         <div className="relative h-36 w-36 overflow-hidden rounded-full ring-4 ring-slate-100 transition duration-300 group-hover:ring-(--primary)/20">
           {photo ? (

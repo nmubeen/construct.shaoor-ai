@@ -53,7 +53,7 @@ export default function MediaPreview({
         role="dialog"
         aria-modal="true"
         aria-label={`${title} preview`}
-        className="relative z-10 flex h-[90vh] w-full max-w-6xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl"
+        className="relative z-10 flex h-[90vh] w-full max-w-6xl flex-col overflow-hidden rounded-lg bg-white shadow-2xl"
       >
         <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3 sm:px-6">
           <h2 className="truncate pr-3 text-sm font-semibold text-slate-900 sm:text-base">

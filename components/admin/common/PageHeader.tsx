@@ -35,7 +35,7 @@ export default function PageHeader({
       {action && (
         <Link
           href={action.href}
-          className="inline-flex items-center gap-2 rounded-xl bg-[#094136] px-5 py-3 text-sm font-semibold !text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[#7D9D76] hover:shadow-md"
+          className="inline-flex items-center gap-2 rounded-md bg-[#094136] px-5 py-3 text-sm font-semibold !text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[#7D9D76] hover:shadow-md"
         >
           {action.icon}
           {action.label}

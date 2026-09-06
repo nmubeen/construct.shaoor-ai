@@ -17,7 +17,7 @@ export default function EmptyState({
   buttonHref,
 }: Props) {
   return (
-    <div className="rounded-xl border border-dashed border-slate-300 bg-white py-20 text-center">
+    <div className="rounded-md border border-dashed border-slate-300 bg-white py-20 text-center">
 
       <h2 className="text-xl font-semibold">
         {title}

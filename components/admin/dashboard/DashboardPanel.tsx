@@ -14,7 +14,7 @@ export default function DashboardPanel({
   children,
 }: DashboardPanelProps) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white shadow-sm">
+    <div className="rounded-md border border-slate-200 bg-white shadow-sm">
       <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
         <div>
           <h2 className="text-lg font-semibold text-slate-900">

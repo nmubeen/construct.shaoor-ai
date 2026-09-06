@@ -224,7 +224,7 @@ export default function GalleryItemsManager({ galleryId, initialItems = [] }: Ga
         />
 
         {totalItems === 0 ? (
-          <div className="mt-6 rounded-xl border-2 border-dashed border-slate-300 py-10 text-center text-slate-500">
+          <div className="mt-6 rounded-md border-2 border-dashed border-slate-300 py-10 text-center text-slate-500">
             <FaImages className="mx-auto mb-3 text-2xl text-slate-400" />
             No images selected yet.
           </div>
@@ -243,7 +243,7 @@ export default function GalleryItemsManager({ galleryId, initialItems = [] }: Ga
                   setDraggedId(null);
                 }}
                 onDragEnd={() => setDraggedId(null)}
-                className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm"
+                className="overflow-hidden rounded-md border border-slate-200 bg-white shadow-sm"
               >
                 <div className="relative aspect-4/3 bg-slate-100">
                   <Image
@@ -267,7 +267,7 @@ export default function GalleryItemsManager({ galleryId, initialItems = [] }: Ga
                     onChange={(event) => updateCaption(item.mediaId, event.target.value)}
                     onBlur={onCaptionBlur}
                     placeholder="Caption (optional)"
-                    className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-700 focus:border-[#0E4A7B] focus:outline-none focus:ring-2 focus:ring-[#0E4A7B]/15"
+                    className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-700 focus:border-[#094136] focus:outline-none focus:ring-2 focus:ring-[#094136]/15"
                   />
 
                   <button

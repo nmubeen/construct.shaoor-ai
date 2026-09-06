@@ -45,7 +45,7 @@ export default function FAQForm({
   return (
     <form
       action={handleSubmit}
-      className="space-y-8 rounded-xl bg-white p-6 shadow sm:p-8"
+      className="space-y-8 rounded-md bg-white p-6 shadow sm:p-8"
     >
       <AdminSection
         title="FAQ Content"

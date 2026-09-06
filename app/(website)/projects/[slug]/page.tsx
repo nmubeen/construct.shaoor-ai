@@ -99,7 +99,7 @@ export default async function ProjectPage({ params }: PageProps) {
       />
 
       <Container className="py-12">
-        <div className="relative mb-12 h-75 overflow-hidden rounded-3xl md:h-112.5 lg:h-137.5">
+        <div className="relative mb-12 h-75 overflow-hidden rounded-lg md:h-112.5 lg:h-137.5">
           <Image
             src={heroImage}
             alt={project.title}
@@ -155,7 +155,7 @@ export default async function ProjectPage({ params }: PageProps) {
               {project.gallery.map((img) => (
                 <div
                   key={img.id}
-                  className="relative aspect-square overflow-hidden rounded-xl"
+                  className="relative aspect-square overflow-hidden rounded-md"
                 >
                   <Image
                     src={img.image}

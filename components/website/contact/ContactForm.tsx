@@ -44,7 +44,7 @@ export default function ContactForm() {
     <form
       id="contact-form"
       action={handleSubmit}
-      className="space-y-8 rounded-xl bg-white p-6 shadow sm:p-8"
+      className="space-y-8 rounded-md bg-white p-6 shadow sm:p-8"
     >
       <div className="hidden" aria-hidden="true">
         <label>Company website<input name="companyWebsite" tabIndex={-1} autoComplete="off" /></label>

@@ -49,7 +49,7 @@ export default function SeoPagesTable({ pages }: SeoPagesTableProps) {
               <div className="flex justify-end gap-4">
                 <Link
                   href={`/admin/seo/${page.pageKey}`}
-                  className="text-slate-600 transition hover:text-[#0E4A7B]"
+                  className="text-slate-600 transition hover:text-[#094136]"
                   title="Edit"
                 >
                   <FaPenToSquare size={18} />

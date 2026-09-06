@@ -28,7 +28,7 @@ export default async function ConstructSignupPage({
       <form action={constructSignUpAction} className="space-y-5">
         {invited && <input type="hidden" name="invited" value="1" />}
         {error && (
-          <p className="rounded-xl bg-red-50 p-3 text-sm text-red-700">
+          <p className="rounded-md bg-red-50 p-3 text-sm text-red-700">
             {error}
           </p>
         )}
@@ -40,7 +40,7 @@ export default async function ConstructSignupPage({
             required
             minLength={2}
             maxLength={100}
-            className="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-teal-600 focus:ring-4 focus:ring-teal-100"
+            className="mt-2 w-full rounded-md border border-[#7D9D76] px-4 py-3 outline-none focus:border-teal-600 focus:ring-4 focus:ring-teal-100"
           />
         </label>
         <label className="block text-sm font-semibold text-slate-700">
@@ -52,7 +52,7 @@ export default async function ConstructSignupPage({
             required
             readOnly={invited}
             defaultValue={email}
-            className={`mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-teal-600 focus:ring-4 focus:ring-teal-100 ${invited ? "bg-slate-50 text-slate-500" : ""}`}
+            className={`mt-2 w-full rounded-md border border-[#7D9D76] px-4 py-3 outline-none focus:border-teal-600 focus:ring-4 focus:ring-teal-100 ${invited ? "bg-slate-50 text-slate-500" : ""}`}
           />
         </label>
         <label className="block text-sm font-semibold text-slate-700">
@@ -62,7 +62,7 @@ export default async function ConstructSignupPage({
             autoComplete="new-password"
             required
             minLength={8}
-            className="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-teal-600 focus:ring-4 focus:ring-teal-100"
+            className="mt-2 w-full rounded-md border border-[#7D9D76] px-4 py-3 outline-none focus:border-teal-600 focus:ring-4 focus:ring-teal-100"
           />
           <span className="mt-2 block text-xs font-normal leading-5 text-slate-500">
             At least 8 characters with uppercase, lowercase, a number and a
@@ -76,7 +76,7 @@ export default async function ConstructSignupPage({
             autoComplete="new-password"
             required
             minLength={8}
-            className="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-teal-600 focus:ring-4 focus:ring-teal-100"
+            className="mt-2 w-full rounded-md border border-[#7D9D76] px-4 py-3 outline-none focus:border-teal-600 focus:ring-4 focus:ring-teal-100"
           />
         </label>
         {!invited && (
@@ -88,12 +88,12 @@ export default async function ConstructSignupPage({
                 required
                 minLength={2}
                 maxLength={100}
-                className="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-teal-600 focus:ring-4 focus:ring-teal-100"
+                className="mt-2 w-full rounded-md border border-[#7D9D76] px-4 py-3 outline-none focus:border-teal-600 focus:ring-4 focus:ring-teal-100"
               />
             </label>
             <label className="block text-sm font-semibold text-slate-700">
               Workspace address
-              <div className="mt-2 flex overflow-hidden rounded-xl border border-slate-300 focus-within:border-teal-600 focus-within:ring-4 focus-within:ring-teal-100">
+              <div className="mt-2 flex overflow-hidden rounded-md border border-[#7D9D76] focus-within:border-teal-600 focus-within:ring-4 focus-within:ring-teal-100">
                 <input
                   name="organizationSlug"
                   required
@@ -126,7 +126,7 @@ export default async function ConstructSignupPage({
             </label>
           </>
         )}
-        <button className="w-full rounded-xl bg-[#0E4A7B] px-4 py-3 font-semibold text-white hover:bg-[#0A365A]">
+        <button className="w-full rounded-md bg-[#094136] px-4 py-3 font-semibold text-white hover:bg-[#7D9D76]">
           {invited ? "Join workspace" : "Start trial workspace"}
         </button>
         <p className="text-center text-sm text-slate-600">

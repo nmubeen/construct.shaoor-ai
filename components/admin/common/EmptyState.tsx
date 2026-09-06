@@ -36,7 +36,7 @@ export default function EmptyState({
       {actionHref && actionLabel && (
         <Link
           href={actionHref}
-          className="mt-6 rounded-lg bg-[#0E4A7B] px-5 py-3 text-white transition hover:bg-[#0A365A]"
+          className="mt-6 rounded-lg bg-[#094136] px-5 py-3 text-white transition hover:bg-[#7D9D76]"
         >
           {actionLabel}
         </Link>

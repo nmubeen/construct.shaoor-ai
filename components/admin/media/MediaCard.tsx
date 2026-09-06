@@ -62,7 +62,7 @@ export default function MediaCard({
         event.dataTransfer.effectAllowed = "move";
       }}
       className={[
-        "rounded-xl border border-slate-200 bg-white shadow-sm transition hover:shadow-md",
+        "rounded-md border border-slate-200 bg-white shadow-sm transition hover:shadow-md",
         view === "grid" && isImage ? "cursor-grab active:cursor-grabbing" : "",
         view === "list" ? "flex gap-4 p-4" : "overflow-hidden",
       ].join(" ")}

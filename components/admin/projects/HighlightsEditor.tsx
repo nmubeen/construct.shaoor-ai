@@ -90,7 +90,7 @@ export default function HighlightsEditor({
   }
 
   return (
-    <section className="rounded-xl border bg-white p-8 shadow">
+    <section className="rounded-md border bg-white p-8 shadow">
       <h2 className="mb-6 text-2xl font-semibold">
         Project Highlights
       </h2>
@@ -115,7 +115,7 @@ export default function HighlightsEditor({
           type="button"
           disabled={pending}
           onClick={add}
-          className="rounded-lg bg-[#0E4A7B] px-5 py-3 text-white disabled:opacity-50"
+          className="rounded-lg bg-[#094136] px-5 py-3 text-white disabled:opacity-50"
         >
           <FaPlus />
         </button>

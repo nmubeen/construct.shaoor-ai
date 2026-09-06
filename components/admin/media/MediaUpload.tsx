@@ -126,7 +126,7 @@ export default function MediaUpload({ folders }: { folders: string[] }) {
         mode="select"
         onSelect={setFolder}
       />
-      <div className="space-y-6 rounded-xl bg-white p-6 shadow sm:p-8">
+      <div className="space-y-6 rounded-md bg-white p-6 shadow sm:p-8">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-2 text-sm text-slate-700">
             <FaFolderTree />
@@ -148,10 +148,10 @@ export default function MediaUpload({ folders }: { folders: string[] }) {
 
         <div
           {...getRootProps()}
-          className={`cursor-pointer rounded-xl border-2 border-dashed p-10 text-center transition ${
+          className={`cursor-pointer rounded-md border-2 border-dashed p-10 text-center transition ${
             isDragActive
-              ? "border-[#0E4A7B] bg-[#0E4A7B]/5"
-              : "border-slate-300 bg-slate-50 hover:border-[#0E4A7B]/60"
+              ? "border-[#094136] bg-[#094136]/5"
+              : "border-slate-300 bg-slate-50 hover:border-[#094136]/60"
           }`}
         >
           <input
@@ -230,7 +230,7 @@ export default function MediaUpload({ folders }: { folders: string[] }) {
             type="button"
             onClick={uploadAll}
             disabled={isPending || files.length === 0}
-            className="rounded-lg bg-[#0E4A7B] px-6 py-2.5 font-medium text-white transition hover:bg-[#0A365A] disabled:cursor-not-allowed disabled:opacity-60"
+            className="rounded-lg bg-[#094136] px-6 py-2.5 font-medium text-white transition hover:bg-[#7D9D76] disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isPending ? "Uploading..." : "Upload Files"}
           </button>

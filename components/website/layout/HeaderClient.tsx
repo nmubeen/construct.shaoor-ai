@@ -20,7 +20,7 @@ export default function HeaderClient({
 
   return (
     <>
-      <header className="sticky top-0 z-50 border-b border-[#dce5da] bg-white/95 shadow-[0_4px_20px_rgba(9,65,54,.05)] backdrop-blur">
+      <header className="sticky top-0 z-50 border-b border-black/20 bg-linear-to-b from-[#094136] to-black text-white shadow-[0_4px_20px_rgba(0,0,0,.25)] backdrop-blur">
         <div className={`${websiteDesign.container} flex h-20 items-center justify-between`}>
 
           {/* Logo */}
@@ -38,17 +38,17 @@ export default function HeaderClient({
                 className="h-11 w-11 object-contain"
               />
             ) : (
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#094136] font-bold text-white">
+              <div className="flex h-11 w-11 items-center justify-center rounded-md bg-[#7D9D76] font-bold text-white">
                 {settings.companyName.charAt(0)}
               </div>
             )}
 
             <div>
-              <div className="text-lg font-bold">
+              <div className="text-lg font-bold text-white">
                 {settings.companyName}
               </div>
 
-              <div className="text-xs text-slate-500">
+              <div className="text-xs text-white/60">
                 {settings.tagline}
               </div>
             </div>
@@ -57,7 +57,7 @@ export default function HeaderClient({
           {/* Desktop Navigation */}
 
           <div className="hidden lg:block">
-            <Navigation />
+            <Navigation inverse />
           </div>
 
           {/* Right Side */}
@@ -67,7 +67,7 @@ export default function HeaderClient({
             {settings.phone && (
               <a
                 href={`tel:${settings.phone}`}
-                className="flex items-center gap-2 text-sm font-medium transition hover:text-[#7D9D76]"
+                className="flex items-center gap-2 text-sm font-medium text-white/85 transition hover:text-[#7D9D76]"
               >
                 <FaPhone />
                 {settings.phone}
@@ -76,7 +76,7 @@ export default function HeaderClient({
 
             <Link
               href="/contact"
-              className={websiteDesign.primaryButton + " px-5 py-3 font-medium text-white!"}
+              className="inline-flex items-center justify-center rounded-md bg-white px-5 py-3 font-medium text-[#094136]! shadow-sm transition hover:-translate-y-0.5 hover:bg-[#7D9D76] hover:text-white! hover:shadow-lg"
             >
               Get a Quote
             </Link>
@@ -86,7 +86,7 @@ export default function HeaderClient({
           {/* Mobile Menu Button */}
 
           <button
-            className="rounded-lg p-2 hover:bg-slate-100 lg:hidden"
+            className="rounded-md p-2 text-white hover:bg-white/10 lg:hidden"
             onClick={() => setMenuOpen(true)}
             aria-label="Open Menu"
           >

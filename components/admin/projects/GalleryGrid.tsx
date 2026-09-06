@@ -71,7 +71,7 @@ async function makeCover(imagePath: string) {
 
   if (images.length === 0) {
     return (
-      <div className="rounded-xl border border-dashed p-10 text-center text-slate-500">
+      <div className="rounded-md border border-dashed p-10 text-center text-slate-500">
         No gallery images uploaded yet.
       </div>
     );
@@ -89,7 +89,7 @@ async function makeCover(imagePath: string) {
 
           <div
             key={image.id}
-            className="overflow-hidden rounded-xl border bg-white shadow-sm"
+            className="overflow-hidden rounded-md border bg-white shadow-sm"
           >
 
             <div className="relative aspect-square">

@@ -49,13 +49,13 @@ export default function MediaMetadataForm({ item }: MediaMetadataFormProps) {
 
   return (
     <>
-      <form action={handleSubmit} className="space-y-8 rounded-xl bg-white p-6 shadow sm:p-8">
+      <form action={handleSubmit} className="space-y-8 rounded-md bg-white p-6 shadow sm:p-8">
         <AdminSection
           title="Preview"
           description="Visual preview and technical details of this media item."
         >
           <div className="space-y-6 py-6">
-            <div className="overflow-hidden rounded-xl border border-slate-300 bg-slate-50">
+            <div className="overflow-hidden rounded-md border border-slate-300 bg-slate-50">
               {isImage ? (
                 <div className="relative aspect-video w-full">
                   <Image
@@ -124,7 +124,7 @@ export default function MediaMetadataForm({ item }: MediaMetadataFormProps) {
                 type="text"
                 maxLength={160}
                 defaultValue={item.title ?? ""}
-                className="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm text-slate-700 focus:border-[#0E4A7B] focus:outline-none focus:ring-2 focus:ring-[#0E4A7B]/15"
+                className="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm text-slate-700 focus:border-[#094136] focus:outline-none focus:ring-2 focus:ring-[#094136]/15"
               />
             </div>
 
@@ -139,7 +139,7 @@ export default function MediaMetadataForm({ item }: MediaMetadataFormProps) {
                 type="text"
                 maxLength={200}
                 defaultValue={item.altText ?? ""}
-                className="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm text-slate-700 focus:border-[#0E4A7B] focus:outline-none focus:ring-2 focus:ring-[#0E4A7B]/15"
+                className="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm text-slate-700 focus:border-[#094136] focus:outline-none focus:ring-2 focus:ring-[#094136]/15"
               />
             </div>
 
@@ -154,7 +154,7 @@ export default function MediaMetadataForm({ item }: MediaMetadataFormProps) {
                 type="text"
                 maxLength={140}
                 defaultValue={item.folder ?? ""}
-                className="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm text-slate-700 focus:border-[#0E4A7B] focus:outline-none focus:ring-2 focus:ring-[#0E4A7B]/15"
+                className="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm text-slate-700 focus:border-[#094136] focus:outline-none focus:ring-2 focus:ring-[#094136]/15"
               />
             </div>
 
@@ -169,7 +169,7 @@ export default function MediaMetadataForm({ item }: MediaMetadataFormProps) {
                 rows={4}
                 maxLength={1000}
                 defaultValue={item.description ?? ""}
-                className="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm text-slate-700 focus:border-[#0E4A7B] focus:outline-none focus:ring-2 focus:ring-[#0E4A7B]/15"
+                className="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm text-slate-700 focus:border-[#094136] focus:outline-none focus:ring-2 focus:ring-[#094136]/15"
               />
             </div>
           </div>

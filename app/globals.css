@@ -14,7 +14,7 @@
 
   --white: #ffffff;
   --muted: #f3f6f2;
-  --border: #dce5da;
+  --border: #7d9d76;
 
   /* New */
 
@@ -22,8 +22,8 @@
   --warning: #f59e0b;
   --danger: #dc2626;
 
-  --card-radius: 20px;
-  --button-radius: 12px;
+  --card-radius: 10px;
+  --button-radius: 6px;
 
   --shadow-sm: 0 8px 24px rgba(9,65,54,.07);
   --shadow-md: 0 18px 48px rgba(9,65,54,.12);
@@ -39,14 +39,14 @@
   --muted-foreground: #61706c;
   --accent-foreground: #ffffff;
   --destructive: oklch(0.577 0.245 27.325);
-  --input: #cdd9ca;
+  --input: #7d9d76;
   --ring: #7d9d76;
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  --radius: 0.75rem;
+  --radius: 0.375rem;
   --sidebar: #094136;
   --sidebar-foreground: #ffffff;
   --sidebar-primary: #7d9d76;
@@ -98,15 +98,15 @@
   .construct-admin-surface main { color: #15352f; }
   .construct-admin-surface :where(h1, h2, h3) { color: #094136; letter-spacing: -.02em; }
   .construct-admin-surface :where(input, textarea, select) {
-    border-color: #cdd9ca;
+    border-color: #7d9d76;
     background-color: #fff;
   }
   .construct-admin-surface :where(input, textarea, select):focus {
-    border-color: #7d9d76;
+    border-color: #094136;
     --tw-ring-color: rgb(125 157 118 / 25%);
   }
   .construct-admin-surface :where(.bg-slate-50, .bg-slate-100) { background-color: #f5f7f4; }
-  .construct-admin-surface :where(.border-slate-200, .border-slate-300) { border-color: #dce5da; }
+  .construct-admin-surface :where(.border-slate-200, .border-slate-300) { border-color: #7d9d76; }
   .construct-admin-surface :where(.text-blue-600, .text-blue-700, .text-teal-600, .text-teal-700) { color: #094136; }
   .construct-admin-surface :where(.bg-blue-600, .bg-blue-700, .bg-teal-500, .bg-teal-600, .bg-slate-900) {
     background-color: #094136;
@@ -117,14 +117,14 @@
   }
 
   .construct-card {
-    border: 1px solid #dce5da;
-    border-radius: 1.25rem;
+    border: 1px solid #7d9d76;
+    border-radius: 0.625rem;
     background: #fff;
     box-shadow: 0 8px 24px rgb(9 65 54 / 7%);
   }
 
   .construct-brand-button {
-    border-radius: .75rem;
+    border-radius: .375rem;
     background: #094136;
     color: #fff;
     box-shadow: 0 6px 16px rgb(9 65 54 / 14%);

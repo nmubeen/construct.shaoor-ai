@@ -25,10 +25,10 @@ function getToday() {
 
 export default function DashboardHeader() {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
+    <div className="rounded-md border border-slate-200 bg-white p-8 shadow-sm">
       <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <p className="text-sm font-semibold uppercase tracking-wider text-[#0E4A7B]">
+          <p className="text-sm font-semibold uppercase tracking-wider text-[#094136]">
             Dashboard
           </p>
 
@@ -50,7 +50,7 @@ export default function DashboardHeader() {
         <div className="grid grid-cols-2 gap-3">
           <Link
             href="/admin/projects/new"
-            className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#0E4A7B] px-5 py-3 font-semibold text-white transition hover:bg-[#0B3C64]"
+            className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#094136] px-5 py-3 font-semibold text-white transition hover:bg-[#0B3C64]"
           >
             <FaFolderPlus />
             Project
@@ -58,7 +58,7 @@ export default function DashboardHeader() {
 
           <Link
             href="/admin/services/new"
-            className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#0E4A7B] px-5 py-3 font-semibold text-white transition hover:bg-[#0B3C64]"
+            className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#094136] px-5 py-3 font-semibold text-white transition hover:bg-[#0B3C64]"
           >
             <FaClipboardList />
             Service

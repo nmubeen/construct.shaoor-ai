@@ -17,25 +17,25 @@ const capabilities = [
 
 export function ConstructPortalHome() {
   return (
-    <main className="min-h-screen overflow-hidden bg-[#094136] text-white">
+    <main className="min-h-screen overflow-hidden bg-linear-to-b from-[#094136] to-black text-white">
       <div className="absolute inset-x-0 top-0 h-160 bg-[radial-gradient(circle_at_20%_20%,rgba(125,157,118,.38),transparent_34%),radial-gradient(circle_at_82%_8%,rgba(255,255,255,.14),transparent_38%)]" />
       <header className="relative z-10 mx-auto flex max-w-7xl items-center justify-between px-5 py-6 sm:px-8">
         <Link href="/" className="flex items-center gap-3">
-          <span className="grid size-11 place-items-center rounded-2xl bg-[#7D9D76] text-lg font-black shadow-lg shadow-black/20">
+          <span className="grid size-11 place-items-center rounded-md bg-[#7D9D76] text-lg font-black shadow-lg shadow-black/20">
             S
           </span>
           <span>
             <span className="block text-lg font-bold leading-tight">
               Shaoor Construct
             </span>
-            <span className="block text-[10px] font-bold uppercase tracking-[.24em] text-[#c9d8c6]">
+            <span className="block text-[10px] font-bold uppercase tracking-[.24em] text-[#7D9D76]">
               by Shaoor AI Tech
             </span>
           </span>
         </Link>
         <Link
           href="/account/login"
-          className="rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-sm font-semibold backdrop-blur transition hover:bg-white/10"
+          className="rounded-md border border-white/15 bg-white/5 px-4 py-2.5 text-sm font-semibold backdrop-blur transition hover:bg-white/10"
         >
           Customer sign in
         </Link>
@@ -57,8 +57,8 @@ export function ConstructPortalHome() {
         </div>
 
         <div className="mt-12 max-w-xl">
-          <article className="group rounded-3xl border border-[#b9cdb5]/30 bg-gradient-to-br from-[#7D9D76]/75 to-[#062f27]/80 p-7 shadow-2xl sm:p-9">
-            <div className="flex size-13 items-center justify-center rounded-2xl bg-white/12 text-white">
+          <article className="group rounded-lg border border-[#7D9D76]/60 bg-linear-to-br from-[#7D9D76]/75 to-[#062f27]/80 p-7 shadow-2xl sm:p-9">
+            <div className="flex size-13 items-center justify-center rounded-md bg-white/12 text-white">
               <Building2 className="size-6" />
             </div>
             <p className="mt-7 text-xs font-bold uppercase tracking-[.2em] text-[#dce7d9]">
@@ -71,7 +71,7 @@ export function ConstructPortalHome() {
             </p>
             <Link
               href="/account/signup"
-              className="mt-8 inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 font-bold text-[#094136] transition group-hover:bg-[#dce7d9]"
+              className="mt-8 inline-flex items-center gap-2 rounded-md bg-white px-5 py-3 font-bold text-[#094136] transition group-hover:bg-[#dce7d9]"
             >
               Start trial setup <ArrowRight className="size-4" />
             </Link>
@@ -85,7 +85,7 @@ export function ConstructPortalHome() {
             <p className="text-xs font-bold uppercase tracking-[.2em] text-[#7D9D76]">
               One managed platform
             </p>
-            <h2 className="mt-3 text-4xl font-black tracking-tight">
+            <h2 className="mt-3 text-4xl font-black tracking-tight text-[#094136]">
               Everything needed to present and operate your website.
             </h2>
             <p className="mt-5 leading-7 text-slate-600">
@@ -97,9 +97,9 @@ export function ConstructPortalHome() {
             {capabilities.map((item, index) => (
               <div
                 key={item}
-                className="rounded-2xl border border-[#dce5da] bg-white p-5 shadow-[0_8px_24px_rgba(9,65,54,.06)]"
+                className="rounded-lg border border-[#7D9D76] bg-white p-5 shadow-[0_8px_24px_rgba(9,65,54,.06)]"
               >
-                <span className="mb-4 grid size-9 place-items-center rounded-xl bg-[#eef3ec] text-[#094136]">
+                <span className="mb-4 grid size-9 place-items-center rounded-md bg-[#eef3ec] text-[#094136]">
                   {index === 1 ? (
                     <LayoutDashboard className="size-4" />
                   ) : index === 2 ? (

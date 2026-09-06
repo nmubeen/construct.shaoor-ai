@@ -27,7 +27,7 @@ export default async function LoginPage() {
     : tenant.companyCode;
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-100 px-4">
-      <div className="w-full max-w-md rounded-xl bg-white p-8 shadow-lg">
+      <div className="w-full max-w-md rounded-md bg-white p-8 shadow-lg">
         <h1 className="mb-2 text-center">
           <span className="block text-3xl font-bold">{companyName}</span>
           <span className="mt-1 block text-xl font-semibold text-slate-700">Admin Login</span>

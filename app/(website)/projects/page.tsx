@@ -31,7 +31,7 @@ export default async function ProjectsPage() {
 
           {projects.length === 0 ? (
 
-            <div className="rounded-xl border border-dashed p-16 text-center text-slate-500">
+            <div className="rounded-md border border-dashed p-16 text-center text-slate-500">
               No projects available.
             </div>
 

@@ -148,7 +148,7 @@ export default function MediaFolderTree({
               dropTarget === node.path
                 ? "bg-emerald-100 text-emerald-800 ring-2 ring-emerald-400"
                 : selected
-                  ? "bg-[#0E4A7B] text-white"
+                  ? "bg-[#094136] text-white"
                   : "text-slate-700 hover:bg-slate-100"
             }`}
             style={{ paddingLeft: `${10 + depth * 16}px` }}
@@ -165,7 +165,7 @@ export default function MediaFolderTree({
   }
 
   return (
-    <aside className="space-y-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+    <aside className="space-y-4 rounded-md border border-slate-200 bg-white p-4 shadow-sm">
       <div className="flex items-center justify-between">
         <h2 className="font-semibold text-slate-900">Folders</h2>
         {selectedFolder && (
@@ -188,7 +188,7 @@ export default function MediaFolderTree({
           dropTarget === ""
             ? "bg-emerald-100 text-emerald-800 ring-2 ring-emerald-400"
             : !selectedFolder
-              ? "bg-[#0E4A7B] text-white"
+              ? "bg-[#094136] text-white"
               : "text-slate-700 hover:bg-slate-100"
         }`}
       >
@@ -224,7 +224,7 @@ export default function MediaFolderTree({
             onClick={addFolder}
             disabled={isPending || !newName.trim()}
             aria-label="Add folder"
-            className="rounded-md bg-[#0E4A7B] px-3 text-white disabled:opacity-50"
+            className="rounded-md bg-[#094136] px-3 text-white disabled:opacity-50"
           >
             <FaPlus />
           </button>

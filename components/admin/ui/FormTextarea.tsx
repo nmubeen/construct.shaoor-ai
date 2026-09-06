@@ -25,7 +25,7 @@ export default function FormTextarea({
         name={name}
         rows={rows}
         defaultValue={defaultValue ?? ""}
-        className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 transition focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-100"
+        className="w-full rounded-md border border-slate-300 bg-white px-4 py-3 transition focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-100"
       />
     </div>
   );

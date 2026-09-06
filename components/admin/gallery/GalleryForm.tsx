@@ -61,7 +61,7 @@ export default function GalleryForm({ mode, gallery }: GalleryFormProps) {
   }
 
   return (
-    <form action={handleSubmit} className="space-y-8 rounded-xl bg-white p-6 shadow sm:p-8">
+    <form action={handleSubmit} className="space-y-8 rounded-md bg-white p-6 shadow sm:p-8">
       <AdminSection title="Gallery Details" description="Basic information and display settings for this gallery.">
         <div className="space-y-6 py-6">
           <ImageUpload

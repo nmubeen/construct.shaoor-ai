@@ -22,7 +22,7 @@ export default function MediaFilters({
         id="media-type"
         name="type"
         defaultValue={currentType}
-        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 focus:border-[#0E4A7B] focus:outline-none focus:ring-2 focus:ring-[#0E4A7B]/15"
+        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 focus:border-[#094136] focus:outline-none focus:ring-2 focus:ring-[#094136]/15"
       >
         <option value="ALL">All Types</option>
         <option value="IMAGE">Image</option>
@@ -38,7 +38,7 @@ export default function MediaFilters({
         id="media-extension"
         name="extension"
         defaultValue={currentExtension}
-        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 focus:border-[#0E4A7B] focus:outline-none focus:ring-2 focus:ring-[#0E4A7B]/15"
+        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 focus:border-[#094136] focus:outline-none focus:ring-2 focus:ring-[#094136]/15"
       >
         <option value="">All Extensions</option>
         {extensions.map((extension) => (
@@ -55,7 +55,7 @@ export default function MediaFilters({
         id="media-sort"
         name="sort"
         defaultValue={currentSort}
-        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 focus:border-[#0E4A7B] focus:outline-none focus:ring-2 focus:ring-[#0E4A7B]/15"
+        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 focus:border-[#094136] focus:outline-none focus:ring-2 focus:ring-[#094136]/15"
       >
         <option value="newest">Newest</option>
         <option value="oldest">Oldest</option>

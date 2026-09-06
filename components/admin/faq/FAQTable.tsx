@@ -71,7 +71,7 @@ export default function FAQTable({ faqs }: Props) {
               <div className="flex justify-end gap-4">
                 <Link
                   href={`/admin/faq/${faq.id}`}
-                  className="text-slate-600 transition hover:text-[#0E4A7B]"
+                  className="text-slate-600 transition hover:text-[#094136]"
                   title="Edit"
                 >
                   <FaPenToSquare size={18} />

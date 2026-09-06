@@ -89,7 +89,7 @@ export default function SeoForm({
     `${siteUrl}${page?.pageKey === "home" ? "/" : `/${page?.pageKey ?? ""}`}`;
 
   return (
-    <form action={handleSubmit} className="space-y-8 rounded-xl bg-white p-6 shadow sm:p-8">
+    <form action={handleSubmit} className="space-y-8 rounded-md bg-white p-6 shadow sm:p-8">
       {errorMessage && (
         <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
           {errorMessage}

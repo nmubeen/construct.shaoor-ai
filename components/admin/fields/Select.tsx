@@ -32,7 +32,7 @@ export default function Select<TFieldValues extends FieldValues = FieldValues>({
         className={`w-full rounded-lg border px-4 py-3 outline-none transition ${
           error
             ? "border-red-500 focus:border-red-500"
-            : "border-slate-300 focus:border-[#0E4A7B]"
+            : "border-slate-300 focus:border-[#094136]"
         }`}
       >
         <option value="">Select...</option>

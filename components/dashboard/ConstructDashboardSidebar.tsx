@@ -18,21 +18,21 @@ const navigation = [
 
 export function ConstructDashboardSidebar({ organizationName, role, organizationStatus }: { organizationName: string; role: string; organizationStatus: string }) {
   return (
-    <aside className="flex w-full flex-col border-b border-white/10 bg-[#094136] text-white shadow-[12px_0_35px_rgba(9,65,54,.14)] lg:fixed lg:inset-y-0 lg:w-72 lg:border-r">
+    <aside className="flex w-full flex-col border-b border-white/10 bg-linear-to-b from-[#094136] to-black text-white shadow-[12px_0_35px_rgba(9,65,54,.14)] lg:fixed lg:inset-y-0 lg:w-72 lg:border-r">
       <div className="flex items-center gap-3 border-b border-white/10 px-5 py-5">
-        <span className="grid size-11 place-items-center rounded-2xl bg-[#7D9D76] text-lg font-black shadow-lg shadow-black/10">S</span>
-        <div className="min-w-0"><p className="font-bold">Shaoor Construct</p><p className="truncate text-xs text-white/65">{organizationName}</p></div>
+        <span className="grid size-11 place-items-center rounded-md bg-[#7D9D76] text-lg font-black shadow-lg shadow-black/10">S</span>
+        <div className="min-w-0"><p className="font-bold">Shaoor Construct</p><p className="truncate text-xs text-[#7D9D76]">{organizationName}</p></div>
       </div>
       <nav className="grid grid-cols-2 gap-1 p-3 sm:grid-cols-4 lg:flex lg:flex-1 lg:flex-col">
         {navigation.map(({ href, label, icon: Icon, available }) => available ? (
-          <Link key={href} href={href} className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-white/80 transition hover:bg-[#7D9D76]/30 hover:text-white"><Icon className="size-4" />{label}</Link>
+          <Link key={href} href={href} className="flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium text-white/80 transition hover:bg-[#7D9D76]/30 hover:text-white"><Icon className="size-4" />{label}</Link>
         ) : (
-          <span key={href} title="Being migrated to PostgreSQL" className="flex cursor-not-allowed items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-slate-500"><Icon className="size-4" />{label}</span>
+          <span key={href} title="Being migrated to PostgreSQL" className="flex cursor-not-allowed items-center gap-3 rounded-md px-3 py-2.5 text-sm text-slate-500"><Icon className="size-4" />{label}</span>
         ))}
       </nav>
       <div className="border-t border-white/10 p-4">
-        <div className="mb-3 flex items-center gap-3 rounded-xl bg-white/8 p-3"><Building2 className="size-4 text-[#b9cdb5]" /><div><p className="text-xs font-semibold">{role}</p><p className="text-xs text-white/55">{organizationStatus.toLowerCase()} workspace</p></div></div>
-        <form action={constructSignOutAction}><button className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-slate-300 hover:bg-white/10 hover:text-white"><LogOut className="size-4" />Sign out</button></form>
+        <div className="mb-3 flex items-center gap-3 rounded-md border border-[#7D9D76]/40 bg-white/8 p-3"><Building2 className="size-4 text-[#7D9D76]" /><div><p className="text-xs font-semibold">{role}</p><p className="text-xs text-white/55">{organizationStatus.toLowerCase()} workspace</p></div></div>
+        <form action={constructSignOutAction}><button className="flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm text-slate-300 hover:bg-white/10 hover:text-white"><LogOut className="size-4" />Sign out</button></form>
       </div>
     </aside>
   );

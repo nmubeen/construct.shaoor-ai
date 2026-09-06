@@ -7,7 +7,7 @@ interface TableProps extends TableHTMLAttributes<HTMLTableElement> {
 
 export default function Table({ children, className, ...props }: TableProps) {
   return (
-    <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+    <div className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
       <div className="overflow-x-auto">
         <table className={clsx("min-w-full text-left text-sm text-slate-700", className)} {...props}>
           {children}

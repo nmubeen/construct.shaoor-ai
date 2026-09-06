@@ -38,7 +38,7 @@ export default function GalleryUploader({
 
   return (
     <div className="space-y-3">
-      <div className="inline-flex items-center gap-2 rounded-lg bg-[#0E4A7B]/10 px-4 py-2 text-sm font-medium text-[#0E4A7B]">
+      <div className="inline-flex items-center gap-2 rounded-lg bg-[#094136]/10 px-4 py-2 text-sm font-medium text-[#094136]">
         <FaImages />
         Add gallery images from Media Library
       </div>

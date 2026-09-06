@@ -20,12 +20,12 @@ export default async function ConstructLoginPage({
       <form action={constructSignInAction} className="space-y-5">
         {next && <input type="hidden" name="next" value={next} />}
         {message && (
-          <p className="rounded-xl bg-teal-50 p-3 text-sm text-teal-800">
+          <p className="rounded-md bg-teal-50 p-3 text-sm text-teal-800">
             {message}
           </p>
         )}
         {error && (
-          <p className="rounded-xl bg-red-50 p-3 text-sm text-red-700">
+          <p className="rounded-md bg-red-50 p-3 text-sm text-red-700">
             {error}
           </p>
         )}
@@ -37,7 +37,7 @@ export default async function ConstructLoginPage({
             autoComplete="email"
             required
             defaultValue={email}
-            className="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition focus:border-teal-600 focus:ring-4 focus:ring-teal-100"
+            className="mt-2 w-full rounded-md border border-[#7D9D76] px-4 py-3 outline-none transition focus:border-teal-600 focus:ring-4 focus:ring-teal-100"
           />
         </label>
         <label className="block text-sm font-semibold text-slate-700">
@@ -46,10 +46,10 @@ export default async function ConstructLoginPage({
             name="password"
             autoComplete="current-password"
             required
-            className="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition focus:border-teal-600 focus:ring-4 focus:ring-teal-100"
+            className="mt-2 w-full rounded-md border border-[#7D9D76] px-4 py-3 outline-none transition focus:border-teal-600 focus:ring-4 focus:ring-teal-100"
           />
         </label>
-        <button className="w-full rounded-xl bg-[#0E4A7B] px-4 py-3 font-semibold text-white transition hover:bg-[#0A365A]">
+        <button className="w-full rounded-md bg-[#094136] px-4 py-3 font-semibold text-white transition hover:bg-[#7D9D76]">
           Sign in
         </button>
         <p className="text-center text-sm text-slate-600">

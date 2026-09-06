@@ -16,10 +16,10 @@ export default function DashboardStatCard({
   subtitle,
   icon: Icon,
   href,
-  color = "bg-[#0E4A7B]",
+  color = "bg-[#094136]",
 }: DashboardStatCardProps) {
   const card = (
-    <div className="group rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg">
+    <div className="group rounded-md border border-slate-200 bg-white p-6 shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg">
       <div className="flex items-start justify-between">
         <div>
           <p className="text-sm font-medium text-slate-500">
@@ -38,7 +38,7 @@ export default function DashboardStatCard({
         </div>
 
         <div
-          className={`flex h-14 w-14 items-center justify-center rounded-xl ${color}`}
+          className={`flex h-14 w-14 items-center justify-center rounded-md ${color}`}
         >
           <Icon
             className="text-white"

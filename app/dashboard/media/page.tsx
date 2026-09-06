@@ -22,11 +22,11 @@ export default async function MediaPage({ searchParams }: { searchParams: Promis
 
   return <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
     <header className="mb-6"><p className="text-xs font-bold uppercase tracking-[0.2em] text-teal-700">Website CMS</p><h1 className="mt-2 text-3xl font-bold">Media Library</h1><p className="mt-2 text-sm text-slate-600">Upload reusable images and documents for this tenant&apos;s website.</p></header>
-    {query.deleted && <p className="mb-5 rounded-xl border border-teal-200 bg-teal-50 p-3 text-sm text-teal-800">Media deleted successfully.</p>}
-    {query.error && <p className="mb-5 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">{query.error}</p>}
+    {query.deleted && <p className="mb-5 rounded-md border border-teal-200 bg-teal-50 p-3 text-sm text-teal-800">Media deleted successfully.</p>}
+    {query.error && <p className="mb-5 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">{query.error}</p>}
     {context.role !== "VIEWER" && <div className="mb-6"><MediaUploadForm /></div>}
     <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-      {media.length === 0 ? <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center text-slate-500 sm:col-span-2 xl:col-span-3"><ImageIcon className="mx-auto mb-3 size-8" />No media files yet.</div> : media.map((item) => <article key={item.id} className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+      {media.length === 0 ? <div className="rounded-lg border border-dashed border-slate-300 bg-white p-10 text-center text-slate-500 sm:col-span-2 xl:col-span-3"><ImageIcon className="mx-auto mb-3 size-8" />No media files yet.</div> : media.map((item) => <article key={item.id} className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
         <div className="relative grid aspect-[16/10] place-items-center bg-slate-100">
           {item.type === "IMAGE" ? <Image src={item.url} alt={item.altText || item.title || item.originalName} fill sizes="(min-width: 1280px) 30vw, (min-width: 640px) 50vw, 100vw" unoptimized className="object-cover" /> : <FileText className="size-12 text-slate-400" />}
         </div>

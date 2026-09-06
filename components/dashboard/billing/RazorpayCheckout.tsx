@@ -71,7 +71,7 @@ export function RazorpayCheckout({
         name: "Shaoor Construct",
         description: `${workspaceName} — ${planCode}`,
         prefill: userEmail ? { email: userEmail } : undefined,
-        theme: { color: "#0E4A7B" },
+        theme: { color: "#094136" },
         handler: () => {
           // The webhook (app/api/razorpay/webhook) is the actual source of
           // truth for plan state — this redirect is just UX, not trusted.

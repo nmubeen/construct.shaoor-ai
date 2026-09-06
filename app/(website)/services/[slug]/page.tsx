@@ -114,7 +114,7 @@ export default async function ServiceDetailsPage({
               alt={service.title}
               width={1200}
               height={700}
-              className="mb-10 rounded-xl object-cover"
+              className="mb-10 rounded-md object-cover"
             />
           )}
 
@@ -167,7 +167,7 @@ export default async function ServiceDetailsPage({
 
       )}
 
-      <section className="bg-[#0E4A7B] py-16 text-center text-white!">
+      <section className="bg-[#094136] py-16 text-center text-white!">
 
         <h2 className="text-3xl font-bold">
           Ready to discuss your project?

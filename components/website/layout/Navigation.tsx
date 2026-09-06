@@ -8,11 +8,16 @@ import { siteConfig } from "@/lib/site";
 interface NavigationProps {
   vertical?: boolean;
   onNavigate?: () => void;
+  // Set when rendered over a dark background (the desktop header is now a
+  // dark gradient) so links stay legible instead of using the default
+  // dark-on-light text colors.
+  inverse?: boolean;
 }
 
 export default function Navigation({
   vertical = false,
   onNavigate,
+  inverse = false,
 }: NavigationProps) {
   const pathname = usePathname();
 
@@ -36,9 +41,13 @@ export default function Navigation({
             href={item.href}
             onClick={onNavigate}
             className={`transition-colors duration-200 ${
-              active
-                ? "font-semibold text-[var(--primary)]"
-                : "text-[var(--foreground)] hover:text-[var(--primary)]"
+              inverse
+                ? active
+                  ? "font-semibold text-[#7D9D76]"
+                  : "text-white/85 hover:text-white"
+                : active
+                  ? "font-semibold text-[var(--primary)]"
+                  : "text-[var(--foreground)] hover:text-[var(--primary)]"
             }`}
           >
             {item.title}

@@ -18,7 +18,7 @@ export default function Spinner({
   return (
     <span
       className={clsx(
-        "inline-block animate-spin rounded-full border-slate-200 border-t-[#0E4A7B]",
+        "inline-block animate-spin rounded-full border-slate-200 border-t-[#094136]",
         sizeClasses[size],
         className
       )}

@@ -84,7 +84,7 @@ export default function ImageUploader({
         Cover Image
       </label>
 
-      <div className="relative h-72 overflow-hidden rounded-xl border bg-slate-100">
+      <div className="relative h-72 overflow-hidden rounded-md border bg-slate-100">
         {preview ? (
           <Image
             src={preview}
@@ -118,7 +118,7 @@ export default function ImageUploader({
           type="button"
           disabled={uploading}
           onClick={chooseImage}
-          className="rounded-lg bg-[#0E4A7B] px-5 py-2 text-white disabled:cursor-not-allowed disabled:opacity-60"
+          className="rounded-lg bg-[#094136] px-5 py-2 text-white disabled:cursor-not-allowed disabled:opacity-60"
         >
           {uploading
             ? "Uploading..."

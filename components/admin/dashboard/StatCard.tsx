@@ -52,7 +52,7 @@ export default function StatCard({
   color = "blue",
 }: StatCardProps) {
   const card = (
-    <div className="rounded-xl border bg-white p-6 shadow-sm transition hover:shadow-md">
+    <div className="rounded-md border bg-white p-6 shadow-sm transition hover:shadow-md">
 
       <div className="flex items-start justify-between">
 
@@ -75,7 +75,7 @@ export default function StatCard({
         </div>
 
         <div
-          className={`flex h-14 w-14 items-center justify-center rounded-xl ${
+          className={`flex h-14 w-14 items-center justify-center rounded-md ${
             colorMap[color].bg
           } ${colorMap[color].text}`}
         >

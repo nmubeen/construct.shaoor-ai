@@ -15,7 +15,7 @@ export default function ProjectForm({
   return (
     <form
       action={createProject}
-      className="space-y-8 rounded-xl bg-white p-8 shadow"
+      className="space-y-8 rounded-md bg-white p-8 shadow"
     >
       <div className="grid gap-6 md:grid-cols-2">
 
@@ -175,7 +175,7 @@ export default function ProjectForm({
 
       <button
         type="submit"
-        className="rounded-lg bg-[#0E4A7B] px-8 py-3 text-white hover:bg-[#0A365A]"
+        className="rounded-lg bg-[#094136] px-8 py-3 text-white hover:bg-[#7D9D76]"
       >
         {mode === "create"
           ? "Create Project"

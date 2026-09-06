@@ -6,7 +6,7 @@ export default function LoadingSeoPage() {
       title="SEO"
       description="Loading SEO data..."
     >
-      <div className="rounded-xl bg-white p-6 shadow sm:p-8">
+      <div className="rounded-md bg-white p-6 shadow sm:p-8">
         <p className="text-slate-500">Loading...</p>
       </div>
     </AdminPage>

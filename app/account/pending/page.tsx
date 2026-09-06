@@ -16,9 +16,9 @@ export default async function ActivationPendingPage() {
   return (
     <ConstructAuthShell eyebrow={commerciallyBlocked?"Access unavailable":"Activation pending"} title={commerciallyBlocked?"Your subscription needs attention":"Your workspace is ready"} description={commerciallyBlocked?"Contact Shaoor AI to restore access to this workspace.":"Shaoor AI will activate access after confirming your offline subscription."}>
       <div className="space-y-5">
-        <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4"><p className="font-semibold text-amber-950">{context.organization?.name}</p><p className="mt-1 text-sm text-amber-800">Status: {commerciallyBlocked?commercial?.status.toLowerCase():context.organization?.status.toLowerCase()}</p>{commerciallyBlocked&&<p className="mt-1 text-sm text-amber-800">Plan: {commercial?.planName}</p>}</div>
+        <div className="rounded-lg border border-amber-200 bg-amber-50 p-4"><p className="font-semibold text-amber-950">{context.organization?.name}</p><p className="mt-1 text-sm text-amber-800">Status: {commerciallyBlocked?commercial?.status.toLowerCase():context.organization?.status.toLowerCase()}</p>{commerciallyBlocked&&<p className="mt-1 text-sm text-amber-800">Plan: {commercial?.planName}</p>}</div>
         <p className="text-sm leading-6 text-slate-600">No payment is required online. Contact Shaoor AI if your activation has already been approved.</p>
-        <form action={constructSignOutAction}><button className="w-full rounded-xl border border-slate-300 px-4 py-3 font-semibold text-slate-700 hover:bg-slate-50">Sign out</button></form>
+        <form action={constructSignOutAction}><button className="w-full rounded-md border border-[#7D9D76] px-4 py-3 font-semibold text-slate-700 hover:bg-slate-50">Sign out</button></form>
       </div>
     </ConstructAuthShell>
   );

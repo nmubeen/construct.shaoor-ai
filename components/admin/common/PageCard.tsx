@@ -11,7 +11,7 @@ export default function PageCard({
 }: PageCardProps) {
   return (
     <section
-      className={`rounded-2xl border border-[#dce5da] bg-white p-5 shadow-[0_8px_24px_rgba(9,65,54,.06)] sm:p-8 ${className}`}
+      className={`rounded-lg border border-[#dce5da] bg-white p-5 shadow-[0_8px_24px_rgba(9,65,54,.06)] sm:p-8 ${className}`}
     >
       {children}
     </section>

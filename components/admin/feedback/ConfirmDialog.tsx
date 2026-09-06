@@ -84,7 +84,7 @@ export default function ConfirmDialog({
               leaveFrom="opacity-100 scale-100 translate-y-0"
               leaveTo="opacity-0 scale-95 translate-y-2"
             >
-              <DialogPanel className="w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl">
+              <DialogPanel className="w-full max-w-md overflow-hidden rounded-lg bg-white shadow-2xl">
 
                 {/* Header */}
 

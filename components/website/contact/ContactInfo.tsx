@@ -14,7 +14,7 @@ export default function ContactInfo({
   settings,
 }: ContactInfoProps) {
   return (
-    <div className="rounded-2xl bg-slate-50 p-8 shadow-sm">
+    <div className="rounded-lg bg-slate-50 p-8 shadow-sm">
 
       <h2 className="mb-2 text-3xl font-bold">
         Contact Information
@@ -28,7 +28,7 @@ export default function ContactInfo({
       <div className="space-y-10">
 
         <div className="flex gap-5">
-          <FaLocationDot className="mt-1 text-2xl text-[#0E4A7B]" />
+          <FaLocationDot className="mt-1 text-2xl text-[#094136]" />
 
           <div>
             <h3 className="mb-1 font-semibold">
@@ -61,7 +61,7 @@ export default function ContactInfo({
         </div>
 
         <div className="flex gap-5">
-          <FaPhone className="mt-1 text-2xl text-[#0E4A7B]" />
+          <FaPhone className="mt-1 text-2xl text-[#094136]" />
 
           <div>
             <h3 className="mb-1 font-semibold">
@@ -70,7 +70,7 @@ export default function ContactInfo({
 
             <a
               href={`tel:${settings.phone}`}
-              className="text-slate-600 hover:text-[#0E4A7B]"
+              className="text-slate-600 hover:text-[#094136]"
             >
               {settings.phone}
             </a>
@@ -91,7 +91,7 @@ export default function ContactInfo({
         </div>
 
         <div className="flex gap-5">
-          <FaEnvelope className="mt-1 text-2xl text-[#0E4A7B]" />
+          <FaEnvelope className="mt-1 text-2xl text-[#094136]" />
 
           <div>
             <h3 className="mb-1 font-semibold">
@@ -100,7 +100,7 @@ export default function ContactInfo({
 
             <a
               href={`mailto:${settings.email}`}
-              className="text-slate-600 hover:text-[#0E4A7B]"
+              className="text-slate-600 hover:text-[#094136]"
             >
               {settings.email}
             </a>

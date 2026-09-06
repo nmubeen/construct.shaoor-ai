@@ -57,7 +57,7 @@ export default async function ConstructDashboardPage() {
           >
             <div className="flex items-center justify-between">
               <p className="text-sm font-medium text-slate-600">{label}</p>
-              <span className="grid size-10 place-items-center rounded-xl bg-[#eef3ec] text-[#094136]">
+              <span className="grid size-10 place-items-center rounded-md bg-[#eef3ec] text-[#094136]">
                 <Icon className="size-5" />
               </span>
             </div>
@@ -82,7 +82,7 @@ export default async function ConstructDashboardPage() {
             Core tenant CMS migration complete
           </p>
         </article>
-        <article className="rounded-3xl border border-[#094136] bg-[#094136] p-6 text-white shadow-[0_12px_30px_rgba(9,65,54,.18)]">
+        <article className="rounded-lg border border-[#094136] bg-[#094136] p-6 text-white shadow-[0_12px_30px_rgba(9,65,54,.18)]">
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#b9cdb5]">
             Website address
           </p>
@@ -98,7 +98,7 @@ export default async function ConstructDashboardPage() {
             href={`https://${primaryDomain?.hostname ?? `${context.organization.slug}.construct.shaoor-ai.com`}`}
             target="_blank"
             rel="noreferrer"
-            className="mt-5 inline-flex items-center gap-2 rounded-xl bg-white/10 px-4 py-2.5 text-sm font-semibold text-white hover:bg-white/15"
+            className="mt-5 inline-flex items-center gap-2 rounded-md bg-white/10 px-4 py-2.5 text-sm font-semibold text-white hover:bg-white/15"
           >
             <ExternalLink className="size-4" />
             Open website preview

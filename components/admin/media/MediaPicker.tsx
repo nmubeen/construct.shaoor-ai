@@ -117,7 +117,7 @@ export default function MediaPicker({
 
       {name && <input type="hidden" name={name} value={selectedUrl} required={required} readOnly />}
 
-      <div className="overflow-hidden rounded-xl border border-slate-300 bg-slate-50">
+      <div className="overflow-hidden rounded-md border border-slate-300 bg-slate-50">
         {selectedUrl ? (
           isImageUrl(selectedUrl) ? (
             <div className="relative aspect-video w-full">
@@ -158,7 +158,7 @@ export default function MediaPicker({
             className="absolute inset-0 bg-black/50"
           />
 
-          <div className="relative z-10 flex h-[90vh] w-full max-w-6xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
+          <div className="relative z-10 flex h-[90vh] w-full max-w-6xl flex-col overflow-hidden rounded-lg bg-white shadow-2xl">
             <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3 sm:px-6">
               <h3 className="text-base font-semibold text-slate-900">Select Media</h3>
 
@@ -197,7 +197,7 @@ export default function MediaPicker({
                       key={item.id}
                       type="button"
                       onClick={() => chooseItem(item)}
-                      className="overflow-hidden rounded-xl border border-slate-200 bg-white text-left shadow-sm transition hover:border-[#0E4A7B] hover:shadow"
+                      className="overflow-hidden rounded-md border border-slate-200 bg-white text-left shadow-sm transition hover:border-[#094136] hover:shadow"
                     >
                       <div className="relative aspect-4/3 bg-slate-100">
                         {item.type === "IMAGE" ? (
@@ -227,7 +227,7 @@ export default function MediaPicker({
             <div className="border-t border-slate-200 bg-slate-50 px-4 py-3 text-right sm:px-6">
               <Link
                 href="/admin/media/upload"
-                className="text-sm font-medium text-[#0E4A7B] hover:underline"
+                className="text-sm font-medium text-[#094136] hover:underline"
               >
                 Need a new file? Upload in Media Library
               </Link>

@@ -28,7 +28,7 @@ export default function Button(props: ButtonProps) {
   } = props;
 
   const baseClasses =
-    "inline-flex items-center justify-center rounded-xl px-6 py-3 font-semibold shadow-sm transition duration-300";
+    "inline-flex items-center justify-center rounded-md px-6 py-3 font-semibold shadow-sm transition duration-300";
 
   const variantClasses: Record<Variant, string> = {
     primary:
