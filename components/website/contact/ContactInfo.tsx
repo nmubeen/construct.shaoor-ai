@@ -20,12 +20,12 @@ export default function ContactInfo({
         Contact Information
       </h2>
 
-      <p className="mb-10 text-slate-600">
+      <p className="mb-6 text-slate-600">
         We&apos;d love to hear about your project.
         Reach out using any of the methods below.
       </p>
 
-      <div className="space-y-10">
+      <div className="space-y-6">
 
         <div className="flex gap-5">
           <FaLocationDot className="mt-1 text-2xl text-[var(--site-primary)]" />

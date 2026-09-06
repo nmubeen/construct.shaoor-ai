@@ -100,7 +100,7 @@ export default async function ProjectsPage() {
 
                       <Link
                         href={`/projects/${project.slug}`}
-                        className="inline-flex font-semibold text-primary hover:underline"
+                        className="inline-flex font-semibold text-[var(--site-primary)] hover:underline"
                       >
                         View Project →
                       </Link>

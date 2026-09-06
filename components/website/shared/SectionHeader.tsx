@@ -17,7 +17,7 @@ export default function SectionHeader({
 }: SectionHeaderProps) {
   const centered = align === "center";
   const eyebrowClass = inverse
-    ? "text-sm font-semibold uppercase tracking-[0.25em] text-accent"
+    ? "text-sm font-semibold uppercase tracking-[0.25em] text-[var(--site-accent)]"
     : websiteDesign.sectionEyebrow;
   const titleClass = inverse
     ? "mt-3 text-3xl font-bold text-white md:text-4xl"

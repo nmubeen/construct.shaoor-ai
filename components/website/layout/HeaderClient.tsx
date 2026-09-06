@@ -20,35 +20,43 @@ export default function HeaderClient({
 
   return (
     <>
-      <header className="sticky top-0 z-50 border-b border-black/20 bg-linear-to-b from-[var(--site-primary)] to-black text-white shadow-[0_4px_20px_rgba(0,0,0,.25)] backdrop-blur">
-        <div className={`${websiteDesign.container} flex h-20 items-center justify-between`}>
+      {/* Header band height halved (h-20 -> h-10): logo, name/tagline
+          text, and the "Get a Quote" button padding are all scaled down
+          to match, so nothing clips or overflows the shorter band.
+          Background switched from the dark primary-to-black gradient to
+          white — every foreground color below is flipped to its
+          light-background counterpart to match (dark logo fallback text
+          stays as-is since it's already on the accent-colored square,
+          not the header background itself). */}
+      <header className="sticky top-0 z-50 border-b border-slate-200 bg-white text-slate-900 shadow-sm">
+        <div className={`${websiteDesign.container} flex h-10 items-center justify-between`}>
 
           {/* Logo */}
 
           <Link
             href="/"
-            className="flex items-center gap-3"
+            className="flex items-center gap-2"
           >
             {settings.logo ? (
               <Image
                 src={settings.logo}
                 alt={settings.companyName}
-                width={44}
-                height={44}
-                className="h-11 w-11 object-contain"
+                width={24}
+                height={24}
+                className="h-6 w-6 object-contain"
               />
             ) : (
-              <div className="flex h-11 w-11 items-center justify-center rounded-md bg-[var(--site-accent)] font-bold text-white">
+              <div className="flex h-6 w-6 items-center justify-center rounded-md bg-[var(--site-accent)] text-xs font-bold text-white">
                 {settings.companyName.charAt(0)}
               </div>
             )}
 
             <div>
-              <div className="text-lg font-bold text-white">
+              <div className="text-sm leading-tight font-bold text-[var(--site-primary)]">
                 {settings.companyName}
               </div>
 
-              <div className="text-xs text-white/60">
+              <div className="text-[10px] leading-tight text-slate-500">
                 {settings.tagline}
               </div>
             </div>
@@ -57,7 +65,7 @@ export default function HeaderClient({
           {/* Desktop Navigation */}
 
           <div className="hidden lg:block">
-            <Navigation inverse />
+            <Navigation />
           </div>
 
           {/* Right Side */}
@@ -67,7 +75,7 @@ export default function HeaderClient({
             {settings.phone && (
               <a
                 href={`tel:${settings.phone}`}
-                className="flex items-center gap-2 text-sm font-medium text-white/85 transition hover:text-[var(--site-accent)]"
+                className="flex items-center gap-2 text-sm font-medium text-slate-700 transition hover:text-[var(--site-primary)]"
               >
                 <FaPhone />
                 {settings.phone}
@@ -76,7 +84,7 @@ export default function HeaderClient({
 
             <Link
               href="/contact"
-              className="inline-flex items-center justify-center rounded-md bg-white px-5 py-3 font-medium text-[var(--site-primary)]! shadow-sm transition hover:-translate-y-0.5 hover:bg-[var(--site-accent)] hover:text-white! hover:shadow-lg"
+              className="inline-flex items-center justify-center rounded-md bg-[var(--site-primary)] px-4 py-1.5 text-sm font-medium text-white! shadow-sm transition hover:-translate-y-0.5 hover:bg-[var(--site-accent)] hover:shadow-lg"
             >
               Get a Quote
             </Link>
@@ -86,11 +94,11 @@ export default function HeaderClient({
           {/* Mobile Menu Button */}
 
           <button
-            className="rounded-md p-2 text-white hover:bg-white/10 lg:hidden"
+            className="rounded-md p-1 text-slate-700 hover:bg-slate-100 lg:hidden"
             onClick={() => setMenuOpen(true)}
             aria-label="Open Menu"
           >
-            <FaBars size={22} />
+            <FaBars size={18} />
           </button>
 
         </div>

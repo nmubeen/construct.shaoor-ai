@@ -56,7 +56,7 @@ export default function WhyChooseUs() {
                 key={feature.title}
                 className={websiteDesign.card}
               >
-                <div className="m-8 mb-0 inline-flex rounded-md bg-primary p-4 text-2xl text-white">
+                <div className="m-8 mb-0 inline-flex rounded-md bg-[var(--site-primary)] p-4 text-2xl text-white">
                   <Icon />
                 </div>
 

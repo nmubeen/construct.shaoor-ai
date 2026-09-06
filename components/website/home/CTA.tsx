@@ -21,10 +21,10 @@ export default function CTA({
   badge,
 }: CTAProps) {
   return (
-    <section className="bg-linear-to-r from-primary to-slate-900 py-24 text-white">
+    <section className="bg-linear-to-r from-[var(--site-primary)] to-[color-mix(in_oklab,var(--site-primary),black_55%)] py-24 text-white">
       <div className="mx-auto max-w-7xl px-6 text-center sm:px-8">
 
-        <span className="text-sm font-semibold uppercase tracking-[0.3em] text-accent">
+        <span className="text-sm font-semibold uppercase tracking-[0.3em] text-[var(--site-accent)]">
           {badge || "Let's Build Together"}
         </span>
 
@@ -40,7 +40,7 @@ export default function CTA({
 
           <Link
             href={buttonLink || settings.ctaButtonLink || "#"}
-            className="rounded-lg bg-accent px-8 py-4 font-semibold text-black transition hover:brightness-95"
+            className="rounded-lg bg-[var(--site-accent)] px-8 py-4 font-semibold text-white transition hover:brightness-95"
           >
             {buttonText || settings.ctaButtonText}
           </Link>

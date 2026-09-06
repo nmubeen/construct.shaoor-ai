@@ -52,7 +52,7 @@ export default async function ServicesPreview() {
 
               <Link
                 href={`/services/${service.slug}`}
-                className="mt-4 inline-block text-sm font-semibold text-primary hover:underline"
+                className="mt-4 inline-block text-sm font-semibold text-[var(--site-primary)] hover:underline"
               >
                 Learn More →
               </Link>

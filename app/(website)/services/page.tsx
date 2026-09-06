@@ -54,9 +54,17 @@ export default async function ServicesPage() {
                     {service.shortDescription}
                   </p>
 
+                  {service.subServices.length > 0 && (
+                    <ul className="mt-4 list-disc space-y-1 pl-5 text-sm text-slate-600">
+                      {service.subServices.map((item) => (
+                        <li key={item}>{item}</li>
+                      ))}
+                    </ul>
+                  )}
+
                   <Link
                     href={`/services/${service.slug}`}
-                    className="mt-6 inline-flex font-semibold text-primary hover:underline"
+                    className="mt-6 inline-flex font-semibold text-[var(--site-primary)] hover:underline"
                   >
                     Read More →
                   </Link>

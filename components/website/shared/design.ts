@@ -7,9 +7,17 @@ export const websiteDesign = {
   sectionEyebrow: "text-sm font-semibold uppercase tracking-[0.25em] text-[var(--site-accent)]",
   sectionTitle: "mt-3 text-3xl font-bold text-[var(--site-primary)] md:text-4xl",
   sectionSubtitle: "mx-auto mt-5 max-w-3xl text-base leading-8 text-slate-600 md:text-lg",
-  pageHero: "relative overflow-hidden bg-linear-to-b from-[var(--site-primary)] to-black text-white",
-  pageHeroOverlay: "absolute inset-0 bg-linear-to-br from-[var(--site-primary)]/40 via-transparent to-black/60",
-  pageHeroInner: "relative z-10 mx-auto max-w-7xl px-5 py-16 sm:px-8 md:py-24",
+  // Darkens toward a mix of the tenant's own primary color and black,
+  // not plain black: at the shorter height below, a flat "to-black" end
+  // dominated most of the visible band, so a page header ended up
+  // looking like an untinted black bar instead of visibly following
+  // the chosen theme color.
+  pageHero: "relative overflow-hidden bg-linear-to-b from-[var(--site-primary)] to-[color-mix(in_oklab,var(--site-primary),black_55%)] text-white",
+  pageHeroOverlay: "absolute inset-0 bg-linear-to-br from-[var(--site-primary)]/40 via-transparent to-[color-mix(in_oklab,var(--site-primary),black_55%)]/60",
+  // Vertical padding halved (py-16/md:py-24 -> py-8/md:py-12): this is
+  // what actually sets the band's height, since PageHero has no fixed
+  // height of its own — it just grows to fit its padded content.
+  pageHeroInner: "relative z-10 mx-auto max-w-7xl px-5 py-8 sm:px-8 md:py-12",
   pageHeroSubtitle: "text-sm font-semibold uppercase tracking-[0.3em] text-[var(--site-accent)]",
   pageHeroTitle: "mt-4 text-4xl font-bold tracking-tight text-white md:text-5xl",
   pageHeroDescription: "mt-5 max-w-3xl text-base leading-8 text-slate-200 md:text-lg",

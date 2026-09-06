@@ -41,7 +41,7 @@ export default async function Stats() {
   ];
 
   return (
-    <section className="bg-primary py-24 text-white">
+    <section className="bg-[var(--site-primary)] py-24 text-white">
       <Container>
         <SectionHeader
           eyebrow="Our Numbers"
@@ -62,7 +62,7 @@ export default async function Stats() {
                 key={stat.label}
                 className="relative rounded-md border border-white/10 bg-white/5 p-8 backdrop-blur-sm transition duration-300 hover:bg-white/10"
               >
-                <div className="absolute right-6 top-6 flex text-4xl text-accent">
+                <div className="absolute right-6 top-6 flex text-4xl text-[var(--site-accent)]">
                   <Icon />
                 </div>
 

@@ -61,7 +61,7 @@ export default async function FeaturedProjects() {
                   </span>
                 </div>
 
-                <h3 className="text-xl font-bold transition group-hover:text-primary">
+                <h3 className="text-xl font-bold transition group-hover:text-[var(--site-primary)]">
                   {project.title}
                 </h3>
 
@@ -71,7 +71,7 @@ export default async function FeaturedProjects() {
                   {project.description}
                 </p>
 
-                <div className="pt-1 text-sm font-semibold text-primary">
+                <div className="pt-1 text-sm font-semibold text-[var(--site-primary)]">
                   View Project →
                 </div>
               </div>

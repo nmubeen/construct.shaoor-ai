@@ -8,7 +8,7 @@ import CTA from "@/components/website/home/CTA";
 import { websiteDesign } from "@/components/website/shared/design";
 
 import { getSeoPageMetadata } from "@/lib/seo";
-import { getPublicSiteSettings } from "@/lib/public-site-data";
+import { getPublicServices, getPublicSiteSettings } from "@/lib/public-site-data";
 
 function getGoogleMapsEmbedUrl(rawUrl: string) {
   try {
@@ -35,7 +35,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function ContactPage() {
-  const settings = await getPublicSiteSettings();
+  const [settings, services] = await Promise.all([getPublicSiteSettings(), getPublicServices()]);
   const mapsEmbedUrl = settings?.googleMapsUrl
     ? getGoogleMapsEmbedUrl(settings.googleMapsUrl)
     : null;
@@ -52,7 +52,7 @@ export default async function ContactPage() {
       <section className={websiteDesign.sectionY}>
         <Container>
           <div className="grid gap-16 lg:grid-cols-2">
-            <ContactForm />
+            <ContactForm services={services.map((service) => service.title)} />
 
             <ContactInfo settings={settings} />
           </div>
