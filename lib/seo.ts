@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { prisma } from "@/lib/prisma";
 import { ensureSeoDefaults } from "@/lib/actions/seo.actions";
 import { getSiteSettings } from "@/lib/settings";
@@ -370,7 +371,10 @@ export async function getRouteMetadata({
   });
 }
 
-export async function getDefaultSEO(): Promise<SeoMetadataResult> {
+// Cached: called from both generateMetadata and getPageSEO's fallback
+// path, sometimes more than once per request — each call was otherwise
+// a fresh round trip on top of ensureConstructSeoDefaults's own.
+export const getDefaultSEO = cache(async (): Promise<SeoMetadataResult> => {
   const constructOrganization = await resolvePublicConstructOrganization();
   if (constructOrganization) {
     await ensureConstructSeoDefaults(constructOrganization.id);
@@ -460,11 +464,14 @@ export async function getDefaultSEO(): Promise<SeoMetadataResult> {
     siteName,
     siteUrl,
   };
-}
+});
 
-export async function getPageSEO(
+// Cached: generateMetadata calls this once per page render, but nothing
+// stops it being reached twice in one request (e.g. its own fallback to
+// getDefaultSEO above) — same reasoning as getDefaultSEO.
+export const getPageSEO = cache(async (
   pageKey: string
-): Promise<SeoMetadataResult> {
+): Promise<SeoMetadataResult> => {
   const constructOrganization = await resolvePublicConstructOrganization();
   if (constructOrganization) {
     await ensureConstructSeoDefaults(constructOrganization.id);
@@ -546,4 +553,4 @@ export async function getPageSEO(
     siteName: firstNonEmpty(settings?.siteName, fallback.siteName) ?? fallback.siteName,
     siteUrl,
   };
-}
+});
