@@ -125,17 +125,17 @@ export default async function WebsiteLayout({
       );
     }
     return (
-      <>
+      <div className="font-[family-name:var(--site-font)]">
         <SiteThemeStyle />
         <Header />
         <WebsiteStructuredData />
         <main className="min-h-screen bg-[#f5f7f4]">{children}</main>
         <Footer />
-      </>
+      </div>
     );
   }
   return (
-    <>
+    <div className="font-[family-name:var(--site-font)]">
       <SiteThemeStyle />
 
       <Header />
@@ -145,7 +145,7 @@ export default async function WebsiteLayout({
       <main className="min-h-screen bg-[#f5f7f4]">{children}</main>
 
       <Footer />
-    </>
+    </div>
   );
 }
 
