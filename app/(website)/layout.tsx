@@ -4,6 +4,7 @@ import Header from "@/components/website/layout/Header";
 import Footer from "@/components/website/layout/Footer";
 import { getDefaultSEO, resolveBaseUrl } from "@/lib/seo";
 import { getPublicSiteSettings } from "@/lib/public-site-data";
+import { resolveSiteTheme } from "@/lib/theme";
 import JsonLd from "@/components/shared/JsonLd";
 import { buildWebsiteSchema } from "@/lib/schema";
 import { getConstructPrisma } from "@/lib/construct-prisma";
@@ -91,7 +92,7 @@ export default async function WebsiteLayout({
   const organization = await resolvePublicConstructOrganization();
   if ((await isConstructProductRequest()) && !organization) {
     return (
-      <main className="grid min-h-screen place-items-center bg-[#094136] px-6 text-center text-white">
+      <main className="grid min-h-screen place-items-center bg-[var(--site-primary)] px-6 text-center text-white">
         <div>
           <p className="text-xs font-bold uppercase tracking-[.22em] text-[#b9cdb5]">
             Shaoor Construct
@@ -110,7 +111,7 @@ export default async function WebsiteLayout({
     });
     if (publication?.status !== "PUBLISHED") {
       return (
-        <main className="grid min-h-screen place-items-center bg-[#094136] px-6 text-center text-white">
+        <main className="grid min-h-screen place-items-center bg-[var(--site-primary)] px-6 text-center text-white">
           <div>
             <p className="text-xs font-bold uppercase tracking-[.22em] text-[#b9cdb5]">
               Shaoor Construct
@@ -125,6 +126,7 @@ export default async function WebsiteLayout({
     }
     return (
       <>
+        <SiteThemeStyle />
         <Header />
         <WebsiteStructuredData />
         <main className="min-h-screen bg-[#f5f7f4]">{children}</main>
@@ -134,6 +136,8 @@ export default async function WebsiteLayout({
   }
   return (
     <>
+      <SiteThemeStyle />
+
       <Header />
 
       <WebsiteStructuredData />
@@ -142,6 +146,21 @@ export default async function WebsiteLayout({
 
       <Footer />
     </>
+  );
+}
+
+// Overrides the --site-primary/--site-accent CSS variables (defaulted in
+// globals.css to Shaoor's own brand colors) with this tenant's chosen
+// theme, scoped to the whole document via :root — safe because this
+// layout wraps the entire public website and nothing else on the page
+// reads these two variables. resolveSiteTheme re-validates the hex format
+// right here, since this is where the value gets interpolated into raw
+// CSS text.
+async function SiteThemeStyle() {
+  const settings = await getPublicSiteSettings();
+  const theme = resolveSiteTheme(settings.themePrimaryColor, settings.themeAccentColor);
+  return (
+    <style>{`:root{--site-primary:${theme.primary};--site-accent:${theme.accent}}`}</style>
   );
 }
 

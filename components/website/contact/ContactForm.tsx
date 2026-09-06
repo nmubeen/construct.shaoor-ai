@@ -111,7 +111,7 @@ export default function ContactForm() {
       </AdminSection>
 
       <label className="flex items-start gap-3 text-sm text-slate-600">
-        <input name="consent" type="checkbox" required className="mt-1 size-4 rounded border-slate-300 text-teal-600" />
+        <input name="consent" type="checkbox" required className="mt-1 size-4 rounded border-slate-300 text-[var(--site-accent)]" />
         <span>I consent to this company using my details to respond to this enquiry.</span>
       </label>
 

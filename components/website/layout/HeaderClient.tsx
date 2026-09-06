@@ -20,7 +20,7 @@ export default function HeaderClient({
 
   return (
     <>
-      <header className="sticky top-0 z-50 border-b border-black/20 bg-linear-to-b from-[#094136] to-black text-white shadow-[0_4px_20px_rgba(0,0,0,.25)] backdrop-blur">
+      <header className="sticky top-0 z-50 border-b border-black/20 bg-linear-to-b from-[var(--site-primary)] to-black text-white shadow-[0_4px_20px_rgba(0,0,0,.25)] backdrop-blur">
         <div className={`${websiteDesign.container} flex h-20 items-center justify-between`}>
 
           {/* Logo */}
@@ -38,7 +38,7 @@ export default function HeaderClient({
                 className="h-11 w-11 object-contain"
               />
             ) : (
-              <div className="flex h-11 w-11 items-center justify-center rounded-md bg-[#7D9D76] font-bold text-white">
+              <div className="flex h-11 w-11 items-center justify-center rounded-md bg-[var(--site-accent)] font-bold text-white">
                 {settings.companyName.charAt(0)}
               </div>
             )}
@@ -67,7 +67,7 @@ export default function HeaderClient({
             {settings.phone && (
               <a
                 href={`tel:${settings.phone}`}
-                className="flex items-center gap-2 text-sm font-medium text-white/85 transition hover:text-[#7D9D76]"
+                className="flex items-center gap-2 text-sm font-medium text-white/85 transition hover:text-[var(--site-accent)]"
               >
                 <FaPhone />
                 {settings.phone}
@@ -76,7 +76,7 @@ export default function HeaderClient({
 
             <Link
               href="/contact"
-              className="inline-flex items-center justify-center rounded-md bg-white px-5 py-3 font-medium text-[#094136]! shadow-sm transition hover:-translate-y-0.5 hover:bg-[#7D9D76] hover:text-white! hover:shadow-lg"
+              className="inline-flex items-center justify-center rounded-md bg-white px-5 py-3 font-medium text-[var(--site-primary)]! shadow-sm transition hover:-translate-y-0.5 hover:bg-[var(--site-accent)] hover:text-white! hover:shadow-lg"
             >
               Get a Quote
             </Link>

@@ -10,6 +10,14 @@
   --brand-sage: #7d9d76;
   --brand-sage-soft: #eef3ec;
 
+  /* Per-tenant public-website theme. Defaults match Shaoor's own brand so
+     an un-themed tenant site renders identically to today; a tenant's
+     chosen colors override these two variables only, scoped to their site
+     (see app/(website)/layout.tsx) — dashboard/admin/auth chrome always
+     read --primary/--brand-sage above, never these. */
+  --site-primary: #094136;
+  --site-accent: #7d9d76;
+
   --accent: #7d9d76;
 
   --white: #ffffff;

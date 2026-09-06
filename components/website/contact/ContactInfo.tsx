@@ -28,7 +28,7 @@ export default function ContactInfo({
       <div className="space-y-10">
 
         <div className="flex gap-5">
-          <FaLocationDot className="mt-1 text-2xl text-[#094136]" />
+          <FaLocationDot className="mt-1 text-2xl text-[var(--site-primary)]" />
 
           <div>
             <h3 className="mb-1 font-semibold">
@@ -61,7 +61,7 @@ export default function ContactInfo({
         </div>
 
         <div className="flex gap-5">
-          <FaPhone className="mt-1 text-2xl text-[#094136]" />
+          <FaPhone className="mt-1 text-2xl text-[var(--site-primary)]" />
 
           <div>
             <h3 className="mb-1 font-semibold">
@@ -70,7 +70,7 @@ export default function ContactInfo({
 
             <a
               href={`tel:${settings.phone}`}
-              className="text-slate-600 hover:text-[#094136]"
+              className="text-slate-600 hover:text-[var(--site-primary)]"
             >
               {settings.phone}
             </a>
@@ -91,7 +91,7 @@ export default function ContactInfo({
         </div>
 
         <div className="flex gap-5">
-          <FaEnvelope className="mt-1 text-2xl text-[#094136]" />
+          <FaEnvelope className="mt-1 text-2xl text-[var(--site-primary)]" />
 
           <div>
             <h3 className="mb-1 font-semibold">
@@ -100,7 +100,7 @@ export default function ContactInfo({
 
             <a
               href={`mailto:${settings.email}`}
-              className="text-slate-600 hover:text-[#094136]"
+              className="text-slate-600 hover:text-[var(--site-primary)]"
             >
               {settings.email}
             </a>

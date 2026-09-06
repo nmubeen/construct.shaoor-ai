@@ -6,7 +6,7 @@ import { deleteConstructContentAction, saveConstructContentAction, toggleConstru
 import { requireActiveConstructContext } from "@/lib/auth/construct-context";
 import { getConstructPrisma } from "@/lib/construct-prisma";
 
-const inputClass = "w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:border-teal-600";
+const inputClass = "w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:border-[#7D9D76]";
 function Field({ label, name, value, type = "text", required = false, min, max }: { label: string; name: string; value?: string | number | null; type?: string; required?: boolean; min?: number; max?: number }) {
   return <label className="grid gap-1 text-xs font-semibold text-slate-600">{label}<input className={inputClass} name={name} type={type} defaultValue={value ?? ""} required={required} min={min} max={max} /></label>;
 }
@@ -14,7 +14,7 @@ function Area({ label, name, value, required = false }: { label: string; name: s
   return <label className="grid gap-1 text-xs font-semibold text-slate-600 sm:col-span-2">{label}<textarea className={`${inputClass} min-h-24 resize-y`} name={name} defaultValue={value ?? ""} required={required} /></label>;
 }
 function Check({ label, name, checked = false }: { label: string; name: string; checked?: boolean }) {
-  return <label className="flex items-center gap-2 text-sm font-medium text-slate-700"><input name={name} type="checkbox" defaultChecked={checked} className="size-4 accent-teal-600" />{label}</label>;
+  return <label className="flex items-center gap-2 text-sm font-medium text-slate-700"><input name={name} type="checkbox" defaultChecked={checked} className="size-4 accent-[#7D9D76]" />{label}</label>;
 }
 function FormFooter({ kind, id, active, canDelete }: { kind: string; id?: string; active?: boolean; canDelete: boolean }) {
   return <div className="flex flex-wrap items-center gap-2 sm:col-span-2"><button className="rounded-lg bg-[#094136] px-4 py-2 text-sm font-semibold text-white">{id ? "Save changes" : "Create item"}</button>{id && <><button formAction={toggleConstructContentAction} className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold">{active ? "Deactivate" : "Activate"}</button>{canDelete && <ConfirmActionButton formAction={deleteConstructContentAction} message="Permanently delete this content item?" className="rounded-lg border border-red-200 px-3 py-2 text-sm font-semibold text-red-700" >Delete</ConfirmActionButton>}</>}<input type="hidden" name="kind" value={kind} />{id && <input type="hidden" name="id" value={id} />}</div>;
@@ -34,10 +34,10 @@ function FaqForm({ item, canDelete }: { item?: Faq; canDelete: boolean }) {
 }
 
 function ItemShell({ title, subtitle, active, children }: { title: string; subtitle: string; active: boolean; children: React.ReactNode }) {
-  return <details className="overflow-hidden rounded-md border border-slate-200 bg-white"><summary className="flex cursor-pointer list-none items-center justify-between gap-3 p-4"><span><span className="font-semibold text-slate-950">{title}</span><span className="ml-2 text-xs text-slate-500">{subtitle}</span></span><span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${active ? "bg-teal-50 text-teal-700" : "bg-slate-100 text-slate-500"}`}>{active ? "Active" : "Inactive"}</span></summary>{children}</details>;
+  return <details className="overflow-hidden rounded-md border border-slate-200 bg-white"><summary className="flex cursor-pointer list-none items-center justify-between gap-3 p-4"><span><span className="font-semibold text-slate-950">{title}</span><span className="ml-2 text-xs text-slate-500">{subtitle}</span></span><span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${active ? "bg-[#eef3ec] text-[#7D9D76]" : "bg-slate-100 text-slate-500"}`}>{active ? "Active" : "Inactive"}</span></summary>{children}</details>;
 }
 function Section({ title, description, icon: Icon, count, addForm, children, canEdit }: { title: string; description: string; icon: typeof Users; count: number; addForm: React.ReactNode; children: React.ReactNode; canEdit: boolean }) {
-  return <section className="rounded-lg border border-slate-200 bg-slate-50/70 p-4"><div className="mb-4 flex items-start justify-between gap-4"><div className="flex gap-3"><span className="grid size-10 shrink-0 place-items-center rounded-md bg-teal-50 text-teal-700"><Icon className="size-5" /></span><div><h2 className="font-bold text-slate-950">{title} <span className="text-sm font-medium text-slate-400">({count})</span></h2><p className="text-sm text-slate-600">{description}</p></div></div></div>{canEdit && <details className="mb-3 overflow-hidden rounded-md border border-dashed border-teal-300 bg-white"><summary className="flex cursor-pointer list-none items-center gap-2 p-4 text-sm font-semibold text-teal-800"><Plus className="size-4" />Add new</summary>{addForm}</details>}<div className="grid gap-2">{children}</div></section>;
+  return <section className="rounded-lg border border-slate-200 bg-slate-50/70 p-4"><div className="mb-4 flex items-start justify-between gap-4"><div className="flex gap-3"><span className="grid size-10 shrink-0 place-items-center rounded-md bg-[#eef3ec] text-[#7D9D76]"><Icon className="size-5" /></span><div><h2 className="font-bold text-slate-950">{title} <span className="text-sm font-medium text-slate-400">({count})</span></h2><p className="text-sm text-slate-600">{description}</p></div></div></div>{canEdit && <details className="mb-3 overflow-hidden rounded-md border border-dashed border-[#7D9D76]/60 bg-white"><summary className="flex cursor-pointer list-none items-center gap-2 p-4 text-sm font-semibold text-[#7D9D76]"><Plus className="size-4" />Add new</summary>{addForm}</details>}<div className="grid gap-2">{children}</div></section>;
 }
 
 export default async function ContentPage({ searchParams }: { searchParams: Promise<{ saved?: string; deleted?: string; error?: string }> }) {
@@ -50,7 +50,7 @@ export default async function ContentPage({ searchParams }: { searchParams: Prom
   ]);
   const canEdit = context.role !== "VIEWER"; const canDelete = context.role === "OWNER" || context.role === "ADMIN";
   return <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8"><header className="mb-6"><p className="text-xs font-bold uppercase tracking-[0.2em] text-[#7D9D76]">Website CMS</p><h1 className="mt-2 text-3xl font-bold">Content</h1><p className="mt-2 text-sm text-slate-600">Manage reusable people, customer proof, and help content across the public website.</p></header>
-    {(query.saved || query.deleted) && <p className="mb-5 rounded-md border border-teal-200 bg-teal-50 p-3 text-sm text-teal-800">Content updated successfully.</p>}{query.error && <p className="mb-5 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">{query.error}</p>}
+    {(query.saved || query.deleted) && <p className="mb-5 rounded-md border border-[#7D9D76]/40 bg-[#eef3ec] p-3 text-sm text-[#7D9D76]">Content updated successfully.</p>}{query.error && <p className="mb-5 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">{query.error}</p>}
     {!canEdit && <p className="mb-5 rounded-md border border-blue-200 bg-blue-50 p-3 text-sm text-blue-800">You have read-only access to this content.</p>}
     <div className="grid gap-5">
       <Section title="Leadership profiles" description="People shown on the team and homepage sections." icon={Users} count={team.length} canEdit={canEdit} addForm={<TeamForm canDelete={canDelete} />}>{team.map(item => <ItemShell key={item.id} title={item.name} subtitle={item.designation} active={item.isActive}>{canEdit && <TeamForm item={item} canDelete={canDelete} />}</ItemShell>)}</Section>

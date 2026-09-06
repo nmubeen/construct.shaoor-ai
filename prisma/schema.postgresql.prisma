@@ -336,6 +336,14 @@ model SiteSettings {
   visionTitle        String?  @map("vision_title")
   visionDescription  String?  @map("vision_description")
   aboutImageUrl      String?  @map("about_image_url")
+  // Per-tenant website theme, editable from /dashboard/settings. NULL means
+  // "use Shaoor's own default brand colors" (#094136 / #7D9D76) — a tenant
+  // who never opens the branding section sees no change. Validated as
+  // #rrggbb hex server-side before saving; applied to the public website
+  // only (not the dashboard/admin/auth chrome, which stays on-brand for
+  // Shaoor regardless of what a tenant picks for their own site).
+  themePrimaryColor  String?  @map("theme_primary_color")
+  themeAccentColor   String?  @map("theme_accent_color")
   createdAt          DateTime @default(now()) @map("created_at")
   updatedAt          DateTime @updatedAt @map("updated_at")
 

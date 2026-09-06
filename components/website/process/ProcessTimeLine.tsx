@@ -56,7 +56,7 @@ export default function ProcessTimeline() {
               key={step.number}
               className={`${websiteDesign.card} flex gap-6 p-6`}
             >
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#094136] text-xl font-bold text-white">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[var(--site-primary)] text-xl font-bold text-white">
                 {step.number}
               </div>
 

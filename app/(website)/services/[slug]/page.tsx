@@ -167,7 +167,7 @@ export default async function ServiceDetailsPage({
 
       )}
 
-      <section className="bg-[#094136] py-16 text-center text-white!">
+      <section className="bg-[var(--site-primary)] py-16 text-center text-white!">
 
         <h2 className="text-3xl font-bold">
           Ready to discuss your project?

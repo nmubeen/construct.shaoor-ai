@@ -20,7 +20,7 @@ export default async function ConstructLoginPage({
       <form action={constructSignInAction} className="space-y-5">
         {next && <input type="hidden" name="next" value={next} />}
         {message && (
-          <p className="rounded-md bg-teal-50 p-3 text-sm text-teal-800">
+          <p className="rounded-md bg-[#eef3ec] p-3 text-sm text-[#7D9D76]">
             {message}
           </p>
         )}
@@ -37,7 +37,7 @@ export default async function ConstructLoginPage({
             autoComplete="email"
             required
             defaultValue={email}
-            className="mt-2 w-full rounded-md border border-[#7D9D76] px-4 py-3 outline-none transition focus:border-teal-600 focus:ring-4 focus:ring-teal-100"
+            className="mt-2 w-full rounded-md border border-[#7D9D76] px-4 py-3 outline-none transition focus:border-[#7D9D76] focus:ring-4 focus:ring-[#7D9D76]/25"
           />
         </label>
         <label className="block text-sm font-semibold text-slate-700">
@@ -46,7 +46,7 @@ export default async function ConstructLoginPage({
             name="password"
             autoComplete="current-password"
             required
-            className="mt-2 w-full rounded-md border border-[#7D9D76] px-4 py-3 outline-none transition focus:border-teal-600 focus:ring-4 focus:ring-teal-100"
+            className="mt-2 w-full rounded-md border border-[#7D9D76] px-4 py-3 outline-none transition focus:border-[#7D9D76] focus:ring-4 focus:ring-[#7D9D76]/25"
           />
         </label>
         <button className="w-full rounded-md bg-[#094136] px-4 py-3 font-semibold text-white transition hover:bg-[#7D9D76]">
@@ -54,7 +54,7 @@ export default async function ConstructLoginPage({
         </button>
         <p className="text-center text-sm text-slate-600">
           <Link
-            className="font-semibold text-teal-700 hover:underline"
+            className="font-semibold text-[#7D9D76] hover:underline"
             href="/account/forgot-password"
           >
             Forgot your password?
@@ -63,7 +63,7 @@ export default async function ConstructLoginPage({
         <p className="text-center text-sm text-slate-600">
           New to Construct?{" "}
           <Link
-            className="font-semibold text-teal-700 hover:underline"
+            className="font-semibold text-[#7D9D76] hover:underline"
             href="/account/signup"
           >
             Start a trial

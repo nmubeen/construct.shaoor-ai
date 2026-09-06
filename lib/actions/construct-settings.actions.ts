@@ -8,6 +8,7 @@ import { z } from "zod";
 import { requireActiveConstructContext } from "@/lib/auth/construct-context";
 import { getConstructPrisma } from "@/lib/construct-prisma";
 import { enforceConstructBooleanEntitlement } from "@/lib/control/construct-subscription.service";
+import { isValidHexColor } from "@/lib/theme";
 
 const hostnameSchema = z.string().trim().toLowerCase().max(253).transform(value => value.replace(/\.$/, "")).refine(value => /^(?=.{1,253}$)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/.test(value), "Enter a valid hostname without https:// or a path.");
 function requireAdmin(role: string) { if (role !== "OWNER" && role !== "ADMIN") redirect("/dashboard/settings?error=Only Owners and Admins can change workspace settings."); }
@@ -71,4 +72,27 @@ export async function removeConstructDomainAction(formData: FormData) {
   if (domain.hostname === `${context.organization.slug}.construct.shaoor-ai.com`) redirect("/dashboard/settings?error=The workspace subdomain cannot be removed.");
   await prisma.$transaction([prisma.domain.delete({ where: { id } }), prisma.auditLog.create({ data: { organizationId: context.organizationId, actorUserId: context.userId, module: "domains", action: "remove", recordId: id, title: `Domain removed: ${domain.hostname}` } })]);
   revalidatePath("/dashboard/settings"); redirect("/dashboard/settings?saved=domain-removed");
+}
+
+// Written via $executeRaw rather than the typed client's siteSettings.update:
+// theme_primary_color/theme_accent_color exist in Postgres (see the
+// theme_primary_color migration) but the generated Postgres client on this
+// machine couldn't be regenerated (the dev server holds its query engine
+// binary locked on Windows) — safe to switch to a normal typed update once
+// a client regen picks the columns up. Reset (blank field) clears back to
+// null, i.e. "use Shaoor's defaults".
+export async function updateConstructThemeAction(formData: FormData) {
+  const context = await requireActiveConstructContext(); requireAdmin(context.role);
+  const primaryRaw = String(formData.get("themePrimaryColor") ?? "").trim();
+  const accentRaw = String(formData.get("themeAccentColor") ?? "").trim();
+  if (primaryRaw && !isValidHexColor(primaryRaw)) redirect("/dashboard/settings?error=Primary color must be a hex value like %23094136.");
+  if (accentRaw && !isValidHexColor(accentRaw)) redirect("/dashboard/settings?error=Accent color must be a hex value like %237D9D76.");
+  const primary = primaryRaw || null;
+  const accent = accentRaw || null;
+  const prisma = getConstructPrisma();
+  await prisma.$transaction([
+    prisma.$executeRaw`UPDATE construct.site_settings SET theme_primary_color = ${primary}, theme_accent_color = ${accent}, updated_at = now() WHERE organization_id = ${context.organizationId}::uuid`,
+    prisma.auditLog.create({ data: { organizationId: context.organizationId, actorUserId: context.userId, module: "settings", action: "theme_update", recordId: context.organizationId, title: "Website theme updated", details: { primary, accent } } }),
+  ]);
+  revalidatePath("/dashboard/settings"); revalidatePath("/", "layout"); redirect("/dashboard/settings?saved=theme");
 }

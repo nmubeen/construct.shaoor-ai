@@ -22,7 +22,7 @@ export default async function MediaPage({ searchParams }: { searchParams: Promis
 
   return <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
     <header className="mb-6"><p className="text-xs font-bold uppercase tracking-[0.2em] text-[#7D9D76]">Website CMS</p><h1 className="mt-2 text-3xl font-bold">Media Library</h1><p className="mt-2 text-sm text-slate-600">Upload reusable images and documents for this tenant&apos;s website.</p></header>
-    {query.deleted && <p className="mb-5 rounded-md border border-teal-200 bg-teal-50 p-3 text-sm text-teal-800">Media deleted successfully.</p>}
+    {query.deleted && <p className="mb-5 rounded-md border border-[#7D9D76]/40 bg-[#eef3ec] p-3 text-sm text-[#7D9D76]">Media deleted successfully.</p>}
     {query.error && <p className="mb-5 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">{query.error}</p>}
     {context.role !== "VIEWER" && <div className="mb-6"><MediaUploadForm /></div>}
     <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
@@ -32,7 +32,7 @@ export default async function MediaPage({ searchParams }: { searchParams: Promis
         </div>
         <div className="p-4"><div className="flex items-start justify-between gap-3"><div className="min-w-0"><h2 className="truncate font-bold text-slate-950">{item.title || item.originalName}</h2><p className="mt-1 truncate text-xs text-slate-500">{item.originalName}</p></div>{(context.role === "OWNER" || context.role === "ADMIN") && <form action={deleteConstructMediaAction}><input type="hidden" name="id" value={item.id} /><button title="Delete media" className="rounded-lg border border-red-200 p-2 text-red-700"><Trash2 className="size-4" /></button></form>}</div>
           <p className="mt-3 text-xs text-slate-500">{item.folder || "library"} · {readableSize(item.fileSize)}{item.width && item.height ? ` · ${item.width}×${item.height}` : ""}</p>
-          <a href={item.url} target="_blank" rel="noreferrer" className="mt-3 inline-block text-xs font-semibold text-teal-700 hover:underline">Open public URL</a>
+          <a href={item.url} target="_blank" rel="noreferrer" className="mt-3 inline-block text-xs font-semibold text-[#7D9D76] hover:underline">Open public URL</a>
         </div>
       </article>)}
     </div>

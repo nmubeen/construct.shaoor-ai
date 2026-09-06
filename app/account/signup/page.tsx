@@ -40,7 +40,7 @@ export default async function ConstructSignupPage({
             required
             minLength={2}
             maxLength={100}
-            className="mt-2 w-full rounded-md border border-[#7D9D76] px-4 py-3 outline-none focus:border-teal-600 focus:ring-4 focus:ring-teal-100"
+            className="mt-2 w-full rounded-md border border-[#7D9D76] px-4 py-3 outline-none focus:border-[#7D9D76] focus:ring-4 focus:ring-[#7D9D76]/25"
           />
         </label>
         <label className="block text-sm font-semibold text-slate-700">
@@ -52,7 +52,7 @@ export default async function ConstructSignupPage({
             required
             readOnly={invited}
             defaultValue={email}
-            className={`mt-2 w-full rounded-md border border-[#7D9D76] px-4 py-3 outline-none focus:border-teal-600 focus:ring-4 focus:ring-teal-100 ${invited ? "bg-slate-50 text-slate-500" : ""}`}
+            className={`mt-2 w-full rounded-md border border-[#7D9D76] px-4 py-3 outline-none focus:border-[#7D9D76] focus:ring-4 focus:ring-[#7D9D76]/25 ${invited ? "bg-slate-50 text-slate-500" : ""}`}
           />
         </label>
         <label className="block text-sm font-semibold text-slate-700">
@@ -62,7 +62,7 @@ export default async function ConstructSignupPage({
             autoComplete="new-password"
             required
             minLength={8}
-            className="mt-2 w-full rounded-md border border-[#7D9D76] px-4 py-3 outline-none focus:border-teal-600 focus:ring-4 focus:ring-teal-100"
+            className="mt-2 w-full rounded-md border border-[#7D9D76] px-4 py-3 outline-none focus:border-[#7D9D76] focus:ring-4 focus:ring-[#7D9D76]/25"
           />
           <span className="mt-2 block text-xs font-normal leading-5 text-slate-500">
             At least 8 characters with uppercase, lowercase, a number and a
@@ -76,7 +76,7 @@ export default async function ConstructSignupPage({
             autoComplete="new-password"
             required
             minLength={8}
-            className="mt-2 w-full rounded-md border border-[#7D9D76] px-4 py-3 outline-none focus:border-teal-600 focus:ring-4 focus:ring-teal-100"
+            className="mt-2 w-full rounded-md border border-[#7D9D76] px-4 py-3 outline-none focus:border-[#7D9D76] focus:ring-4 focus:ring-[#7D9D76]/25"
           />
         </label>
         {!invited && (
@@ -88,12 +88,12 @@ export default async function ConstructSignupPage({
                 required
                 minLength={2}
                 maxLength={100}
-                className="mt-2 w-full rounded-md border border-[#7D9D76] px-4 py-3 outline-none focus:border-teal-600 focus:ring-4 focus:ring-teal-100"
+                className="mt-2 w-full rounded-md border border-[#7D9D76] px-4 py-3 outline-none focus:border-[#7D9D76] focus:ring-4 focus:ring-[#7D9D76]/25"
               />
             </label>
             <label className="block text-sm font-semibold text-slate-700">
               Workspace address
-              <div className="mt-2 flex overflow-hidden rounded-md border border-[#7D9D76] focus-within:border-teal-600 focus-within:ring-4 focus-within:ring-teal-100">
+              <div className="mt-2 flex overflow-hidden rounded-md border border-[#7D9D76] focus-within:border-[#7D9D76] focus-within:ring-4 focus-within:ring-[#7D9D76]/25">
                 <input
                   name="organizationSlug"
                   required
@@ -133,7 +133,7 @@ export default async function ConstructSignupPage({
           Already have an account?{" "}
           <Link
             href={invited && email ? `/account/login?email=${encodeURIComponent(email)}` : "/account/login"}
-            className="font-semibold text-teal-700 hover:underline"
+            className="font-semibold text-[#7D9D76] hover:underline"
           >
             Sign in
           </Link>

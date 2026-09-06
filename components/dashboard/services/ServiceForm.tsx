@@ -1,7 +1,7 @@
 import type { Service } from "@prisma/construct-client";
 import { saveConstructServiceAction } from "@/lib/actions/construct-service.actions";
 
-const input = "mt-1.5 w-full rounded-md border border-slate-300 px-3.5 py-2.5 text-sm outline-none focus:border-teal-600 focus:ring-4 focus:ring-teal-100";
+const input = "mt-1.5 w-full rounded-md border border-slate-300 px-3.5 py-2.5 text-sm outline-none focus:border-[#7D9D76] focus:ring-4 focus:ring-[#7D9D76]/25";
 export function ServiceForm({ service, error }: { service?: Service; error?: string }) {
   return <form action={saveConstructServiceAction} className="space-y-5">
     {service && <input type="hidden" name="id" value={service.id} />}

@@ -24,7 +24,7 @@ export default async function Footer() {
   ];
 
   return (
-    <footer className="mt-20 border-t border-white/10 bg-linear-to-b from-[#094136] to-black text-white">
+    <footer className="mt-20 border-t border-white/10 bg-linear-to-b from-[var(--site-primary)] to-black text-white">
       <div className="mx-auto grid max-w-7xl gap-12 px-6 py-16 md:grid-cols-4">
 
         {/* Company */}
@@ -41,7 +41,7 @@ export default async function Footer() {
                 className="h-14 w-14 object-contain"
               />
             ) : (
-              <div className="flex h-14 w-14 items-center justify-center rounded-md bg-[#7D9D76] text-xl font-bold text-white">
+              <div className="flex h-14 w-14 items-center justify-center rounded-md bg-[var(--site-accent)] text-xl font-bold text-white">
                 {settings.companyName.charAt(0)}
               </div>
             )}
@@ -72,7 +72,7 @@ export default async function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Facebook"
-                className="rounded-md bg-white/10 p-3 transition hover:bg-[#7D9D76]"
+                className="rounded-md bg-white/10 p-3 transition hover:bg-[var(--site-accent)]"
               >
                 <FaFacebookF />
               </a>
@@ -84,7 +84,7 @@ export default async function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Instagram"
-                className="rounded-md bg-white/10 p-3 transition hover:bg-[#7D9D76]"
+                className="rounded-md bg-white/10 p-3 transition hover:bg-[var(--site-accent)]"
               >
                 <FaInstagram />
               </a>
@@ -96,7 +96,7 @@ export default async function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="LinkedIn"
-                className="rounded-md bg-white/10 p-3 transition hover:bg-[#7D9D76]"
+                className="rounded-md bg-white/10 p-3 transition hover:bg-[var(--site-accent)]"
               >
                 <FaLinkedinIn />
               </a>
@@ -108,7 +108,7 @@ export default async function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="X"
-                className="rounded-md bg-white/10 p-3 transition hover:bg-[#7D9D76]"
+                className="rounded-md bg-white/10 p-3 transition hover:bg-[var(--site-accent)]"
               >
                 <FaXTwitter />
               </a>
@@ -120,7 +120,7 @@ export default async function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="YouTube"
-                className="rounded-md bg-white/10 p-3 transition hover:bg-[#7D9D76]"
+                className="rounded-md bg-white/10 p-3 transition hover:bg-[var(--site-accent)]"
               >
                 <FaYoutube />
               </a>
@@ -132,7 +132,7 @@ export default async function Footer() {
         {/* Navigation */}
 
         <div>
-          <h4 className="mb-4 text-lg font-semibold text-[#7D9D76]">
+          <h4 className="mb-4 text-lg font-semibold text-[var(--site-accent)]">
             Quick Links
           </h4>
 
@@ -155,7 +155,7 @@ export default async function Footer() {
         {/* Contact */}
 
         <div>
-          <h4 className="mb-4 text-lg font-semibold text-[#7D9D76]">
+          <h4 className="mb-4 text-lg font-semibold text-[var(--site-accent)]">
             Contact
           </h4>
 
@@ -220,7 +220,7 @@ export default async function Footer() {
         {/* CTA */}
 
         <div>
-          <h4 className="mb-4 text-lg font-semibold text-[#7D9D76]">
+          <h4 className="mb-4 text-lg font-semibold text-[var(--site-accent)]">
             Ready to Build?
           </h4>
 
@@ -230,7 +230,7 @@ export default async function Footer() {
 
           <Link
             href="/contact"
-            className="inline-block rounded-md bg-white px-6 py-3 font-semibold text-[#094136]! transition hover:bg-[#7D9D76] hover:text-white!"
+            className="inline-block rounded-md bg-white px-6 py-3 font-semibold text-[var(--site-primary)]! transition hover:bg-[var(--site-accent)] hover:text-white!"
           >
             Get a Quote
           </Link>

@@ -49,7 +49,7 @@ export function MediaUploadForm() {
     </div>
     <div className="mt-4 flex flex-wrap items-center gap-3">
       <button disabled={pending} className="inline-flex items-center gap-2 rounded-md bg-[#094136] px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-60"><Upload className="size-4" />{pending ? "Uploading…" : "Upload file"}</button>
-      {message && <p className={`text-sm ${message.kind === "success" ? "text-teal-700" : "text-red-700"}`}>{message.text}</p>}
+      {message && <p className={`text-sm ${message.kind === "success" ? "text-[#7D9D76]" : "text-red-700"}`}>{message.text}</p>}
     </div>
   </form>;
 }

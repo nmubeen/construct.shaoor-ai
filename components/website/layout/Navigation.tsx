@@ -43,11 +43,11 @@ export default function Navigation({
             className={`transition-colors duration-200 ${
               inverse
                 ? active
-                  ? "font-semibold text-[#7D9D76]"
+                  ? "font-semibold text-[var(--site-accent)]"
                   : "text-white/85 hover:text-white"
                 : active
-                  ? "font-semibold text-[var(--primary)]"
-                  : "text-[var(--foreground)] hover:text-[var(--primary)]"
+                  ? "font-semibold text-[var(--site-primary)]"
+                  : "text-[var(--foreground)] hover:text-[var(--site-primary)]"
             }`}
           >
             {item.title}

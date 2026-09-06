@@ -175,7 +175,7 @@ export default function ProjectForm({
 
       <button
         type="submit"
-        className="rounded-lg bg-[#094136] px-8 py-3 text-white hover:bg-[#7D9D76]"
+        className="rounded-lg bg-[var(--site-primary)] px-8 py-3 text-white hover:bg-[var(--site-accent)]"
       >
         {mode === "create"
           ? "Create Project"

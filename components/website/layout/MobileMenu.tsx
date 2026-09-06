@@ -86,7 +86,7 @@ export default function MobileMenu({
 
           <a
             href={`tel:${settings.phone}`}
-            className="mb-3 block rounded-lg bg-(--primary) px-4 py-3 text-center text-white! transition hover:bg-(--primary-dark)"
+            className="mb-3 block rounded-lg bg-[var(--site-primary)] px-4 py-3 text-center text-white! transition hover:opacity-90"
           >
             📞 Call Now
           </a>
@@ -94,7 +94,7 @@ export default function MobileMenu({
           <a
             href="/contact"
             onClick={onClose}
-            className="block rounded-lg border border-(--primary) px-4 py-3 text-center text-(--primary) transition hover:bg-slate-50"
+            className="block rounded-lg border border-[var(--site-primary)] px-4 py-3 text-center text-[var(--site-primary)] transition hover:bg-slate-50"
           >
             Get a Quote
           </a>
