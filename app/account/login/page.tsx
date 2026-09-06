@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { ConstructAuthShell } from "@/components/auth/ConstructAuthShell";
+import { ConstructPasswordInput } from "@/components/auth/ConstructPasswordInput";
 import { constructSignInAction } from "@/lib/actions/construct-auth.actions";
 
 export default async function ConstructLoginPage({
@@ -41,9 +42,8 @@ export default async function ConstructLoginPage({
         </label>
         <label className="block text-sm font-semibold text-slate-700">
           Password
-          <input
+          <ConstructPasswordInput
             name="password"
-            type="password"
             autoComplete="current-password"
             required
             className="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 outline-none transition focus:border-teal-600 focus:ring-4 focus:ring-teal-100"

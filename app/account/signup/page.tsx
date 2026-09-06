@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ConstructAuthShell } from "@/components/auth/ConstructAuthShell";
+import { ConstructPasswordInput } from "@/components/auth/ConstructPasswordInput";
 import { constructSignUpAction } from "@/lib/actions/construct-auth.actions";
 import { getOptionalConstructContext } from "@/lib/auth/construct-context";
 
@@ -56,27 +57,25 @@ export default async function ConstructSignupPage({
         </label>
         <label className="block text-sm font-semibold text-slate-700">
           Password
-          <input
+          <ConstructPasswordInput
             name="password"
-            type="password"
             autoComplete="new-password"
             required
-            minLength={12}
+            minLength={8}
             className="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-teal-600 focus:ring-4 focus:ring-teal-100"
           />
           <span className="mt-2 block text-xs font-normal leading-5 text-slate-500">
-            At least 12 characters with uppercase, lowercase, a number and a
+            At least 8 characters with uppercase, lowercase, a number and a
             special character.
           </span>
         </label>
         <label className="block text-sm font-semibold text-slate-700">
           Confirm password
-          <input
+          <ConstructPasswordInput
             name="confirmation"
-            type="password"
             autoComplete="new-password"
             required
-            minLength={12}
+            minLength={8}
             className="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-teal-600 focus:ring-4 focus:ring-teal-100"
           />
         </label>
@@ -100,7 +99,19 @@ export default async function ConstructSignupPage({
                   required
                   minLength={2}
                   maxLength={32}
-                  pattern="[a-z0-9]+"
+                  // Case-insensitive on purpose: the server action already
+                  // lowercases this before validating/using it. Restricting
+                  // the browser's own pattern to [a-z0-9]+ used to reject
+                  // mobile submissions where the keyboard auto-capitalized
+                  // the first letter — the `lowercase` class below only
+                  // changes how the value is *displayed*, not its real
+                  // content, so the field could look like "home1817" while
+                  // actually holding "Home1817", tripping "Please match the
+                  // requested format." Confirmed live on a phone keyboard.
+                  pattern="[A-Za-z0-9]+"
+                  autoCapitalize="off"
+                  autoCorrect="off"
+                  spellCheck={false}
                   placeholder="acme"
                   className="min-w-0 flex-1 px-4 py-3 lowercase outline-none"
                 />
