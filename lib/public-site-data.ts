@@ -4,6 +4,7 @@ import { getConstructPrisma } from "@/lib/construct-prisma";
 import { resolvePublicConstructOrganization } from "@/lib/construct-public-tenant";
 import { prisma as legacyPrisma } from "@/lib/prisma";
 import { getSiteSettings } from "@/lib/settings";
+import { ensureConstructSiteSettingsDefaults } from "@/lib/services/construct-site-settings.service";
 
 export type PublicSiteSettings = Awaited<ReturnType<typeof getSiteSettings>> & {
   // Per-tenant public-website theme — null means "use Shaoor's defaults".
@@ -27,8 +28,7 @@ export async function getPublicSiteSettings(): Promise<PublicSiteSettings> {
     const legacy = await getSiteSettings();
     return { ...legacy, themePrimaryColor: null, themeAccentColor: null };
   }
-  const settings = await getConstructPrisma().siteSettings.findUnique({ where: { organizationId: organization.id } });
-  if (!settings) throw new Error("Tenant site settings are missing.");
+  const settings = await ensureConstructSiteSettingsDefaults(organization.id);
   return {
     id: 0, companyId: 0, companyName: settings.companyName, tagline: settings.tagline, description: settings.description, logo: settings.logoUrl, favicon: settings.faviconUrl,
     phone: settings.phone, email: settings.email, website: settings.website, addressLine1: settings.addressLine1, addressLine2: settings.addressLine2, city: settings.city, state: settings.state, country: settings.country, postalCode: settings.postalCode,

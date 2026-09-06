@@ -2,7 +2,7 @@ import type { InputHTMLAttributes, TextareaHTMLAttributes } from "react";
 
 import { updateConstructSiteSettingsAction } from "@/lib/actions/construct-site-settings.actions";
 import { requireActiveConstructContext } from "@/lib/auth/construct-context";
-import { getConstructPrisma } from "@/lib/construct-prisma";
+import { ensureConstructSiteSettingsDefaults } from "@/lib/services/construct-site-settings.service";
 
 const control = "mt-1.5 w-full rounded-md border border-slate-300 bg-white px-3.5 py-2.5 text-sm outline-none focus:border-[#7D9D76] focus:ring-4 focus:ring-[#7D9D76]/25 disabled:bg-slate-100";
 function Field({ label, ...props }: { label: string } & InputHTMLAttributes<HTMLInputElement>) { return <label className="block text-sm font-semibold text-slate-700">{label}<input {...props} className={control} /></label>; }
@@ -11,8 +11,7 @@ function Section({ title, description, children }: { title: string; description:
 
 export default async function SiteSettingsPage({ searchParams }: { searchParams: Promise<{ saved?: string; error?: string }> }) {
   const context = await requireActiveConstructContext();
-  const s = await getConstructPrisma().siteSettings.findUnique({ where: { organizationId: context.organizationId } });
-  if (!s) throw new Error("Site settings have not been provisioned.");
+  const s = await ensureConstructSiteSettingsDefaults(context.organizationId);
   const { saved, error } = await searchParams;
   const disabled = context.role === "VIEWER";
   return (
