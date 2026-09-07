@@ -21,6 +21,10 @@ const schema = z.object({
 
 const lines = (value: FormDataEntryValue | null) => String(value ?? "").split(/\r?\n/).map(v => v.trim()).filter(Boolean);
 
+function requireEditor(role: string) {
+  if (role === "VIEWER") redirect("/dashboard/projects?error=You do not have permission to manage projects.");
+}
+
 // Bound with useActionState, not a plain <form action> — see the matching
 // comment in construct-service.actions.ts: returning an error here instead
 // of redirecting to "?error=..." means a failed save doesn't navigate, so
