@@ -11,6 +11,8 @@ export type PublicSiteSettings = Awaited<ReturnType<typeof getSiteSettings>> & {
   // Per-tenant public-website theme — null means "use Shaoor's defaults".
   themePrimaryColor: string | null;
   themeAccentColor: string | null;
+  whyChooseUsTitle: string;
+  whyChooseUsSubtitle: string;
 };
 
 export type PublicService = { id: string | number; title: string; slug: string; shortDescription: string; description: string; image: string | null; icon: string | null; displayOrder: number; isActive: boolean; seoTitle: string | null; seoDescription: string | null; seoKeywords: string | null; canonicalUrl: string | null; createdAt: Date; updatedAt: Date; subServices: string[] };
@@ -43,13 +45,23 @@ function mapProject(item: { id: string; slug: string; title: string; category: s
 // the theme <style> injection — without this, that's 4 redundant DB round
 // trips (on top of resolvePublicConstructOrganization's own) every single
 // page load.
+const DEFAULT_WHY_CHOOSE_US_TITLE = "Building with Confidence";
+const DEFAULT_WHY_CHOOSE_US_SUBTITLE = "Every project is backed by professional expertise, disciplined execution, and a commitment to delivering exceptional results.";
+
 export const getPublicSiteSettings = cache(async (): Promise<PublicSiteSettings> => {
   const organization = await resolvePublicConstructOrganization();
   if (!organization) {
     const legacy = await getSiteSettings();
-    return { ...legacy, themePrimaryColor: null, themeAccentColor: null };
+    return { ...legacy, themePrimaryColor: null, themeAccentColor: null, whyChooseUsTitle: DEFAULT_WHY_CHOOSE_US_TITLE, whyChooseUsSubtitle: DEFAULT_WHY_CHOOSE_US_SUBTITLE };
   }
   const settings = await ensureConstructSiteSettingsDefaults(organization.id);
+  // Raw SQL for why_choose_us_title/subtitle: exist in Postgres but the
+  // generated client here couldn't be regenerated (dev server holds the
+  // query engine binary locked on Windows) — fold these into the typed
+  // settings object above once a client regen picks them up.
+  const [whyChooseUs] = await getConstructPrisma().$queryRaw<{ title: string; subtitle: string }[]>`
+    SELECT why_choose_us_title AS title, why_choose_us_subtitle AS subtitle FROM construct.site_settings WHERE organization_id = ${organization.id}::uuid
+  `;
   return {
     id: 0, companyId: 0, companyName: settings.companyName, tagline: settings.tagline, description: settings.description, logo: settings.logoUrl, favicon: settings.faviconUrl,
     phone: settings.phone, email: settings.email, website: settings.website, addressLine1: settings.addressLine1, addressLine2: settings.addressLine2, city: settings.city, state: settings.state, country: settings.country, postalCode: settings.postalCode,
@@ -60,7 +72,19 @@ export const getPublicSiteSettings = cache(async (): Promise<PublicSiteSettings>
     missionTitle: settings.missionTitle, missionDescription: settings.missionDescription, visionTitle: settings.visionTitle, visionDescription: settings.visionDescription, aboutImage: settings.aboutImageUrl,
     createdAt: settings.createdAt, updatedAt: settings.updatedAt,
     themePrimaryColor: settings.themePrimaryColor, themeAccentColor: settings.themeAccentColor,
+    whyChooseUsTitle: whyChooseUs?.title ?? DEFAULT_WHY_CHOOSE_US_TITLE, whyChooseUsSubtitle: whyChooseUs?.subtitle ?? DEFAULT_WHY_CHOOSE_US_SUBTITLE,
   };
+});
+
+// Cached: WhyChooseUs.tsx is the only reader, but public-site-data's
+// functions are cache()-wrapped uniformly across this file regardless of
+// current call count, so a second call site later doesn't silently
+// reintroduce a duplicate query.
+export const getPublicWhyChooseUsHighlights = cache(async () => {
+  const organization = await resolvePublicConstructOrganization();
+  if (!organization) return [];
+  const { getConstructWhyChooseUsHighlights } = await import("@/lib/services/construct-why-choose-us.service");
+  return getConstructWhyChooseUsHighlights(organization.id);
 });
 
 export const getPublicServices = cache(async () => {
@@ -87,7 +111,17 @@ export const getRelatedPublicServices = cache(async (id: string | number, take =
 export const getPublicProjects = cache(async (filters?: { status?: string; featured?: boolean; category?: string; take?: number }) => {
   const organization = await resolvePublicConstructOrganization();
   if (!organization) return legacyPrisma.project.findMany({ where: { ...(filters?.status ? { status: filters.status } : {}), ...(filters?.featured !== undefined ? { featured: filters.featured } : {}), ...(filters?.category ? { category: filters.category } : {}) }, include: { gallery: { orderBy: { id: "asc" } }, highlights: { orderBy: { id: "asc" } } }, orderBy: { year: "desc" }, take: filters?.take });
-  const items = await getConstructPrisma().project.findMany({ where: { organizationId: organization.id, ...(filters?.status ? { status: filters.status } : {}), ...(filters?.featured !== undefined ? { featured: filters.featured } : {}), ...(filters?.category ? { category: filters.category } : {}) }, include: { galleryItems: { orderBy: { sortOrder: "asc" } }, highlights: { orderBy: { sortOrder: "asc" } } }, orderBy: { year: "desc" }, take: filters?.take }); return items.map(mapProject);
+  const prisma = getConstructPrisma();
+  // Raw SQL for is_active: exists in Postgres but the generated client
+  // here couldn't be regenerated (dev server holds the query engine
+  // binary locked on Windows) — restrict the typed query to active ids
+  // (applied before `take`, so a hidden project never displaces a real
+  // result) until a client regen picks the field up, then fold this
+  // straight into the where clause below.
+  const activeRows = await prisma.$queryRaw<{ id: string }[]>`SELECT id FROM construct.projects WHERE organization_id = ${organization.id}::uuid AND is_active = true`;
+  const activeIds = activeRows.map((row) => row.id);
+  if (activeIds.length === 0) return [];
+  const items = await prisma.project.findMany({ where: { organizationId: organization.id, id: { in: activeIds }, ...(filters?.status ? { status: filters.status } : {}), ...(filters?.featured !== undefined ? { featured: filters.featured } : {}), ...(filters?.category ? { category: filters.category } : {}) }, include: { galleryItems: { orderBy: { sortOrder: "asc" } }, highlights: { orderBy: { sortOrder: "asc" } } }, orderBy: { year: "desc" }, take: filters?.take }); return items.map(mapProject);
 });
 export const getPublicProjectBySlug = cache(async (slug: string) => { const projects = await getPublicProjects(); return projects.find(project => project.slug === slug) ?? null; });
 export const getRelatedPublicProjects = cache(async (project: PublicProject, take = 3) => { const projects = await getPublicProjects({ category: project.category }); return projects.filter(item => item.id !== project.id).slice(0, take); });

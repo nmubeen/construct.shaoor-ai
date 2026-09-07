@@ -118,6 +118,7 @@ model Organization {
   publication     SitePublication?
   projects        Project[]
   projectTaxonomies ProjectTaxonomy[]
+  whyChooseUsHighlights WhyChooseUsHighlight[]
   media           Media[]
   mediaFolders    MediaFolder[]
   galleries       Gallery[]
@@ -338,6 +339,8 @@ model SiteSettings {
   visionTitle        String?  @map("vision_title")
   visionDescription  String?  @map("vision_description")
   aboutImageUrl      String?  @map("about_image_url")
+  whyChooseUsTitle    String  @default("Building with Confidence") @map("why_choose_us_title")
+  whyChooseUsSubtitle String  @default("Every project is backed by professional expertise, disciplined execution, and a commitment to delivering exceptional results.") @map("why_choose_us_subtitle")
   // Per-tenant website theme, editable from /dashboard/settings. NULL means
   // "use Shaoor's own default brand colors" (#094136 / #7D9D76) — a tenant
   // who never opens the branding section sees no change. Validated as
@@ -352,6 +355,25 @@ model SiteSettings {
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   @@map("site_settings")
+  @@schema("construct")
+}
+
+// The four icon+title+description cards in the home page's "Why Choose
+// Us" section — icon is a key into a small curated registry (see
+// lib/website-icons.ts), not a free-typed icon name.
+model WhyChooseUsHighlight {
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  icon           String
+  title          String
+  description    String
+  sortOrder      Int      @default(0) @map("sort_order")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, sortOrder])
+  @@map("why_choose_us_highlights")
   @@schema("construct")
 }
 
@@ -371,6 +393,11 @@ model Project {
   coverImageUrl  String?  @map("cover_image_url")
   description    String
   featured       Boolean  @default(false)
+  // Show/Hide, independent of Featured (which only controls homepage
+  // prominence) — a hidden project never appears on the public site at
+  // all, so it can't sensibly stay featured; the toggle action clears
+  // featured whenever this goes false.
+  isActive       Boolean  @default(true) @map("is_active")
   seoTitle       String?  @map("seo_title")
   seoDescription String?  @map("seo_description")
   seoKeywords    String?  @map("seo_keywords")
@@ -385,6 +412,7 @@ model Project {
   @@unique([organizationId, slug])
   @@index([organizationId, status])
   @@index([organizationId, featured])
+  @@index([organizationId, isActive])
   @@map("projects")
   @@schema("construct")
 }

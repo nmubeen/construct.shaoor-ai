@@ -74,6 +74,26 @@ export async function toggleConstructProjectFeaturedAction(formData: FormData) {
   await prisma.project.update({ where: { id }, data: { featured: !project.featured } }); revalidatePath("/dashboard/projects"); redirect("/dashboard/projects");
 }
 
+// Raw SQL for is_active: it exists in Postgres but the generated client
+// here couldn't be regenerated (dev server holds the query engine
+// binary locked on Windows) — switch to typed prisma.project.update()
+// once a client regen picks the field up.
+export async function toggleConstructProjectActiveAction(formData: FormData) {
+  const context = await requireActiveConstructContext(); requireEditor(context.role);
+  const id = String(formData.get("id") ?? ""); const prisma = getConstructPrisma();
+  const rows = await prisma.$queryRaw<{ isActive: boolean }[]>`SELECT is_active AS "isActive" FROM construct.projects WHERE id = ${id}::uuid AND organization_id = ${context.organizationId}::uuid`;
+  if (rows.length === 0) redirect("/dashboard/projects?error=Project not found.");
+  const nextActive = !rows[0].isActive;
+  // Hiding a project also un-features it — a hidden project can't
+  // sensibly stay featured on the homepage it no longer appears on.
+  if (nextActive) {
+    await prisma.$executeRaw`UPDATE construct.projects SET is_active = true WHERE id = ${id}::uuid`;
+  } else {
+    await prisma.$executeRaw`UPDATE construct.projects SET is_active = false, featured = false WHERE id = ${id}::uuid`;
+  }
+  revalidatePath("/dashboard/projects"); revalidatePath("/dashboard"); revalidatePath("/projects"); redirect("/dashboard/projects");
+}
+
 export async function deleteConstructProjectAction(formData: FormData) {
   const context = await requireActiveConstructContext(); if (context.role !== "OWNER" && context.role !== "ADMIN") redirect("/dashboard/projects?error=Only Owners and Admins can delete projects.");
   const id = String(formData.get("id") ?? ""); const prisma = getConstructPrisma(); const project = await prisma.project.findFirst({ where: { id, organizationId: context.organizationId }, select: { title: true } }); if (!project) redirect("/dashboard/projects?error=Project not found.");
