@@ -117,7 +117,9 @@ model Organization {
   settings        SiteSettings?
   publication     SitePublication?
   projects        Project[]
+  projectTaxonomies ProjectTaxonomy[]
   media           Media[]
+  mediaFolders    MediaFolder[]
   galleries       Gallery[]
   services        Service[]
   teamMembers     TeamMember[]
@@ -416,6 +418,26 @@ model ProjectGalleryItem {
   @@schema("construct")
 }
 
+// Tenant-managed picklists for Project.category and Project.status,
+// maintained from the Content page — one kind-discriminated table
+// rather than two near-identical ones, mirroring how Content already
+// unifies team/client/testimonial/faq under one save action.
+model ProjectTaxonomy {
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  kind           String
+  value          String
+  sortOrder      Int      @default(0) @map("sort_order")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, kind, value])
+  @@index([organizationId, kind, sortOrder])
+  @@map("project_taxonomies")
+  @@schema("construct")
+}
+
 model Media {
   id             String    @id @default(uuid()) @db.Uuid
   organizationId String    @map("organization_id") @db.Uuid
@@ -438,12 +460,43 @@ model Media {
   createdAt      DateTime  @default(now()) @map("created_at")
   updatedAt      DateTime  @updatedAt @map("updated_at")
 
+  folderId String? @map("folder_id") @db.Uuid
+
   organization Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  folderRef    MediaFolder?  @relation(fields: [folderId], references: [id], onDelete: SetNull)
   galleryItems GalleryItem[]
 
   @@unique([organizationId, storagePath])
   @@index([organizationId, folder])
+  @@index([organizationId, folderId])
   @@map("media")
+  @@schema("construct")
+}
+
+// A real folder tree, distinct from Media.folder (a flat legacy string —
+// kept for backward compatibility with rows uploaded before this model
+// existed). Lets a folder exist — and be created or deleted — with no
+// media in it, which a value merely derived from existing Media rows
+// never could.
+model MediaFolder {
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  name           String
+  parentId       String?  @map("parent_id") @db.Uuid
+  // Materialized full path (e.g. "library/logos") — cheap display and
+  // lookup without walking the parent chain on every render.
+  path           String
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  organization Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  parent       MediaFolder?  @relation("MediaFolderChildren", fields: [parentId], references: [id], onDelete: Cascade)
+  children     MediaFolder[] @relation("MediaFolderChildren")
+  media        Media[]
+
+  @@unique([organizationId, path])
+  @@index([organizationId, parentId])
+  @@map("media_folders")
   @@schema("construct")
 }
 
@@ -506,10 +559,29 @@ model Service {
   updatedAt        DateTime @updatedAt @map("updated_at")
 
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  subServices  SubService[]
 
   @@unique([organizationId, slug])
   @@index([organizationId, isActive])
   @@map("services")
+  @@schema("construct")
+}
+
+// A single-column bullet list attached to a Service — mirrors
+// ProjectHighlight exactly (same shape, same replace-all-on-save
+// convention in saveConstructServiceAction). Capped at 10 per service,
+// enforced in the action rather than here.
+model SubService {
+  id             String @id @default(uuid()) @db.Uuid
+  organizationId String @map("organization_id") @db.Uuid
+  serviceId      String @map("service_id") @db.Uuid
+  text           String
+  sortOrder      Int    @default(0) @map("sort_order")
+
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, serviceId])
+  @@map("sub_services")
   @@schema("construct")
 }
 

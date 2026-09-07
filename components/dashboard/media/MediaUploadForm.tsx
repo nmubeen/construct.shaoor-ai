@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { FormEvent, useRef, useState } from "react";
 import { Upload } from "lucide-react";
 
-export function MediaUploadForm() {
+export function MediaUploadForm({ folders, defaultFolderId }: { folders: { id: string; name: string; depth: number }[]; defaultFolderId?: string }) {
   const router = useRouter();
   const formRef = useRef<HTMLFormElement>(null);
   const [pending, setPending] = useState(false);
@@ -35,7 +35,11 @@ export function MediaUploadForm() {
         <span className="text-xs font-normal text-slate-500">JPG, PNG, WebP, AVIF or PDF. Maximum 10 MB.</span>
       </label>
       <label className="grid gap-1.5 text-sm font-semibold text-slate-700">Folder
-        <input name="folder" placeholder="library" maxLength={80} className="rounded-md border border-slate-300 px-3 py-2.5 font-normal" />
+        <select name="folderId" defaultValue={defaultFolderId ?? ""} className="rounded-md border border-slate-300 bg-white px-3 py-2.5 font-normal">
+          <option value="">No folder (library)</option>
+          {folders.map((folder) => <option key={folder.id} value={folder.id}>{"  ".repeat(folder.depth)}{folder.name}</option>)}
+        </select>
+        <span className="text-xs font-normal text-slate-500">Pick where this file lives — create a new folder from the tree on the left first if you need one.</span>
       </label>
       <label className="grid gap-1.5 text-sm font-semibold text-slate-700">Title
         <input name="title" maxLength={160} className="rounded-md border border-slate-300 px-3 py-2.5 font-normal" />

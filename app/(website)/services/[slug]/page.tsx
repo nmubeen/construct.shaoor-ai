@@ -106,23 +106,37 @@ export default async function ServiceDetailsPage({
       />
 
       <section className={websiteDesign.sectionY}>
-        <Container className="max-w-5xl">
+        <Container>
 
-          {service.image && (
-            <Image
-              src={service.image}
-              alt={service.title}
-              width={1200}
-              height={700}
-              className="mb-10 rounded-md object-cover"
-            />
-          )}
+          {/* 30/70 split: image column fixed at 30% width, details fill
+              the remaining 70% — stacks to a single column below md. */}
+          <div className="grid gap-8 md:grid-cols-[3fr_7fr]">
 
-          <div className="prose max-w-none">
+            {service.image && (
+              <Image
+                src={service.image}
+                alt={service.title}
+                width={600}
+                height={700}
+                className="h-full w-full rounded-md object-cover"
+              />
+            )}
 
-            <p className="text-lg text-slate-700">
-              {service.description}
-            </p>
+            <div className="prose max-w-none">
+
+              <p className="text-lg text-slate-700">
+                {service.description}
+              </p>
+
+              {service.subServices.length > 0 && (
+                <ul className="mt-6 list-disc space-y-2 pl-6 text-slate-700">
+                  {service.subServices.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              )}
+
+            </div>
 
           </div>
 
@@ -134,7 +148,7 @@ export default async function ServiceDetailsPage({
         <section className={`${websiteDesign.sectionY} bg-slate-50`}>
           <Container>
 
-            <h2 className="mb-8 text-3xl font-bold">
+            <h2 className="mb-8 text-3xl font-bold text-[var(--site-primary)]">
               Related Services
             </h2>
 
@@ -147,7 +161,7 @@ export default async function ServiceDetailsPage({
                   href={`/services/${item.slug}`}
                   className={`${websiteDesign.card} p-6`}
                 >
-                  <h3 className="text-xl font-semibold">
+                  <h3 className="text-xl font-semibold text-[var(--site-primary)]">
                     {item.title}
                   </h3>
 

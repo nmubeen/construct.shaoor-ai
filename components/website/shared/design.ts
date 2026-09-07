@@ -14,10 +14,10 @@ export const websiteDesign = {
   // the chosen theme color.
   pageHero: "relative overflow-hidden bg-linear-to-b from-[var(--site-primary)] to-[color-mix(in_oklab,var(--site-primary),black_55%)] text-white",
   pageHeroOverlay: "absolute inset-0 bg-linear-to-br from-[var(--site-primary)]/40 via-transparent to-[color-mix(in_oklab,var(--site-primary),black_55%)]/60",
-  // Vertical padding halved (py-16/md:py-24 -> py-8/md:py-12): this is
-  // what actually sets the band's height, since PageHero has no fixed
+  // Vertical padding halved again (py-8/md:py-12 -> py-4/md:py-6): this
+  // is what actually sets the band's height, since PageHero has no fixed
   // height of its own — it just grows to fit its padded content.
-  pageHeroInner: "relative z-10 mx-auto max-w-7xl px-5 py-8 sm:px-8 md:py-12",
+  pageHeroInner: "relative z-10 mx-auto max-w-7xl px-5 py-4 sm:px-8 md:py-6",
   pageHeroSubtitle: "text-sm font-semibold uppercase tracking-[0.3em] text-[var(--site-accent)]",
   pageHeroTitle: "mt-4 text-4xl font-bold tracking-tight text-white md:text-5xl",
   pageHeroDescription: "mt-5 max-w-3xl text-base leading-8 text-slate-200 md:text-lg",

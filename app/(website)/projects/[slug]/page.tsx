@@ -99,45 +99,50 @@ export default async function ProjectPage({ params }: PageProps) {
       />
 
       <Container className="py-12">
-        <div className="relative mb-12 h-75 overflow-hidden rounded-lg md:h-112.5 lg:h-137.5">
-          <Image
-            src={heroImage}
-            alt={project.title}
-            fill
-            priority
-            className="object-cover"
-          />
-        </div>
+        {/* 30/70 split: image column fixed at 30% width, description and
+            details fill the remaining 70% — stacks to a single column
+            below md. Same pattern as the service details page. */}
+        <div className="mb-16 grid gap-8 md:grid-cols-[3fr_7fr]">
+          <div className="relative h-75 overflow-hidden rounded-lg md:h-full">
+            <Image
+              src={heroImage}
+              alt={project.title}
+              fill
+              priority
+              className="object-cover"
+            />
+          </div>
 
-        <div className="mb-12 grid gap-8 md:grid-cols-4">
           <div>
-            <div className="text-sm text-slate-500">Client</div>
-            <div className="font-semibold">{project.client}</div>
-          </div>
-          <div>
-            <div className="text-sm text-slate-500">Location</div>
-            <div className="font-semibold">{project.location}</div>
-          </div>
-          <div>
-            <div className="text-sm text-slate-500">Year</div>
-            <div className="font-semibold">{project.year}</div>
-          </div>
-          <div>
-            <div className="text-sm text-slate-500">Duration</div>
-            <div className="font-semibold">{project.duration}</div>
+            <div className="mb-8 grid gap-6 sm:grid-cols-4">
+              <div>
+                <div className="text-sm text-slate-500">Client</div>
+                <div className="font-semibold">{project.client}</div>
+              </div>
+              <div>
+                <div className="text-sm text-slate-500">Location</div>
+                <div className="font-semibold">{project.location}</div>
+              </div>
+              <div>
+                <div className="text-sm text-slate-500">Year</div>
+                <div className="font-semibold">{project.year}</div>
+              </div>
+              <div>
+                <div className="text-sm text-slate-500">Duration</div>
+                <div className="font-semibold">{project.duration}</div>
+              </div>
+            </div>
+
+            <h2 className="mb-6 text-3xl font-bold text-[var(--site-primary)]">About this Project</h2>
+            <p className="whitespace-pre-line leading-8 text-slate-700">
+              {project.description}
+            </p>
           </div>
         </div>
-
-        <section className="mb-16">
-          <h2 className="mb-6 text-3xl font-bold">About this Project</h2>
-          <p className="whitespace-pre-line leading-8 text-slate-700">
-            {project.description}
-          </p>
-        </section>
 
         {project.highlights.length > 0 && (
           <section className="mb-16">
-            <h2 className="mb-6 text-3xl font-bold">Highlights</h2>
+            <h2 className="mb-6 text-3xl font-bold text-[var(--site-primary)]">Highlights</h2>
             <div className="grid gap-4 md:grid-cols-2">
               {project.highlights.map((h) => (
                 <div key={h.id} className={`${websiteDesign.card} p-5`}>
@@ -150,7 +155,7 @@ export default async function ProjectPage({ params }: PageProps) {
 
         {project.gallery.length > 0 && (
           <section className="mb-16">
-            <h2 className="mb-6 text-3xl font-bold">Gallery</h2>
+            <h2 className="mb-6 text-3xl font-bold text-[var(--site-primary)]">Gallery</h2>
             <div className="grid gap-6 md:grid-cols-3">
               {project.gallery.map((img) => (
                 <div
@@ -171,7 +176,7 @@ export default async function ProjectPage({ params }: PageProps) {
 
         {relatedProjects.length > 0 && (
           <section>
-            <h2 className="mb-6 text-3xl font-bold">Related Projects</h2>
+            <h2 className="mb-6 text-3xl font-bold text-[var(--site-primary)]">Related Projects</h2>
             <div className="grid gap-8 md:grid-cols-3">
               {relatedProjects.map((p) => (
                 <Link key={p.id} href={`/projects/${p.slug}`}>
@@ -188,7 +193,7 @@ export default async function ProjectPage({ params }: PageProps) {
                       />
                     </div>
                     <div className="p-4">
-                      <h3 className="font-semibold">{p.title}</h3>
+                      <h3 className="font-semibold text-[var(--site-primary)]">{p.title}</h3>
                       <p className="text-sm text-slate-500">{p.category}</p>
                     </div>
                   </div>

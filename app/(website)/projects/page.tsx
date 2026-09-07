@@ -71,7 +71,7 @@ export default async function ProjectsPage() {
 
                       <div className="flex items-center justify-between">
 
-                        <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold">
+                        <span className="rounded-full bg-[var(--site-accent)]/15 px-3 py-1 text-xs font-semibold text-[var(--site-primary)]">
                           {project.category}
                         </span>
 
@@ -86,7 +86,7 @@ export default async function ProjectsPage() {
 
                       </div>
 
-                      <h2 className="text-2xl font-bold">
+                      <h2 className={websiteDesign.cardTitle}>
                         {project.title}
                       </h2>
 

@@ -46,21 +46,13 @@ export default async function ServicesPage() {
                 )}
 
                 <div className="p-6">
-                  <h2 className="text-2xl font-bold">
+                  <h2 className={websiteDesign.cardTitle}>
                     {service.title}
                   </h2>
 
                   <p className="mt-4 text-slate-600">
                     {service.shortDescription}
                   </p>
-
-                  {service.subServices.length > 0 && (
-                    <ul className="mt-4 list-disc space-y-1 pl-5 text-sm text-slate-600">
-                      {service.subServices.map((item) => (
-                        <li key={item}>{item}</li>
-                      ))}
-                    </ul>
-                  )}
 
                   <Link
                     href={`/services/${service.slug}`}

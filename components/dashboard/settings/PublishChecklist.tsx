@@ -2,6 +2,30 @@ import Link from "next/link";
 import { CheckCircle2, CircleAlert, ListChecks } from "lucide-react";
 import type { PublishChecklistItem } from "@/lib/services/construct-publish-checklist.service";
 
+function ChecklistGroup({ items }: { items: PublishChecklistItem[] }) {
+  return (
+    <ul className="space-y-2">
+      {items.map((item) => (
+        <li key={item.label} className="flex items-center justify-between gap-3 text-sm">
+          <span className="flex items-center gap-2">
+            {item.met ? (
+              <CheckCircle2 className="size-4 shrink-0 text-[#7D9D76]" />
+            ) : (
+              <CircleAlert className={`size-4 shrink-0 ${item.required ? "text-amber-600" : "text-slate-400"}`} />
+            )}
+            <span className={item.met ? "text-slate-700" : "font-semibold text-slate-900"}>{item.label}</span>
+          </span>
+          {!item.met && (
+            <Link href={item.href} className="shrink-0 text-xs font-semibold text-[#7D9D76] hover:underline">
+              Fix this
+            </Link>
+          )}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 export function PublishChecklist({
   items,
   isPublished,
@@ -10,6 +34,7 @@ export function PublishChecklist({
   isPublished: boolean;
 }) {
   const required = items.filter((item) => item.required);
+  const recommended = items.filter((item) => !item.required);
   const requiredMet = required.filter((item) => item.met).length;
   const missingRequired = required.filter((item) => !item.met);
 
@@ -30,30 +55,16 @@ export function PublishChecklist({
         </p>
       )}
 
-      <ul className="space-y-2">
-        {items.map((item) => (
-          <li key={item.label} className="flex items-center justify-between gap-3 text-sm">
-            <span className="flex items-center gap-2">
-              {item.met ? (
-                <CheckCircle2 className="size-4 shrink-0 text-[#7D9D76]" />
-              ) : (
-                <CircleAlert className={`size-4 shrink-0 ${item.required ? "text-amber-600" : "text-slate-400"}`} />
-              )}
-              <span className={item.met ? "text-slate-700" : "font-semibold text-slate-900"}>{item.label}</span>
-              {!item.required && (
-                <span className="rounded-full bg-slate-200 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-slate-500">
-                  Recommended
-                </span>
-              )}
-            </span>
-            {!item.met && (
-              <Link href={item.href} className="shrink-0 text-xs font-semibold text-[#7D9D76] hover:underline">
-                Fix this
-              </Link>
-            )}
-          </li>
-        ))}
-      </ul>
+      <div className="space-y-4">
+        <div>
+          <p className="mb-2 text-xs font-bold uppercase tracking-wide text-amber-700">Required</p>
+          <ChecklistGroup items={required} />
+        </div>
+        <div>
+          <p className="mb-2 text-xs font-bold uppercase tracking-wide text-slate-500">Recommended</p>
+          <ChecklistGroup items={recommended} />
+        </div>
+      </div>
     </div>
   );
 }

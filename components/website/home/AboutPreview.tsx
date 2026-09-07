@@ -1,7 +1,10 @@
 import Link from "next/link";
 import {
-  FaCheckCircle,
-} from "react-icons/fa";
+  FaClock,
+  FaMedal,
+  FaPeopleGroup,
+  FaShieldHalved,
+} from "react-icons/fa6";
 
 import PageSection from "@/components/website/shared/PageSection";
 import SectionHeader from "@/components/website/shared/SectionHeader";
@@ -36,7 +39,7 @@ export default async function AboutPreview() {
           <div className="mt-8 space-y-4">
 
             <div className="flex items-center gap-3">
-              <FaCheckCircle className="text-green-600" />
+              <FaPeopleGroup className="text-[var(--site-accent)]" />
 
               <span>
                 Experienced multidisciplinary team
@@ -44,7 +47,7 @@ export default async function AboutPreview() {
             </div>
 
             <div className="flex items-center gap-3">
-              <FaCheckCircle className="text-green-600" />
+              <FaMedal className="text-[var(--site-accent)]" />
 
               <span>
                 Quality-driven construction practices
@@ -52,7 +55,7 @@ export default async function AboutPreview() {
             </div>
 
             <div className="flex items-center gap-3">
-              <FaCheckCircle className="text-green-600" />
+              <FaShieldHalved className="text-[var(--site-accent)]" />
 
               <span>
                 Safety-first project execution
@@ -60,7 +63,7 @@ export default async function AboutPreview() {
             </div>
 
             <div className="flex items-center gap-3">
-              <FaCheckCircle className="text-green-600" />
+              <FaClock className="text-[var(--site-accent)]" />
 
               <span>
                 On-time project delivery

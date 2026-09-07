@@ -60,7 +60,21 @@ export async function POST(request: Request) {
   try{await enforceConstructNumericLimit(organizationId,"MAX_MEDIA_ITEMS",await prisma.media.count({where:{organizationId}}));}catch(error){return NextResponse.json({error:error instanceof Error?error.message:"Media limit reached."},{status:403});}
   const originalName = file.name.slice(0, 255);
   const fileName = safeSegment(originalName, "upload");
-  const folder = safeSegment(cleanText(formData.get("folder"), 80) ?? "library", "library");
+
+  // folderId, not a free-typed folder name: the picker only offers real
+  // construct.media_folders rows the user (or the "New folder" action)
+  // actually created — raw SQL, see construct-media-folder.actions.ts.
+  const folderId = cleanText(formData.get("folderId"), 100);
+  let folder = "library";
+  if (folderId) {
+    const rows = await prisma.$queryRaw<{ path: string }[]>`
+      SELECT path FROM construct.media_folders WHERE id = ${folderId}::uuid AND organization_id = ${organizationId}::uuid
+    `;
+    if (rows.length === 0) {
+      return NextResponse.json({ error: "Selected folder not found." }, { status: 400 });
+    }
+    folder = rows[0].path;
+  }
   const storagePath = `${organizationId}/${folder}/${crypto.randomUUID()}-${fileName}`;
   const buffer = Buffer.from(await file.arrayBuffer());
   let width: number | null = null;
@@ -108,6 +122,11 @@ export async function POST(request: Request) {
           type: mediaType,
         },
       });
+      // folderId isn't on the generated client's Media input yet (same
+      // regen block as above) — set the column directly.
+      if (folderId) {
+        await tx.$executeRaw`UPDATE construct.media SET folder_id = ${folderId}::uuid WHERE id = ${created.id}::uuid`;
+      }
       await tx.auditLog.create({
         data: {
           organizationId,
