@@ -14,7 +14,9 @@ import { appUrl } from "@/lib/construct-app-url";
 import { createClient } from "@/lib/supabase/server";
 import { isSafeConstructRedirect } from "./construct-redirect";
 import { registerAppMembership, membershipError } from "./membership";
-import { ensureConstructAccountForCurrentUser } from "./provisioning";
+import { createConstructOrganizationForCurrentUser, reconcileConstructUserForCurrentSession } from "./provisioning";
+
+const ORGANIZATION_SLUG_PATTERN = /^[a-z0-9]{2,32}$/;
 
 export type AuthMode = "email-code" | "verify-code";
 export type AuthResult = { error?: string; codeSent?: boolean; redirect?: string };
@@ -88,18 +90,55 @@ export async function submitAuth(mode: AuthMode, form: FormData): Promise<AuthRe
     return { redirect: `/account/error?reason=${membershipError(membership, "missing")}` };
   }
 
-  // Gate C: idempotent Construct organization provisioning.
-  const provisioned = await ensureConstructAccountForCurrentUser(data.user);
-  if (!provisioned) return { redirect: "/account/pending?reason=provisioning" };
+  // Gate C: reconcile the local user + any pending team invite. This never
+  // creates a new organization — the workspace slug is permanent (see
+  // app/dashboard/settings/page.tsx), so it must be chosen by the person,
+  // not auto-generated. A brand-new signup with no invite to reconcile into
+  // lands on /account/setup instead of /dashboard.
+  const hasOrganization = await reconcileConstructUserForCurrentSession(data.user);
 
   // A team invitation's "sign in with a different account" link round-trips
   // here via a hidden `next` field so the user lands back on that
   // invitation's accept screen instead of /dashboard.
-  return { redirect: isSafeConstructRedirect(requestedNext) ? requestedNext : "/dashboard" };
+  if (isSafeConstructRedirect(requestedNext)) return { redirect: requestedNext };
+
+  return { redirect: hasOrganization ? "/dashboard" : "/account/setup" };
 }
 
 export async function constructSignOutAction() {
   const client = await createClient();
   await client.auth.signOut();
   redirect("/account/login");
+}
+
+/** Completes a brand-new signup that reconcileConstructUserForCurrentSession()
+ * left without an organization — the one place a Construct workspace name
+ * and permanent slug are ever chosen. See app/account/setup/page.tsx. Uses
+ * redirect() directly (not a returned result) — invoked from a plain
+ * <form action={...}>, same convention as the old password actions, unlike
+ * submitAuth() above (called as a function from client-side JS). */
+export async function completeConstructSetupAction(formData: FormData) {
+  const client = await createClient();
+  const {
+    data: { user },
+  } = await client.auth.getUser();
+  if (!user) redirect("/account/login");
+
+  const field = (name: string) => (typeof formData.get(name) === "string" ? String(formData.get(name)) : "");
+  const name = field("name").trim();
+  const slug = field("slug").trim().toLowerCase();
+
+  if (name.length < 2 || name.length > 100) {
+    redirect(`/account/setup?error=${encodeURIComponent("Enter your company name.")}`);
+  }
+  if (!ORGANIZATION_SLUG_PATTERN.test(slug)) {
+    redirect(`/account/setup?error=${encodeURIComponent("Workspace address must be 2-32 lowercase letters or numbers.")}`);
+  }
+
+  const result = await createConstructOrganizationForCurrentUser(user, { name, slug });
+  if (result.ok || result.error === "already-has-organization") redirect("/dashboard");
+  if (result.error === "slug-taken") {
+    redirect(`/account/setup?error=${encodeURIComponent("That workspace address is already taken. Try another.")}`);
+  }
+  redirect(`/account/setup?error=${encodeURIComponent("We couldn't create your workspace. Please try again.")}`);
 }

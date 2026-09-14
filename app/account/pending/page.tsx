@@ -11,23 +11,9 @@ export default async function ActivationPendingPage() {
   if (context.appMembershipError) redirect(`/account/error?reason=${context.appMembershipError}`);
 
   if (!context.membership) {
-    // getOptionalConstructContext() already self-heals organization
-    // provisioning on every call — reaching here with none means that
-    // self-heal itself failed (a real, if rare, failure), not a missing
-    // onboarding step. Offer a way out rather than a dead-end redirect.
-    return (
-      <ConstructAuthShell
-        eyebrow="Setup incomplete"
-        title="We couldn't finish setting up your workspace"
-        description="Sign out and sign back in to try again. Contact Shaoor AI if this keeps happening."
-      >
-        <form action={constructSignOutAction}>
-          <button className="w-full rounded-md border border-[#7D9D76] px-4 py-3 font-semibold text-slate-700 hover:bg-slate-50">
-            Sign out
-          </button>
-        </form>
-      </ConstructAuthShell>
-    );
+    // A brand-new signup — the workspace name/slug are chosen on
+    // /account/setup, never auto-generated (see lib/auth/provisioning.ts).
+    redirect("/account/setup");
   }
 
   const commercial = context.organization ? await getConstructCommercialAccess(context.organization.id) : null;

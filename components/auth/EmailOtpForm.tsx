@@ -46,10 +46,7 @@ export function EmailOtpForm() {
         setStatus(session ? "signed-in" : "signed-out");
       });
       unsubscribe = () => data.subscription.unsubscribe();
-    } catch (cause) {
-      // TEMPORARY DIAGNOSTIC — remove once the root cause of the
-      // "Unable to initialize authentication" report is confirmed.
-      console.error("EmailOtpForm: browser Supabase client failed to initialize", cause);
+    } catch {
       queueMicrotask(() => {
         if (active) {
           setError("Unable to initialize authentication. Reload to retry.");

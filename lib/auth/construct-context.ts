@@ -7,7 +7,7 @@ import { getConstructPrisma } from "@/lib/construct-prisma";
 import { getConstructCommercialAccess } from "@/lib/control/construct-subscription.service";
 import { createClient } from "@/lib/supabase/server";
 import { ensureAppMembership, membershipError } from "@/lib/auth/membership";
-import { ensureConstructAccountForCurrentUser } from "@/lib/auth/provisioning";
+import { reconcileConstructUserForCurrentSession } from "@/lib/auth/provisioning";
 import { logAuthDiagnostic } from "@/lib/auth/diagnostics";
 
 export async function synchronizeConstructUser(authUser: SupabaseUser) {
@@ -76,26 +76,26 @@ export async function getOptionalConstructContext(organizationSlug?: string) {
   });
 
   if (!user) {
-    // Self-heal: an active app membership but no local construct.users/
-    // organizations row yet — e.g. the first Construct visit after
-    // authenticating through another shaoor-ai.com app, or a race right
-    // after verifyOtp. Safe no-op once the row already exists.
+    // Self-heal: an active app membership but no local construct.users row
+    // yet — e.g. the first Construct visit after authenticating through
+    // another shaoor-ai.com app, or a race right after verifyOtp. Only
+    // reconciles (upserts the user row, joins a pending invite) — never
+    // creates a new organization; requireActiveConstructContext() below
+    // sends a brand-new signup to /account/setup to choose one instead.
     logAuthDiagnostic("account_missing");
-    const provisioned = await ensureConstructAccountForCurrentUser(authUser);
-    if (provisioned) {
-      user = await constructPrisma.user.findUnique({
-        where: { id: authUser.id },
-        include: {
-          memberships: {
-            where: organizationSlug
-              ? { organization: { slug: organizationSlug } }
-              : undefined,
-            include: { organization: true },
-            orderBy: { createdAt: "asc" },
-          },
+    await reconcileConstructUserForCurrentSession(authUser);
+    user = await constructPrisma.user.findUnique({
+      where: { id: authUser.id },
+      include: {
+        memberships: {
+          where: organizationSlug
+            ? { organization: { slug: organizationSlug } }
+            : undefined,
+          include: { organization: true },
+          orderBy: { createdAt: "asc" },
         },
-      });
-    }
+      },
+    });
   }
 
   if (!user) {
@@ -121,11 +121,13 @@ export async function requireActiveConstructContext(organizationSlug?: string) {
   if (!context) redirect("/account/login");
   if (context.appMembershipError) redirect(`/account/error?reason=${context.appMembershipError}`);
   if (!context.user || !context.membership || !context.organization) {
-    // Provisioning always runs on-demand during sign-in now (Gate C in
-    // lib/auth/actions.ts, self-healed above) — reaching here with none of
-    // these means provisioning itself failed. /account/pending explains
-    // the state rather than a now-deleted onboarding step.
-    redirect("/account/pending");
+    // A brand-new signup (or a shared identity's first Construct visit)
+    // reconciles fine above but never auto-creates an organization — the
+    // workspace slug is permanent, so it's chosen on /account/setup, not
+    // silently generated. lib/auth/actions.ts's submitAuth() already sends
+    // people there right after verifyOtp; this covers anyone who instead
+    // lands on a protected route directly (a bookmark, a shared link).
+    redirect("/account/setup");
   }
   if (context.organization.status !== "ACTIVE") {
     redirect("/account/pending");
