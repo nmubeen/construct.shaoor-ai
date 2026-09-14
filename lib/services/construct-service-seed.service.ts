@@ -126,103 +126,117 @@ async function ensureServicesFolder(organizationId: string): Promise<string> {
   return created[0].id;
 }
 
-export type SeedConstructDefaultServicesResult =
-  | { seeded: true; count: number }
-  | { seeded: false; reason: "not-empty" };
+export function getConstructDefaultServiceSeedTotal() {
+  return DEFAULT_CONSTRUCT_SERVICES.length;
+}
+
+export type SeedStartResult = { started: true; total: number } | { started: false; reason: "not-empty" };
 
 // No "already seeded" flag by design: a tenant who deletes every service
 // back down to zero and wants to start over from the defaults again
 // should be able to — this stays available for as long as the table is
-// actually empty, not strictly once per organization's lifetime.
-export async function seedConstructDefaultServices(organizationId: string): Promise<SeedConstructDefaultServicesResult> {
+// actually empty, not strictly once per organization's lifetime. Checked
+// once, up front, rather than before every step — see
+// seedConstructDefaultServiceAtIndex for why a step doesn't repeat it.
+export async function startConstructDefaultServiceSeed(organizationId: string): Promise<SeedStartResult> {
+  const existingCount = await getConstructPrisma().service.count({ where: { organizationId } });
+  if (existingCount > 0) return { started: false, reason: "not-empty" };
+  return { started: true, total: DEFAULT_CONSTRUCT_SERVICES.length };
+}
+
+export type SeedStepResult =
+  | { ok: true; title: string; index: number; total: number }
+  | { ok: false; error: string };
+
+// One item's worth of work from the old all-or-nothing seedConstructDefaultServices()
+// — split out so the caller (seedConstructDefaultServiceStepAction) can run
+// the 15 items one at a time across separate requests, giving the browser
+// something to show progress against instead of one long, silent request.
+// Idempotent by slug rather than wrapped in the old bulk function's
+// upload/delete rollback: a step that fails partway (say, item 9 of 15)
+// leaves items 1-8 in place instead of unwinding them, and a retry from
+// item 0 skips anything already created rather than erroring on it — a
+// simpler and more forgiving recovery story than an all-or-nothing rollback.
+export async function seedConstructDefaultServiceAtIndex(organizationId: string, index: number): Promise<SeedStepResult> {
+  const seed = DEFAULT_CONSTRUCT_SERVICES[index];
+  if (!seed) return { ok: false, error: "Invalid step." };
+
   const prisma = getConstructPrisma();
-  const existingCount = await prisma.service.count({ where: { organizationId } });
-  if (existingCount > 0) return { seeded: false, reason: "not-empty" };
+
+  const already = await prisma.service.findUnique({
+    where: { organizationId_slug: { organizationId, slug: seed.slug } },
+    select: { id: true },
+  });
+  if (already) return { ok: true, title: seed.title, index, total: DEFAULT_CONSTRUCT_SERVICES.length };
 
   const [siteSettings, folderId] = await Promise.all([
     prisma.siteSettings.findUnique({ where: { organizationId }, select: { themePrimaryColor: true, themeAccentColor: true } }),
     ensureServicesFolder(organizationId),
   ]);
   const theme = resolveSiteTheme(siteSettings?.themePrimaryColor, siteSettings?.themeAccentColor);
-
   const supabase = await createClient();
-  const uploadedPaths: string[] = [];
-  const createdServiceIds: string[] = [];
 
   try {
-    for (const [index, seed] of DEFAULT_CONSTRUCT_SERVICES.entries()) {
-      const buffer = await renderPlaceholderImage(index, theme.primary, theme.accent);
-      const fileName = `${seed.slug}.png`;
-      const storagePath = `${organizationId}/services/${crypto.randomUUID()}-${fileName}`;
+    const buffer = await renderPlaceholderImage(index, theme.primary, theme.accent);
+    const fileName = `${seed.slug}.png`;
+    const storagePath = `${organizationId}/services/${crypto.randomUUID()}-${fileName}`;
 
-      const { error: uploadError } = await supabase.storage.from(BUCKET).upload(storagePath, buffer, {
-        contentType: "image/png",
-        upsert: false,
+    const { error: uploadError } = await supabase.storage.from(BUCKET).upload(storagePath, buffer, {
+      contentType: "image/png",
+      upsert: false,
+    });
+    if (uploadError) throw new Error(`Could not upload placeholder image for "${seed.title}": ${uploadError.message}`);
+
+    const { data: publicData } = supabase.storage.from(BUCKET).getPublicUrl(storagePath);
+
+    await prisma.$transaction(async (tx) => {
+      const media = await tx.media.create({
+        data: {
+          organizationId,
+          fileName,
+          originalName: fileName,
+          storagePath,
+          url: publicData.publicUrl,
+          folder: "services",
+          mimeType: "image/png",
+          extension: "png",
+          fileSize: buffer.byteLength,
+          width: IMAGE_WIDTH,
+          height: IMAGE_HEIGHT,
+          type: "IMAGE",
+          title: `${seed.title} (placeholder)`,
+        },
       });
-      if (uploadError) throw new Error(`Could not upload placeholder image for "${seed.title}": ${uploadError.message}`);
-      uploadedPaths.push(storagePath);
+      // folderId isn't on the generated client's Media input yet (same
+      // regen block noted throughout this feature) — set it directly.
+      await tx.$executeRaw`UPDATE construct.media SET folder_id = ${folderId}::uuid WHERE id = ${media.id}::uuid`;
 
-      const { data: publicData } = supabase.storage.from(BUCKET).getPublicUrl(storagePath);
-
-      await prisma.$transaction(async (tx) => {
-        const media = await tx.media.create({
-          data: {
-            organizationId,
-            fileName,
-            originalName: fileName,
-            storagePath,
-            url: publicData.publicUrl,
-            folder: "services",
-            mimeType: "image/png",
-            extension: "png",
-            fileSize: buffer.byteLength,
-            width: IMAGE_WIDTH,
-            height: IMAGE_HEIGHT,
-            type: "IMAGE",
-            title: `${seed.title} (placeholder)`,
-          },
-        });
-        // folderId isn't on the generated client's Media input yet (same
-        // regen block noted throughout this feature) — set it directly.
-        await tx.$executeRaw`UPDATE construct.media SET folder_id = ${folderId}::uuid WHERE id = ${media.id}::uuid`;
-
-        const service = await tx.service.create({
-          data: {
-            organizationId,
-            title: seed.title,
-            slug: seed.slug,
-            shortDescription: seed.shortDescription,
-            description: seed.description,
-            imageUrl: publicData.publicUrl,
-            displayOrder: index,
-            isActive: true,
-            seoTitle: seed.seoTitle,
-            seoDescription: seed.seoDescription,
-            seoKeywords: seed.seoKeywords,
-          },
-        });
-        createdServiceIds.push(service.id);
-
-        // Raw SQL: same SubService regen note as elsewhere in this
-        // feature — switch to tx.subService.createMany once available.
-        for (const [subIndex, text] of seed.subServices.entries()) {
-          await tx.$executeRaw`INSERT INTO construct.sub_services (organization_id, service_id, text, sort_order) VALUES (${organizationId}::uuid, ${service.id}::uuid, ${text}, ${subIndex})`;
-        }
+      const service = await tx.service.create({
+        data: {
+          organizationId,
+          title: seed.title,
+          slug: seed.slug,
+          shortDescription: seed.shortDescription,
+          description: seed.description,
+          imageUrl: publicData.publicUrl,
+          displayOrder: index,
+          isActive: true,
+          seoTitle: seed.seoTitle,
+          seoDescription: seed.seoDescription,
+          seoKeywords: seed.seoKeywords,
+        },
       });
-    }
+
+      // Raw SQL: same SubService regen note as elsewhere in this feature —
+      // switch to tx.subService.createMany once available.
+      for (const [subIndex, text] of seed.subServices.entries()) {
+        await tx.$executeRaw`INSERT INTO construct.sub_services (organization_id, service_id, text, sort_order) VALUES (${organizationId}::uuid, ${service.id}::uuid, ${text}, ${subIndex})`;
+      }
+    });
+
+    return { ok: true, title: seed.title, index, total: DEFAULT_CONSTRUCT_SERVICES.length };
   } catch (error) {
-    // Best-effort cleanup so a failure partway through (e.g. the 9th of
-    // 15 uploads) doesn't leave a half-seeded table that then
-    // permanently blocks re-seeding (the empty-table guard above would
-    // see it as "not empty" and refuse to try again).
-    if (createdServiceIds.length > 0) {
-      await prisma.service.deleteMany({ where: { id: { in: createdServiceIds }, organizationId } }).catch(() => {});
-    }
-    if (uploadedPaths.length > 0) {
-      await supabase.storage.from(BUCKET).remove(uploadedPaths).catch(() => {});
-    }
-    throw error;
+    console.error(`Seeding "${seed.title}" (step ${index + 1}) failed:`, error);
+    return { ok: false, error: `Could not create "${seed.title}". ${error instanceof Error ? error.message : ""}`.trim() };
   }
-
-  return { seeded: true, count: DEFAULT_CONSTRUCT_SERVICES.length };
 }

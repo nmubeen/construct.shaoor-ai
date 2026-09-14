@@ -7,7 +7,10 @@ import type { Prisma } from "@prisma/construct-client";
 
 import { requireActiveConstructContext } from "@/lib/auth/construct-context";
 import { getConstructPrisma } from "@/lib/construct-prisma";
-import { seedConstructDefaultServices } from "@/lib/services/construct-service-seed.service";
+import {
+  seedConstructDefaultServiceAtIndex,
+  startConstructDefaultServiceSeed,
+} from "@/lib/services/construct-service-seed.service";
 
 // Zod's default messages ("Too small: expected string to have >=10
 // characters") don't name the field, so a form with several similarly-
@@ -118,15 +121,38 @@ export async function deleteConstructServiceAction(formData: FormData) {
 }
 
 // Available only from the empty-state button on /dashboard/services (see
-// seedConstructDefaultServices for why there's no persisted "already
+// startConstructDefaultServiceSeed for why there's no persisted "already
 // seeded" flag — deleting every service back to zero intentionally makes
 // this available again, by design, not as an accidental side effect).
-export async function seedConstructDefaultServicesAction() {
+//
+// Called as a plain async function from SeedServicesButton (a client
+// component), not via <form action>, and split into a start + 15 per-item
+// steps rather than one call — the seed is slow enough (an image render +
+// upload + DB write per service) that a single request left the button
+// looking hung with no feedback until the whole thing finished. This way
+// the client can show a real percentage/step count between calls.
+export async function startConstructServiceSeedAction() {
   const context = await requireActiveConstructContext();
   requireEditor(context.role);
-  const result = await seedConstructDefaultServices(context.organizationId);
-  if (!result.seeded) redirect("/dashboard/services?error=Services already exist — seeding is only available for an empty list.");
-  await getConstructPrisma().auditLog.create({ data: { organizationId: context.organizationId, actorUserId: context.userId, module: "services", action: "seed", recordId: context.organizationId, title: `Seeded ${result.count} default services` } });
-  revalidatePath("/dashboard"); revalidatePath("/dashboard/services"); revalidatePath("/dashboard/media");
-  redirect(`/dashboard/services?seeded=${result.count}`);
+  return startConstructDefaultServiceSeed(context.organizationId);
+}
+
+export async function seedConstructDefaultServiceStepAction(index: number) {
+  const context = await requireActiveConstructContext();
+  requireEditor(context.role);
+  const result = await seedConstructDefaultServiceAtIndex(context.organizationId, index);
+  if (result.ok && index === result.total - 1) {
+    await getConstructPrisma().auditLog.create({
+      data: {
+        organizationId: context.organizationId,
+        actorUserId: context.userId,
+        module: "services",
+        action: "seed",
+        recordId: context.organizationId,
+        title: `Seeded ${result.total} default services`,
+      },
+    });
+    revalidatePath("/dashboard"); revalidatePath("/dashboard/services"); revalidatePath("/dashboard/media");
+  }
+  return result;
 }
