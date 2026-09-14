@@ -1,7 +1,7 @@
 import { BookOpen, Building2, FolderKanban, Gauge, ImageIcon, LayoutTemplate, LogOut, Mail, Search, Settings, Users, Wrench } from "lucide-react";
 import Link from "next/link";
 
-import { constructSignOutAction } from "@/lib/actions/construct-auth.actions";
+import { constructSignOutAction } from "@/lib/auth/actions";
 
 const navigation = [
   { href: "/dashboard", label: "Overview", icon: Gauge, available: true, sections: ["Quick stats", "CMS migration status", "Website address & preview"] },

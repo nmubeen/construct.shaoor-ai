@@ -1,0 +1,318 @@
+<?xml version="1.0" ?>
+<Services>
+  <Service>
+    <ServiceName>Building Construction</ServiceName>
+    <SubServices>
+      <SubService>Independent Houses &amp; Villas</SubService>
+      <SubService>Residential Buildings</SubService>
+      <SubService>Apartments</SubService>
+      <SubService>Commercial Buildings</SubService>
+      <SubService>Office Buildings</SubService>
+      <SubService>Shops &amp; Showrooms</SubService>
+      <SubService>Warehouses &amp; Sheds</SubService>
+      <SubService>Schools &amp; Institutional Buildings</SubService>
+      <SubService>Turnkey Construction</SubService>
+      <SubService>Building Extensions &amp; Additional Floors</SubService>
+    </SubServices>
+    <ShortDescription>End-to-end construction of homes, apartments, offices, and commercial buildings, from foundation to finishing.</ShortDescription>
+    <FullDescription>We deliver complete building construction services covering independent houses, villas, apartments, and residential complexes, along with commercial, office, and institutional buildings. Our turnkey construction model manages design, materials, labour, and quality control under one roof, so clients get a single point of accountability from groundbreaking to handover. We also handle building extensions and additional floors on existing structures, matching new work to the original design and structural capacity.</FullDescription>
+    <SEOTitle>Building Construction Services | Homes, Apartments &amp; Commercial</SEOTitle>
+    <SEODescription>Turnkey building construction for villas, apartments, offices, shops, warehouses &amp; schools. Reliable quality, on-time handover &amp; building extensions.</SEODescription>
+    <SEOKeywords>building construction, house construction, villa construction, apartment construction, commercial building construction, turnkey construction, office building construction, building extension, additional floor construction, institutional buildings</SEOKeywords>
+    <CanonicalURL>/services/building-construction</CanonicalURL>
+  </Service>
+  <Service>
+    <ServiceName>Renovation &amp; Remodeling</ServiceName>
+    <SubServices>
+      <SubService>Complete Home Renovation</SubService>
+      <SubService>Office &amp; Commercial Renovation</SubService>
+      <SubService>Kitchen Renovation</SubService>
+      <SubService>Bathroom Renovation</SubService>
+      <SubService>Building Refurbishment</SubService>
+      <SubService>Structural Alterations</SubService>
+      <SubService>Flooring Replacement</SubService>
+      <SubService>Ceiling Renovation</SubService>
+      <SubService>Painting &amp; Repainting</SubService>
+      <SubService>Building Extension Works</SubService>
+    </SubServices>
+    <ShortDescription>Complete home and office renovation, from kitchens and bathrooms to full structural remodeling.</ShortDescription>
+    <FullDescription>Our renovation and remodeling services refresh and reconfigure homes, offices, and commercial spaces of any age. We handle complete home and office renovations, targeted kitchen and bathroom remodeling, and building refurbishment for tired or damaged structures. Where a space needs more than a facelift, our team carries out structural alterations, flooring replacement, ceiling renovation, and building extension works, finished with expert painting and repainting to bring the property back to a like-new standard.</FullDescription>
+    <SEOTitle>Renovation &amp; Remodeling Services | Home &amp; Office Makeovers</SEOTitle>
+    <SEODescription>Home, kitchen, bathroom &amp; office renovation services. Structural alterations, flooring, ceiling renovation &amp; repainting handled by one experienced team.</SEODescription>
+    <SEOKeywords>home renovation, office renovation, kitchen renovation, bathroom renovation, building refurbishment, structural alterations, flooring replacement, ceiling renovation, repainting services, remodeling contractor</SEOKeywords>
+    <CanonicalURL>/services/renovation-and-remodeling</CanonicalURL>
+  </Service>
+  <Service>
+    <ServiceName>Civil &amp; Structural Works</ServiceName>
+    <SubServices>
+      <SubService>RCC Works</SubService>
+      <SubService>Foundations &amp; Footings</SubService>
+      <SubService>Brickwork &amp; Blockwork</SubService>
+      <SubService>Plastering</SubService>
+      <SubService>Structural Steel Works</SubService>
+      <SubService>Concrete Flooring</SubService>
+      <SubService>Compound &amp; Boundary Walls</SubService>
+      <SubService>Retaining Walls</SubService>
+      <SubService>Structural Repairs &amp; Strengthening</SubService>
+      <SubService>Demolition Works</SubService>
+    </SubServices>
+    <ShortDescription>RCC works, foundations, brickwork, and structural repairs that form the backbone of every build.</ShortDescription>
+    <FullDescription>Our civil and structural works team handles the foundational engineering that every construction project depends on, including RCC works, foundations and footings, and brickwork and blockwork. We carry out plastering, structural steel works, and concrete flooring to specification, along with compound, boundary, and retaining walls. For existing structures, we provide structural repairs and strengthening to restore load-bearing capacity, and manage demolition works safely when a site needs to be cleared for new construction.</FullDescription>
+    <SEOTitle>Civil &amp; Structural Works | RCC, Foundations &amp; Structural Repairs</SEOTitle>
+    <SEODescription>Expert civil and structural works: RCC, foundations, brickwork, plastering, structural steel, retaining walls, structural strengthening &amp; demolition.</SEODescription>
+    <SEOKeywords>civil works, structural works, RCC construction, foundation work, brickwork, plastering services, structural steel works, retaining wall construction, structural strengthening, demolition works</SEOKeywords>
+    <CanonicalURL>/services/civil-and-structural-works</CanonicalURL>
+  </Service>
+  <Service>
+    <ServiceName>Interior &amp; Fit-Out Works</ServiceName>
+    <SubServices>
+      <SubService>Residential Interiors</SubService>
+      <SubService>Office Interiors</SubService>
+      <SubService>Shop &amp; Showroom Fit-Outs</SubService>
+      <SubService>False Ceilings</SubService>
+      <SubService>Gypsum &amp; Partition Works</SubService>
+      <SubService>Carpentry &amp; Woodwork</SubService>
+      <SubService>Modular Kitchens</SubService>
+      <SubService>Wardrobes &amp; Storage</SubService>
+      <SubService>Interior Painting</SubService>
+      <SubService>Decorative Finishes</SubService>
+    </SubServices>
+    <ShortDescription>Residential and commercial interior fit-outs, from modular kitchens to false ceilings and carpentry.</ShortDescription>
+    <FullDescription>We design and execute interior and fit-out works for homes, offices, shops, and showrooms, translating a space's purpose into a finished, functional interior. Services include false ceilings, gypsum and partition works, and custom carpentry and woodwork, along with modular kitchens and wardrobes built to fit each space. Interior painting and decorative finishes complete the look, giving residential and commercial clients a coordinated interior delivered by one team.</FullDescription>
+    <SEOTitle>Interior &amp; Fit-Out Works | Residential &amp; Commercial Interiors</SEOTitle>
+    <SEODescription>Interior fit-out services for homes, offices &amp; showrooms: false ceilings, partitions, modular kitchens, wardrobes, carpentry &amp; decorative finishes.</SEODescription>
+    <SEOKeywords>interior fit-out, residential interiors, office interiors, showroom fit-out, false ceiling work, modular kitchen, gypsum partition, carpentry work, interior painting, decorative finishes</SEOKeywords>
+    <CanonicalURL>/services/interior-and-fit-out-works</CanonicalURL>
+  </Service>
+  <Service>
+    <ServiceName>Flooring, Tiling &amp; Stone Works</ServiceName>
+    <SubServices>
+      <SubService>Vitrified Tile Flooring</SubService>
+      <SubService>Ceramic Tile Works</SubService>
+      <SubService>Marble Flooring</SubService>
+      <SubService>Granite Flooring</SubService>
+      <SubService>Kota Stone Flooring</SubService>
+      <SubService>Wooden / Laminate Flooring</SubService>
+      <SubService>Bathroom &amp; Kitchen Tiling</SubService>
+      <SubService>Wall Cladding</SubService>
+      <SubService>Staircase Stone Works</SubService>
+      <SubService>Outdoor &amp; Parking Tiles</SubService>
+    </SubServices>
+    <ShortDescription>Vitrified, ceramic, marble, granite, and wooden flooring for interiors, bathrooms, and outdoor areas.</ShortDescription>
+    <FullDescription>Our flooring, tiling, and stone works cover every surface a building needs, from vitrified and ceramic tile flooring to marble, granite, and Kota stone installations. We also install wooden and laminate flooring, bathroom and kitchen tiling, and wall cladding for interior and exterior finishes. For durability in high-traffic and outdoor zones, we complete staircase stone works and outdoor and parking tile installations to a precise, long-lasting finish.</FullDescription>
+    <SEOTitle>Flooring, Tiling &amp; Stone Works | Vitrified, Marble &amp; Granite</SEOTitle>
+    <SEODescription>Flooring &amp; tiling services: vitrified tiles, marble, granite, Kota stone, wooden flooring, wall cladding &amp; outdoor tiling for homes and offices.</SEODescription>
+    <SEOKeywords>flooring services, tiling contractor, vitrified tile flooring, marble flooring, granite flooring, Kota stone flooring, wall cladding, bathroom tiling, outdoor tiling, wooden flooring</SEOKeywords>
+    <CanonicalURL>/services/flooring-tiling-and-stone-works</CanonicalURL>
+  </Service>
+  <Service>
+    <ServiceName>Electrical Works</ServiceName>
+    <SubServices>
+      <SubService>Complete Building Electrification</SubService>
+      <SubService>Electrical Wiring &amp; Rewiring</SubService>
+      <SubService>Switches &amp; Socket Installation</SubService>
+      <SubService>Lighting Installation</SubService>
+      <SubService>Electrical Panels &amp; Distribution Boards</SubService>
+      <SubService>Earthing</SubService>
+      <SubService>Inverter &amp; UPS Wiring</SubService>
+      <SubService>Generator Wiring</SubService>
+      <SubService>CCTV &amp; Security Wiring</SubService>
+      <SubService>Data &amp; Network Cabling</SubService>
+    </SubServices>
+    <ShortDescription>Complete building electrification, wiring, panels, and security and network cabling.</ShortDescription>
+    <FullDescription>We provide complete electrical works for new and existing buildings, including full building electrification, wiring and rewiring, and switch and socket installation. Our team designs and installs lighting, electrical panels, and distribution boards, along with earthing systems for safety compliance. We also handle inverter, UPS, and generator wiring, plus CCTV, security, and data and network cabling, so a property's power and connectivity needs are covered in one scope.</FullDescription>
+    <SEOTitle>Electrical Works | Wiring, Panels &amp; Building Electrification</SEOTitle>
+    <SEODescription>Licensed electrical works: building electrification, wiring, lighting, distribution panels, earthing, generator wiring, CCTV &amp; network cabling.</SEODescription>
+    <SEOKeywords>electrical works, building electrification, electrical wiring, lighting installation, distribution panel installation, earthing work, generator wiring, CCTV wiring, network cabling, electrical contractor</SEOKeywords>
+    <CanonicalURL>/services/electrical-works</CanonicalURL>
+  </Service>
+  <Service>
+    <ServiceName>Plumbing &amp; Sanitary Works</ServiceName>
+    <SubServices>
+      <SubService>Water Supply Plumbing</SubService>
+      <SubService>Drainage &amp; Sewerage</SubService>
+      <SubService>Bathroom Plumbing</SubService>
+      <SubService>Sanitaryware Installation</SubService>
+      <SubService>Kitchen Plumbing</SubService>
+      <SubService>Water Tank Installation</SubService>
+      <SubService>Pumps &amp; Motors</SubService>
+      <SubService>Rainwater Drainage</SubService>
+      <SubService>Plumbing Repairs</SubService>
+      <SubService>Water Leakage Rectification</SubService>
+    </SubServices>
+    <ShortDescription>Water supply, drainage, bathroom plumbing, and sanitaryware installation for homes and buildings.</ShortDescription>
+    <FullDescription>Our plumbing and sanitary works cover water supply plumbing, drainage and sewerage systems, and bathroom and kitchen plumbing for residential and commercial projects. We install sanitaryware, water tanks, pumps, and motors, and set up rainwater drainage systems to manage runoff effectively. When issues arise, our team also handles plumbing repairs and water leakage rectification to protect the building's structure and interiors.</FullDescription>
+    <SEOTitle>Plumbing &amp; Sanitary Works | Water Supply, Drainage &amp; Repairs</SEOTitle>
+    <SEODescription>Plumbing services: water supply, drainage, bathroom &amp; kitchen plumbing, sanitaryware installation, water tanks, pumps &amp; leakage rectification.</SEODescription>
+    <SEOKeywords>plumbing services, sanitary works, water supply plumbing, drainage services, bathroom plumbing, sanitaryware installation, water tank installation, plumbing repairs, water leakage rectification, pump installation</SEOKeywords>
+    <CanonicalURL>/services/plumbing-and-sanitary-works</CanonicalURL>
+  </Service>
+  <Service>
+    <ServiceName>Waterproofing &amp; Roof Works</ServiceName>
+    <SubServices>
+      <SubService>Terrace Waterproofing</SubService>
+      <SubService>Bathroom Waterproofing</SubService>
+      <SubService>Basement Waterproofing</SubService>
+      <SubService>Water Tank Waterproofing</SubService>
+      <SubService>Roof Waterproofing</SubService>
+      <SubService>Roof Repair</SubService>
+      <SubService>Dampness Treatment</SubService>
+      <SubService>Crack Sealing</SubService>
+      <SubService>Heat / Thermal Insulation</SubService>
+      <SubService>Protective Coatings</SubService>
+    </SubServices>
+    <ShortDescription>Terrace, bathroom, and basement waterproofing along with roof repair and dampness treatment.</ShortDescription>
+    <FullDescription>We protect buildings from water damage with comprehensive waterproofing and roof works, including terrace, bathroom, basement, and water tank waterproofing. Our roof waterproofing and roof repair services address leaks and wear before they cause structural damage. We also carry out dampness treatment, crack sealing, heat and thermal insulation, and protective coatings, giving buildings lasting protection against moisture and weather.</FullDescription>
+    <SEOTitle>Waterproofing &amp; Roof Works | Terrace, Basement &amp; Roof Repair</SEOTitle>
+    <SEODescription>Waterproofing services for terraces, bathrooms, basements &amp; roofs, plus dampness treatment, crack sealing &amp; thermal insulation coatings.</SEODescription>
+    <SEOKeywords>waterproofing services, terrace waterproofing, bathroom waterproofing, basement waterproofing, roof waterproofing, roof repair, dampness treatment, crack sealing, thermal insulation, protective coatings</SEOKeywords>
+    <CanonicalURL>/services/waterproofing-and-roof-works</CanonicalURL>
+  </Service>
+  <Service>
+    <ServiceName>Painting &amp; Finishing Works</ServiceName>
+    <SubServices>
+      <SubService>Interior Painting</SubService>
+      <SubService>Exterior Painting</SubService>
+      <SubService>Texture Painting</SubService>
+      <SubService>Wall Putty</SubService>
+      <SubService>Primer &amp; Finishing</SubService>
+      <SubService>Enamel Painting</SubService>
+      <SubService>Waterproof Exterior Coatings</SubService>
+      <SubService>Wood Polishing</SubService>
+      <SubService>Metal Painting</SubService>
+      <SubService>Repainting &amp; Maintenance</SubService>
+    </SubServices>
+    <ShortDescription>Interior and exterior painting, texture finishes, and wood and metal polishing services.</ShortDescription>
+    <FullDescription>Our painting and finishing works cover interior and exterior painting, texture painting, and wall putty application for a smooth, lasting base coat. We use quality primers and finishing coats, including enamel painting and waterproof exterior coatings built to withstand weather. The team also provides wood polishing and metal painting, plus repainting and maintenance packages to keep a property looking its best year after year.</FullDescription>
+    <SEOTitle>Painting &amp; Finishing Works | Interior, Exterior &amp; Texture Painting</SEOTitle>
+    <SEODescription>Interior &amp; exterior painting, texture finishes, wall putty, enamel painting, waterproof coatings, wood polishing &amp; repainting services.</SEODescription>
+    <SEOKeywords>painting services, interior painting, exterior painting, texture painting, wall putty application, enamel painting, waterproof exterior coating, wood polishing, metal painting, repainting contractor</SEOKeywords>
+    <CanonicalURL>/services/painting-and-finishing-works</CanonicalURL>
+  </Service>
+  <Service>
+    <ServiceName>Doors,  Glass &amp; Fabrication</ServiceName>
+    <SubServices>
+      <SubService>Wooden Doors &amp; Windows</SubService>
+      <SubService>uPVC Doors &amp; Windows</SubService>
+      <SubService>Aluminium Doors &amp; Windows</SubService>
+      <SubService>Glass Doors &amp; Partitions</SubService>
+      <SubService>Toughened Glass Works</SubService>
+      <SubService>MS Fabrication</SubService>
+      <SubService>Stainless Steel Fabrication</SubService>
+      <SubService>Railings &amp; Handrails</SubService>
+      <SubService>Grills &amp; Gates</SubService>
+      <SubService>Roofing Sheds &amp; Canopies</SubService>
+    </SubServices>
+    <ShortDescription>Wooden, uPVC, and aluminium doors and windows, glass partitions, and steel fabrication.</ShortDescription>
+    <FullDescription>We supply and install wooden, uPVC, and aluminium doors and windows for residential and commercial buildings, along with glass doors, partitions, and toughened glass works for a modern finish. Our fabrication division handles MS and stainless steel fabrication, including railings, handrails, grills, and gates. We also design and build roofing sheds and canopies, combining structural fabrication with functional and aesthetic finishing.</FullDescription>
+    <SEOTitle>Doors, Glass &amp; Fabrication Works | Windows, Railings &amp; Sheds</SEOTitle>
+    <SEODescription>Doors &amp; windows in wood, uPVC &amp; aluminium, glass partitions, toughened glass, steel fabrication, railings, grills, gates &amp; roofing sheds.</SEODescription>
+    <SEOKeywords>doors and windows, uPVC doors, aluminium windows, glass partitions, toughened glass work, MS fabrication, stainless steel fabrication, railings and handrails, grills and gates, roofing sheds</SEOKeywords>
+    <CanonicalURL>/services/doors-glass-and-fabrication</CanonicalURL>
+  </Service>
+  <Service>
+    <ServiceName>External &amp; Site Development</ServiceName>
+    <SubServices>
+      <SubService>Site Clearing &amp; Levelling</SubService>
+      <SubService>Excavation &amp; Earthwork</SubService>
+      <SubService>Internal Roads</SubService>
+      <SubService>Driveways</SubService>
+      <SubService>Parking Areas</SubService>
+      <SubService>Paver Blocks</SubService>
+      <SubService>Footpaths &amp; Kerbs</SubService>
+      <SubService>Stormwater Drains</SubService>
+      <SubService>Compound Walls &amp; Gates</SubService>
+      <SubService>External Lighting</SubService>
+    </SubServices>
+    <ShortDescription>Site clearing, excavation, internal roads, driveways, and stormwater drainage for new sites.</ShortDescription>
+    <FullDescription>Our external and site development services prepare and finish the land around a building, starting with site clearing, levelling, excavation, and earthwork. We construct internal roads, driveways, and parking areas using paver blocks, along with footpaths, kerbs, and stormwater drains for proper drainage. Compound walls, gates, and external lighting complete the site, giving properties a secure, well-finished exterior.</FullDescription>
+    <SEOTitle>External &amp; Site Development | Roads, Driveways &amp; Site Works</SEOTitle>
+    <SEODescription>Site development services: clearing, excavation, internal roads, driveways, paver block parking, stormwater drains, compound walls &amp; lighting.</SEODescription>
+    <SEOKeywords>site development, site clearing, excavation works, internal road construction, driveway construction, paver block parking, stormwater drainage, compound wall construction, external lighting, earthwork</SEOKeywords>
+    <CanonicalURL>/services/external-and-site-development</CanonicalURL>
+  </Service>
+  <Service>
+    <ServiceName>Landscaping &amp; Outdoor Works</ServiceName>
+    <SubServices>
+      <SubService>Garden Development</SubService>
+      <SubService>Lawn Development</SubService>
+      <SubService>Hard Landscaping</SubService>
+      <SubService>Walkways</SubService>
+      <SubService>Pergolas &amp; Gazebos</SubService>
+      <SubService>Outdoor Seating</SubService>
+      <SubService>Irrigation Systems</SubService>
+      <SubService>Outdoor Lighting</SubService>
+      <SubService>Water Features</SubService>
+      <SubService>Terrace Gardens</SubService>
+    </SubServices>
+    <ShortDescription>Garden and lawn development, hard landscaping, irrigation, and outdoor lighting design.</ShortDescription>
+    <FullDescription>We create outdoor spaces that complement a building's design through garden and lawn development, hard landscaping, and walkway construction. Our landscaping team adds pergolas, gazebos, and outdoor seating areas for functional, inviting spaces, backed by irrigation systems that keep gardens healthy with minimal upkeep. Outdoor lighting, water features, and terrace gardens round out the design, turning unused outdoor areas into an extension of the living or working space.</FullDescription>
+    <SEOTitle>Landscaping &amp; Outdoor Works | Gardens, Lawns &amp; Outdoor Living</SEOTitle>
+    <SEODescription>Landscaping services: garden &amp; lawn development, hard landscaping, pergolas, irrigation systems, outdoor lighting, water features &amp; terrace gardens.</SEODescription>
+    <SEOKeywords>landscaping services, garden development, lawn development, hard landscaping, pergola construction, irrigation system installation, outdoor lighting, water features, terrace garden, outdoor design</SEOKeywords>
+    <CanonicalURL>/services/landscaping-and-outdoor-works</CanonicalURL>
+  </Service>
+  <Service>
+    <ServiceName>Repair &amp; Maintenance</ServiceName>
+    <SubServices>
+      <SubService>Civil Repairs</SubService>
+      <SubService>Plumbing Repairs</SubService>
+      <SubService>Electrical Repairs</SubService>
+      <SubService>Waterproofing Repairs</SubService>
+      <SubService>Roof Repairs</SubService>
+      <SubService>Painting &amp; Touch-Ups</SubService>
+      <SubService>Tile &amp; Flooring Repairs</SubService>
+      <SubService>Door &amp; Window Repairs</SubService>
+      <SubService>Common Area Maintenance</SubService>
+      <SubService>Annual Maintenance Contracts</SubService>
+    </SubServices>
+    <ShortDescription>Civil, plumbing, electrical, and waterproofing repairs plus annual maintenance contracts.</ShortDescription>
+    <FullDescription>Our repair and maintenance services keep buildings running smoothly long after construction is complete. We handle civil, plumbing, and electrical repairs, along with waterproofing and roof repairs to address leaks and damage before they worsen. Painting touch-ups, tile and flooring repairs, and door and window repairs restore a property's finish, while our common area maintenance and annual maintenance contracts give owners a dependable, ongoing upkeep plan.</FullDescription>
+    <SEOTitle>Repair &amp; Maintenance Services | Civil, Plumbing &amp; Electrical</SEOTitle>
+    <SEODescription>Repair &amp; maintenance services: civil, plumbing, electrical &amp; waterproofing repairs, tile and flooring fixes, plus annual maintenance contracts.</SEODescription>
+    <SEOKeywords>repair and maintenance, civil repairs, plumbing repairs, electrical repairs, waterproofing repairs, roof repair, tile and flooring repair, door and window repair, annual maintenance contract, common area maintenance</SEOKeywords>
+    <CanonicalURL>/services/repair-and-maintenance</CanonicalURL>
+  </Service>
+  <Service>
+    <ServiceName>Design &amp; Pre-Construction</ServiceName>
+    <SubServices>
+      <SubService>Architectural Planning</SubService>
+      <SubService>Floor Plans</SubService>
+      <SubService>Structural Design</SubService>
+      <SubService>3D Elevation &amp; Visualization</SubService>
+      <SubService>Interior Design</SubService>
+      <SubService>Site Survey</SubService>
+      <SubService>Quantity Estimation</SubService>
+      <SubService>BOQ Preparation</SubService>
+      <SubService>Cost Estimation</SubService>
+      <SubService>Construction Planning</SubService>
+    </SubServices>
+    <ShortDescription>Architectural planning, floor plans, 3D elevations, and cost and quantity estimation.</ShortDescription>
+    <FullDescription>Before construction begins, our design and pre-construction team develops architectural plans, floor plans, and structural designs tailored to the client's needs and site conditions. We produce 3D elevations and visualizations along with interior design concepts, so clients can see the finished project before ground is broken. Supporting services include site surveys, quantity estimation, BOQ preparation, cost estimation, and detailed construction planning to keep the project on budget and on schedule.</FullDescription>
+    <SEOTitle>Design &amp; Pre-Construction Services | Planning, 3D &amp; Estimation</SEOTitle>
+    <SEODescription>Architectural planning, floor plans, structural design, 3D elevations, site survey, BOQ preparation &amp; cost estimation before construction starts.</SEODescription>
+    <SEOKeywords>architectural planning, floor plan design, structural design, 3D elevation, interior design, site survey, quantity estimation, BOQ preparation, cost estimation, construction planning</SEOKeywords>
+    <CanonicalURL>/services/design-and-pre-construction</CanonicalURL>
+  </Service>
+  <Service>
+    <ServiceName>Project Management</ServiceName>
+    <SubServices>
+      <SubService>Construction Project Management</SubService>
+      <SubService>Site Supervision</SubService>
+      <SubService>Planning &amp; Scheduling</SubService>
+      <SubService>Cost &amp; Budget Control</SubService>
+      <SubService>Contractor Coordination</SubService>
+      <SubService>Vendor Coordination</SubService>
+      <SubService>Material Procurement</SubService>
+      <SubService>Quality Control</SubService>
+      <SubService>Safety Management</SubService>
+      <SubService>Progress Monitoring &amp; Reporting</SubService>
+    </SubServices>
+    <ShortDescription>Site supervision, scheduling, cost control, and coordination for smooth project delivery.</ShortDescription>
+    <FullDescription>Our project management services oversee construction from start to finish, providing site supervision along with detailed planning and scheduling to keep work on track. We manage cost and budget control, contractor and vendor coordination, and material procurement so resources are available when needed. Ongoing quality control, safety management, and progress monitoring and reporting keep clients informed and projects accountable at every stage.</FullDescription>
+    <SEOTitle>Construction Project Management | Site Supervision &amp; Cost Control</SEOTitle>
+    <SEODescription>Project management services: site supervision, scheduling, cost &amp; budget control, contractor coordination, quality control &amp; progress reporting.</SEODescription>
+    <SEOKeywords>construction project management, site supervision, project scheduling, cost and budget control, contractor coordination, vendor coordination, material procurement, quality control, safety management, progress reporting</SEOKeywords>
+    <CanonicalURL>/services/project-management</CanonicalURL>
+  </Service>
+</Services>

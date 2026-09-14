@@ -1,17 +1,38 @@
 import { redirect } from "next/navigation";
 
 import { ConstructAuthShell } from "@/components/auth/ConstructAuthShell";
-import { constructSignOutAction } from "@/lib/actions/construct-auth.actions";
+import { constructSignOutAction } from "@/lib/auth/actions";
 import { getOptionalConstructContext } from "@/lib/auth/construct-context";
 import { getConstructCommercialAccess } from "@/lib/control/construct-subscription.service";
 
 export default async function ActivationPendingPage() {
   const context = await getOptionalConstructContext();
   if (!context) redirect("/account/login");
-  if (!context.membership) redirect("/account/signup");
-  const commercial=context.organization?await getConstructCommercialAccess(context.organization.id):null;
-  const commerciallyBlocked=Boolean(commercial&&!commercial.accessAllowed);
-  if (context.organization?.status === "ACTIVE"&&!commerciallyBlocked) redirect("/dashboard");
+  if (context.appMembershipError) redirect(`/account/error?reason=${context.appMembershipError}`);
+
+  if (!context.membership) {
+    // getOptionalConstructContext() already self-heals organization
+    // provisioning on every call — reaching here with none means that
+    // self-heal itself failed (a real, if rare, failure), not a missing
+    // onboarding step. Offer a way out rather than a dead-end redirect.
+    return (
+      <ConstructAuthShell
+        eyebrow="Setup incomplete"
+        title="We couldn't finish setting up your workspace"
+        description="Sign out and sign back in to try again. Contact Shaoor AI if this keeps happening."
+      >
+        <form action={constructSignOutAction}>
+          <button className="w-full rounded-md border border-[#7D9D76] px-4 py-3 font-semibold text-slate-700 hover:bg-slate-50">
+            Sign out
+          </button>
+        </form>
+      </ConstructAuthShell>
+    );
+  }
+
+  const commercial = context.organization ? await getConstructCommercialAccess(context.organization.id) : null;
+  const commerciallyBlocked = Boolean(commercial && !commercial.accessAllowed);
+  if (context.organization?.status === "ACTIVE" && !commerciallyBlocked) redirect("/dashboard");
 
   return (
     <ConstructAuthShell eyebrow={commerciallyBlocked?"Access unavailable":"Activation pending"} title={commerciallyBlocked?"Your subscription needs attention":"Your workspace is ready"} description={commerciallyBlocked?"Contact Shaoor AI to restore access to this workspace.":"Shaoor AI will activate access after confirming your offline subscription."}>

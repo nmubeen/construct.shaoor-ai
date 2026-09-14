@@ -5,15 +5,16 @@ import { requireActiveConstructContext } from "@/lib/auth/construct-context";
 import { getConstructPrisma } from "@/lib/construct-prisma";
 import { appUrl } from "@/lib/construct-app-url";
 
-// The invited-mode signup link this workspace's invitee actually needs —
-// no org name/slug fields, so joining this existing workspace (rather
-// than accidentally creating a new one) is the only thing the form lets
-// them do. Construct sends no invite email itself (unlike Pets), so the
-// inviter has to relay this link by hand — shown both right after
-// inviting and next to every still-pending invitation, so it's never
-// just "ask them to sign in" with no actual link behind it.
+// The sign-in link this workspace's invitee actually needs. Construct's
+// OTP flow unifies sign-up and sign-in (see components/auth/EmailOtpForm.tsx)
+// and self-heals a pending invite by email match the moment they complete
+// it (see lib/auth/provisioning.ts) — no separate "invited mode" form
+// needed anymore. Construct sends no invite email itself (unlike Pets), so
+// the inviter has to relay this link by hand — shown both right after
+// inviting and next to every still-pending invitation, so it's never just
+// "ask them to sign in" with no actual link behind it.
 function invitedSignupUrl(email: string) {
-  return `${appUrl()}/account/signup?invited=1&email=${encodeURIComponent(email)}`;
+  return `${appUrl()}/account/login?email=${encodeURIComponent(email)}`;
 }
 
 export default async function TeamPage({ searchParams }: { searchParams: Promise<{ error?: string; updated?: string; invited?: string; role?: string }> }) {

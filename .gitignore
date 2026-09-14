@@ -49,3 +49,6 @@ next-env.d.ts
 /Pitch Assets/
 /Infographic.jpg
 /Sample Data.docx
+
+.vercel
+.env*
