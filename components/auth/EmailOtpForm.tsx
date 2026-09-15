@@ -46,7 +46,12 @@ export function EmailOtpForm() {
         setStatus(session ? "signed-in" : "signed-out");
       });
       unsubscribe = () => data.subscription.unsubscribe();
-    } catch {
+    } catch (err) {
+      // Was a bare `catch {}` — logged nothing, so every failure here
+      // (missing env vars, a rejected Supabase client, anything) looked
+      // identical and undiagnosable. Log the real error so DevTools shows
+      // what's actually failing instead of just this generic message.
+      console.error("[EmailOtpForm] Failed to initialize Supabase auth client:", err);
       queueMicrotask(() => {
         if (active) {
           setError("Unable to initialize authentication. Reload to retry.");

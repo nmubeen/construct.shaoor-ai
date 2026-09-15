@@ -1,10 +1,16 @@
-const requiredPublicKeys = [
-  "NEXT_PUBLIC_SUPABASE_URL",
-  "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
-] as const;
-
+// Deliberately NOT `requiredPublicKeys.every(key => process.env[key])`:
+// Next.js/Turbopack can only inline a NEXT_PUBLIC_* value into the client
+// bundle by statically replacing a literal `process.env.NEXT_PUBLIC_X`
+// expression at build time. It can't do that for computed/dynamic access
+// like `process.env[key]` — there's no way to know what string `key` will
+// be at build time — so that lookup silently falls through to the
+// browser's real (empty) `process.env` and always resolves to undefined,
+// regardless of what's actually configured. Every reference below must
+// therefore spell out each key literally so the bundler can replace it.
 export function getSupabasePublicEnvironment() {
-  const missing = requiredPublicKeys.filter((key) => !process.env[key]);
+  const missing: string[] = [];
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL) missing.push("NEXT_PUBLIC_SUPABASE_URL");
+  if (!process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY) missing.push("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY");
 
   if (missing.length > 0) {
     throw new Error(`Missing Supabase environment variables: ${missing.join(", ")}`);
@@ -12,13 +18,12 @@ export function getSupabasePublicEnvironment() {
 
   return {
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL as string,
-    NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: process.env
-      .NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY as string,
+    NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY as string,
   };
 }
 
 export function hasSupabasePublicEnvironment() {
-  return requiredPublicKeys.every((key) => Boolean(process.env[key]));
+  return Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL) && Boolean(process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY);
 }
 
 export function getConstructDatabaseUrl() {
