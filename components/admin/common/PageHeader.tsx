@@ -21,7 +21,7 @@ export default function PageHeader({
   return (
     <div className="mb-8 flex flex-col gap-5 border-b border-[#dce5da] pb-6 md:flex-row md:items-end md:justify-between">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-[#094136]">
+        <h1 className="text-3xl font-bold tracking-tight text-(--color-primary-text)">
           {title}
         </h1>
 
@@ -35,7 +35,7 @@ export default function PageHeader({
       {action && (
         <Link
           href={action.href}
-          className="inline-flex items-center gap-2 rounded-md bg-[#094136] px-5 py-3 text-sm font-semibold !text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[#7D9D76] hover:shadow-md"
+          className="inline-flex items-center gap-2 rounded-md bg-(image:--gradient-button-bg) px-5 py-3 text-sm font-semibold !text-white shadow-sm transition hover:-translate-y-0.5 hover:brightness-110 hover:shadow-md"
         >
           {action.icon}
           {action.label}

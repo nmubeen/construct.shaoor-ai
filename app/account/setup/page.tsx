@@ -1,3 +1,4 @@
+import { TriangleAlert } from "lucide-react";
 import { redirect } from "next/navigation";
 
 import { ConstructAuthShell } from "@/components/auth/ConstructAuthShell";
@@ -69,10 +70,21 @@ export default async function ConstructSetupPage({
             </span>
           </div>
           <span className="mt-2 block text-xs font-normal text-slate-500">
-            One word using lowercase letters or numbers. This is permanent and must be unique.
+            One word using lowercase letters or numbers, must be unique.
           </span>
         </label>
-        <button className="w-full rounded-md bg-[#094136] px-4 py-3 font-semibold text-white hover:bg-[#7D9D76]">
+        {/* Prominent, can't-miss callout: unlike every other field on this
+            form, this one can never be changed once saved — it's the
+            tenant's permanent website address. */}
+        <div className="flex items-start gap-2.5 rounded-md border border-amber-300 bg-amber-50 p-3.5 text-sm text-amber-900">
+          <TriangleAlert className="mt-0.5 size-4 shrink-0" />
+          <p>
+            <strong>This address is permanent.</strong> It becomes your
+            website&apos;s URL and can&apos;t be changed later — choose it
+            carefully before creating your workspace.
+          </p>
+        </div>
+        <button className="w-full rounded-md bg-(image:--gradient-button-bg) px-4 py-3 font-semibold text-white hover:brightness-110">
           Create workspace
         </button>
       </form>

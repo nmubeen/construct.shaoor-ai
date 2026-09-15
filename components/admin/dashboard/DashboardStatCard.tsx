@@ -16,7 +16,7 @@ export default function DashboardStatCard({
   subtitle,
   icon: Icon,
   href,
-  color = "bg-[#094136]",
+  color = "bg-(--color-primary-text)",
 }: DashboardStatCardProps) {
   const card = (
     <div className="group rounded-md border border-slate-200 bg-white p-6 shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg">

@@ -148,7 +148,7 @@ export default function MediaFolderTree({
               dropTarget === node.path
                 ? "bg-emerald-100 text-emerald-800 ring-2 ring-emerald-400"
                 : selected
-                  ? "bg-[#094136] text-white"
+                  ? "bg-(image:--gradient-button-bg) text-white"
                   : "text-slate-700 hover:bg-slate-100"
             }`}
             style={{ paddingLeft: `${10 + depth * 16}px` }}
@@ -188,7 +188,7 @@ export default function MediaFolderTree({
           dropTarget === ""
             ? "bg-emerald-100 text-emerald-800 ring-2 ring-emerald-400"
             : !selectedFolder
-              ? "bg-[#094136] text-white"
+              ? "bg-(image:--gradient-button-bg) text-white"
               : "text-slate-700 hover:bg-slate-100"
         }`}
       >
@@ -224,7 +224,7 @@ export default function MediaFolderTree({
             onClick={addFolder}
             disabled={isPending || !newName.trim()}
             aria-label="Add folder"
-            className="rounded-md bg-[#094136] px-3 text-white disabled:opacity-50"
+            className="rounded-md bg-(image:--gradient-button-bg) px-3 text-white disabled:opacity-50"
           >
             <FaPlus />
           </button>

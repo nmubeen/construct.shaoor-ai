@@ -67,7 +67,7 @@ export default function MediaToolbar({
             name="q"
             defaultValue={query}
             placeholder="Search by filename, title, alt text, description or folder"
-            className="w-full rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm text-slate-700 focus:border-[#094136] focus:outline-none focus:ring-2 focus:ring-[#094136]/15"
+            className="w-full rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm text-slate-700 focus:border-(--color-primary-text) focus:outline-none focus:ring-2 focus:ring-(--color-primary-text)/15"
           />
         </div>
 
@@ -76,7 +76,7 @@ export default function MediaToolbar({
             href={gridHref}
             className={`inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm transition ${
               view === "grid"
-                ? "border-[#094136] bg-[#094136] text-white"
+                ? "border-[#0375d0] bg-(image:--gradient-button-bg) text-white"
                 : "border-slate-300 text-slate-700 hover:bg-slate-100"
             }`}
             aria-label="Grid view"
@@ -89,7 +89,7 @@ export default function MediaToolbar({
             href={listHref}
             className={`inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm transition ${
               view === "list"
-                ? "border-[#094136] bg-[#094136] text-white"
+                ? "border-[#0375d0] bg-(image:--gradient-button-bg) text-white"
                 : "border-slate-300 text-slate-700 hover:bg-slate-100"
             }`}
             aria-label="List view"
@@ -100,7 +100,7 @@ export default function MediaToolbar({
 
           <button
             type="submit"
-            className="rounded-lg bg-[#094136] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#7D9D76]"
+            className="rounded-lg bg-(image:--gradient-button-bg) px-4 py-2 text-sm font-medium text-white transition hover:brightness-110"
           >
             Apply
           </button>

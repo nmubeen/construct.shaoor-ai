@@ -21,7 +21,7 @@ const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(function Checkbox(
         id={checkboxId}
         type="checkbox"
         className={clsx(
-          "mt-1 h-4 w-4 rounded border-slate-300 text-[#094136] focus:ring-[#094136]",
+          "mt-1 h-4 w-4 rounded border-slate-300 text-(--color-primary-text) focus:ring-(--color-primary-text)",
           className
         )}
         {...props}

@@ -1,4 +1,4 @@
-# Shaoor Construct PostgreSQL cutover
+# Shaoor-AI Construct PostgreSQL cutover
 
 The product will start with an empty `construct` schema. No SQLite application data,
 IDs, users, passwords, sessions, OTPs, or uploaded-file records will be migrated.

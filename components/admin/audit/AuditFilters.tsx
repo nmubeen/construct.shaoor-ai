@@ -32,7 +32,7 @@ export default function AuditFilters({ query, module }: AuditFiltersProps) {
             name="q"
             defaultValue={query}
             placeholder="Search title or details"
-            className="w-full rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm text-slate-700 focus:border-[#094136] focus:outline-none focus:ring-2 focus:ring-[#094136]/15"
+            className="w-full rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm text-slate-700 focus:border-(--color-primary-text) focus:outline-none focus:ring-2 focus:ring-(--color-primary-text)/15"
           />
         </div>
 
@@ -44,7 +44,7 @@ export default function AuditFilters({ query, module }: AuditFiltersProps) {
             id="audit-module"
             name="module"
             defaultValue={module || "ALL"}
-            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-700 focus:border-[#094136] focus:outline-none focus:ring-2 focus:ring-[#094136]/15"
+            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-700 focus:border-(--color-primary-text) focus:outline-none focus:ring-2 focus:ring-(--color-primary-text)/15"
           >
             {MODULE_OPTIONS.map((option) => (
               <option key={option} value={option}>
@@ -56,7 +56,7 @@ export default function AuditFilters({ query, module }: AuditFiltersProps) {
 
         <button
           type="submit"
-          className="rounded-lg bg-[#094136] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[#7D9D76]"
+          className="rounded-lg bg-(image:--gradient-button-bg) px-4 py-2.5 text-sm font-medium text-white transition hover:brightness-110"
         >
           Apply
         </button>

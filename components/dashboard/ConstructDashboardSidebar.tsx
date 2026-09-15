@@ -1,4 +1,5 @@
 import { BookOpen, Building2, FolderKanban, Gauge, ImageIcon, LayoutTemplate, LogOut, Mail, Search, Settings, Users, Wrench } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
 import { constructSignOutAction } from "@/lib/auth/actions";
@@ -17,32 +18,46 @@ const navigation = [
 ] as const;
 
 export function ConstructDashboardSidebar({ organizationName, role, organizationStatus }: { organizationName: string; role: string; organizationStatus: string }) {
+  // PrimaryBackgroundColor (--gradient-primary-bg).
   return (
-    <aside className="flex w-full flex-col border-b border-white/10 bg-linear-to-b from-[#094136] to-black text-white shadow-[12px_0_35px_rgba(9,65,54,.14)] lg:fixed lg:inset-y-0 lg:w-72 lg:border-r">
+    <aside className="flex w-full flex-col border-b border-white/10 bg-(image:--gradient-primary-bg) text-white shadow-[12px_0_35px_rgba(9,65,54,.14)] lg:fixed lg:inset-y-0 lg:w-72 lg:border-r">
       <div className="flex items-center gap-3 border-b border-white/10 px-5 py-5">
-        <span className="grid size-11 place-items-center rounded-md bg-[#7D9D76] text-lg font-black shadow-lg shadow-black/10">S</span>
-        <div className="min-w-0"><p className="font-bold">Shaoor Construct</p><p className="truncate text-xs text-[#7D9D76]">{organizationName}</p></div>
+        <span className="shrink-0 rounded-lg bg-white p-1.5 shadow-md">
+          <Image
+            src="/images/brand/shaoor-ai-construct-logo.png"
+            alt="Shaoor-AI Construct"
+            width={56}
+            height={56}
+            className="size-14 object-contain"
+          />
+        </span>
+        <div className="min-w-0">
+          <p className="truncate font-bold text-white">Shaoor-AI Construct</p>
+          <p className="truncate text-xs text-(--color-secondary-text-icon)">{organizationName}</p>
+        </div>
       </div>
-      <nav className="grid grid-cols-2 gap-1 p-3 sm:grid-cols-4 lg:flex lg:flex-1 lg:flex-col">
+      {/* Item padding and gap both cut by 25% (py-2.5/gap-1 -> py-[7.5px]/gap-[3px])
+          to tighten the vertical rhythm between menu rows. */}
+      <nav className="grid grid-cols-2 gap-0.75 p-3 sm:grid-cols-4 lg:flex lg:flex-1 lg:flex-col">
         {navigation.map(({ href, label, icon: Icon, available, sections }) => available ? (
           <div key={href} className="group relative">
-            <Link href={href} className="flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium text-white/80 transition hover:bg-[#7D9D76]/30 hover:text-white"><Icon className="size-4" />{label}</Link>
+            <Link href={href} className="flex items-center gap-3 rounded-md px-3 py-[7.5px] text-sm font-medium text-white/80 transition hover:bg-[#7D9D76]/30 hover:text-white"><Icon className="size-4" />{label}</Link>
             {/* Pure CSS bubble (group-hover), no client JS needed — hidden
                 below lg since the sidebar isn't a fixed side rail there,
                 and hover has no real meaning on touch anyway. */}
             <div className="pointer-events-none invisible absolute left-full top-0 z-50 ml-2 w-56 -translate-x-1 rounded-lg border border-slate-200 bg-white p-3 text-slate-700 opacity-0 shadow-xl transition-all duration-150 lg:group-hover:visible lg:group-hover:translate-x-0 lg:group-hover:opacity-100">
-              <p className="mb-1.5 text-[10px] font-bold uppercase tracking-wide text-[#7D9D76]">{label}</p>
+              <p className="mb-1.5 text-[10px] font-bold uppercase tracking-wide text-(--color-secondary-text-icon)">{label}</p>
               <ul className="space-y-1">
                 {sections.map((section) => <li key={section} className="text-xs leading-5">{section}</li>)}
               </ul>
             </div>
           </div>
         ) : (
-          <span key={href} title="Being migrated to PostgreSQL" className="flex cursor-not-allowed items-center gap-3 rounded-md px-3 py-2.5 text-sm text-slate-500"><Icon className="size-4" />{label}</span>
+          <span key={href} title="Being migrated to PostgreSQL" className="flex cursor-not-allowed items-center gap-3 rounded-md px-3 py-[7.5px] text-sm text-slate-500"><Icon className="size-4" />{label}</span>
         ))}
       </nav>
       <div className="border-t border-white/10 p-4">
-        <div className="mb-3 flex items-center gap-3 rounded-md border border-[#7D9D76]/40 bg-white/8 p-3"><Building2 className="size-4 text-[#7D9D76]" /><div><p className="text-xs font-semibold">{role}</p><p className="text-xs text-white/55">{organizationStatus.toLowerCase()} workspace</p></div></div>
+        <div className="mb-3 flex items-center gap-3 rounded-md border border-[#7D9D76]/40 bg-white/8 p-3"><Building2 className="size-4 text-(--color-secondary-text-icon)" /><div><p className="text-xs font-semibold">{role}</p><p className="text-xs text-white/55">{organizationStatus.toLowerCase()} workspace</p></div></div>
         <form action={constructSignOutAction}><button className="flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm text-slate-300 hover:bg-white/10 hover:text-white"><LogOut className="size-4" />Sign out</button></form>
       </div>
     </aside>

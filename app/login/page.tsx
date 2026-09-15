@@ -26,7 +26,10 @@ export default async function LoginPage() {
     ? configuredName
     : tenant.companyCode;
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-100 px-4">
+    // Standardized page background: PrimaryBackgroundColor
+    // (--gradient-primary-bg), same as the admin panel and the Construct
+    // account login screen.
+    <div className="flex min-h-screen items-center justify-center bg-(image:--gradient-primary-bg) px-4">
       <div className="w-full max-w-md rounded-md bg-white p-8 shadow-lg">
         <h1 className="mb-2 text-center">
           <span className="block text-3xl font-bold">{companyName}</span>

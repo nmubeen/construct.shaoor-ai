@@ -27,7 +27,7 @@ import { resolvePublicConstructOrganization } from "@/lib/construct-public-tenan
 export async function generateMetadata(): Promise<Metadata> {
   if (await isConstructPortalRequest()) {
     return {
-      title: "Shaoor Construct | Start your trial workspace",
+      title: "Shaoor-AI Construct | Start your trial workspace",
       description:
         "Create your own trial workspace and start managing your construction website.",
     };

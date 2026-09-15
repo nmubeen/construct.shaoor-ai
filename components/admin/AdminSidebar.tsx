@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import {
   FaHouse,
@@ -100,11 +101,30 @@ export default function AdminSidebar({
   superAdmin,
 }: AdminSidebarProps) {
   const visibleMenu = superAdmin ? [{ title: "Companies", href: "/admin/companies", icon: <FaBuilding /> }] : menu;
+  // PrimaryBackgroundColor (--gradient-primary-bg).
   return (
-    <aside className="sticky top-0 flex h-screen w-56 shrink-0 flex-col bg-[#094136] text-white shadow-[12px_0_35px_rgba(9,65,54,.12)]">
+    <aside className="sticky top-0 flex h-screen w-56 shrink-0 flex-col bg-(image:--gradient-primary-bg) text-white shadow-[12px_0_35px_rgba(9,65,54,.12)]">
       <div className="border-b border-white/10 px-5 py-7">
-        <div className="mb-3 h-1 w-12 rounded-full bg-[#7D9D76]" />
-        <h2 className="text-xl font-bold leading-tight">{companyName} CMS</h2>
+        {superAdmin ? (
+          <div className="flex items-center gap-3">
+            <span className="inline-block shrink-0 rounded-lg bg-white p-1.5 shadow-md">
+              <Image
+                src="/images/brand/shaoor-ai-construct-logo.png"
+                alt="Shaoor-AI Construct"
+                width={56}
+                height={56}
+                className="size-14 object-contain"
+              />
+            </span>
+            {/* PrimaryBackgroundColor backgrounds show the wordmark in white. */}
+            <h2 className="text-lg font-bold leading-tight text-white">Shaoor-AI Construct</h2>
+          </div>
+        ) : (
+          <>
+            <div className="mb-3 h-1 w-12 rounded-full bg-[#7D9D76]" />
+            <h2 className="text-xl font-bold leading-tight text-white">{companyName} CMS</h2>
+          </>
+        )}
       </div>
 
       <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-5">

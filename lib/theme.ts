@@ -11,8 +11,8 @@ export function isValidHexColor(value: string): boolean {
 }
 
 export const DEFAULT_SITE_THEME = {
-  primary: "#094136",
-  accent: "#7d9d76",
+  primary: "#0375d0",
+  accent: "#83cceb",
 } as const;
 
 /** Resolves a tenant's chosen colors against the defaults, rejecting

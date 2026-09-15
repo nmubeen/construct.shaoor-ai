@@ -13,7 +13,9 @@ export default function AdminSection({
   children,
 }: AdminSectionProps) {
   return (
-    <Card>
+    // FormBackgroundColor (--gradient-form-bg) — every admin CRUD form
+    // built on AdminSection gets this from one place.
+    <Card className="bg-(image:--gradient-form-bg)!">
       <div className="border-b border-slate-200 px-6 py-5">
         <h2 className="text-lg font-semibold text-slate-900">
           {title}

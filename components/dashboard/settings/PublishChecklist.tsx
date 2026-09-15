@@ -9,14 +9,14 @@ function ChecklistGroup({ items }: { items: PublishChecklistItem[] }) {
         <li key={item.label} className="flex items-center justify-between gap-3 text-sm">
           <span className="flex items-center gap-2">
             {item.met ? (
-              <CheckCircle2 className="size-4 shrink-0 text-[#7D9D76]" />
+              <CheckCircle2 className="size-4 shrink-0 text-(--color-secondary-text-icon)" />
             ) : (
               <CircleAlert className={`size-4 shrink-0 ${item.required ? "text-amber-600" : "text-slate-400"}`} />
             )}
             <span className={item.met ? "text-slate-700" : "font-semibold text-slate-900"}>{item.label}</span>
           </span>
           {!item.met && (
-            <Link href={item.href} className="shrink-0 text-xs font-semibold text-[#7D9D76] hover:underline">
+            <Link href={item.href} className="shrink-0 text-xs font-semibold text-(--color-secondary-text-icon) hover:underline">
               Fix this
             </Link>
           )}
@@ -41,7 +41,7 @@ export function PublishChecklist({
   return (
     <div className="mt-4 rounded-lg border border-slate-200 bg-slate-50 p-4">
       <div className="mb-3 flex items-center gap-2">
-        <ListChecks className="size-4 text-[#7D9D76]" />
+        <ListChecks className="size-4 text-(--color-secondary-text-icon)" />
         <p className="text-sm font-bold">
           Publish checklist — {requiredMet} of {required.length} required items ready
         </p>

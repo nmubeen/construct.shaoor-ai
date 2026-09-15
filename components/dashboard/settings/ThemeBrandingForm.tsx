@@ -113,10 +113,10 @@ export function ThemeBrandingForm({
   }
 
   return (
-    <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+    <section className="rounded-lg border border-slate-200 bg-(image:--gradient-form-bg) p-5 shadow-sm">
       <div className="mb-4 flex items-center gap-2">
-        <Palette className="size-5 text-[#7D9D76]" />
-        <h2 className="font-bold">Website theme</h2>
+        <Palette className="size-5 text-(--color-secondary-text-icon)" />
+        <h2 className="font-bold text-(--color-primary-text)">Website theme</h2>
       </div>
       <p className="mb-4 text-xs leading-5 text-slate-500">
         Choose the two colors your public website uses for its header, footer, buttons and accents. This only
@@ -127,7 +127,7 @@ export function ThemeBrandingForm({
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
-          className="inline-flex items-center gap-2 rounded-md border border-[#7D9D76] px-3 py-2 text-xs font-semibold text-[#094136] hover:bg-[#eef3ec]"
+          className="inline-flex items-center gap-2 rounded-md border border-[#7D9D76] px-3 py-2 text-xs font-semibold text-(--color-primary-text) hover:bg-[#eef3ec]"
         >
           <Upload className="size-3.5" />
           Suggest from a logo or graphic
@@ -136,7 +136,7 @@ export function ThemeBrandingForm({
           <button
             type="button"
             onClick={() => runSuggestion(logoUrl)}
-            className="inline-flex items-center gap-2 rounded-md border border-[#7D9D76] px-3 py-2 text-xs font-semibold text-[#094136] hover:bg-[#eef3ec]"
+            className="inline-flex items-center gap-2 rounded-md border border-[#7D9D76] px-3 py-2 text-xs font-semibold text-(--color-primary-text) hover:bg-[#eef3ec]"
           >
             <Sparkles className="size-3.5" />
             Suggest from current logo
@@ -201,7 +201,7 @@ export function ThemeBrandingForm({
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
-          <button className="rounded-md bg-[#094136] px-4 py-2.5 text-sm font-semibold text-white">
+          <button className="rounded-md bg-(image:--gradient-button-bg) px-4 py-2.5 text-sm font-semibold text-white">
             Save theme
           </button>
           <button
@@ -210,9 +210,9 @@ export function ThemeBrandingForm({
               setPrimary(DEFAULT_SITE_THEME.primary);
               setAccent(DEFAULT_SITE_THEME.accent);
             }}
-            className="rounded-md border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+            className="rounded-md border border-slate-300 px-4 py-2.5 text-sm font-semibold text-(--color-primary-text) hover:bg-slate-50"
           >
-            Reset to Shaoor defaults
+            Reset to Shaoor-AI defaults
           </button>
         </div>
       </form>

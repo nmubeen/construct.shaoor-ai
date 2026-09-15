@@ -28,7 +28,7 @@ export function MediaUploadForm({ folders, defaultFolderId }: { folders: { id: s
     }
   }
 
-  return <form ref={formRef} onSubmit={submit} className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+  return <form ref={formRef} onSubmit={submit} className="rounded-lg border border-slate-200 bg-(image:--gradient-form-bg) p-5 shadow-sm">
     <div className="grid gap-4 lg:grid-cols-2">
       <label className="grid gap-1.5 text-sm font-semibold text-slate-700">File
         <input required name="file" type="file" accept="image/jpeg,image/png,image/webp,image/avif,application/pdf" className="rounded-md border border-slate-300 bg-white px-3 py-2.5 font-normal" />
@@ -52,8 +52,8 @@ export function MediaUploadForm({ folders, defaultFolderId }: { folders: { id: s
       </label>
     </div>
     <div className="mt-4 flex flex-wrap items-center gap-3">
-      <button disabled={pending} className="inline-flex items-center gap-2 rounded-md bg-[#094136] px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-60"><Upload className="size-4" />{pending ? "Uploading…" : "Upload file"}</button>
-      {message && <p className={`text-sm ${message.kind === "success" ? "text-[#7D9D76]" : "text-red-700"}`}>{message.text}</p>}
+      <button disabled={pending} className="inline-flex items-center gap-2 rounded-md bg-(image:--gradient-button-bg) px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-60"><Upload className="size-4" />{pending ? "Uploading…" : "Upload file"}</button>
+      {message && <p className={`text-sm ${message.kind === "success" ? "text-(--color-secondary-text-icon)" : "text-red-700"}`}>{message.text}</p>}
     </div>
   </form>;
 }

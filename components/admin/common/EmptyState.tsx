@@ -36,7 +36,7 @@ export default function EmptyState({
       {actionHref && actionLabel && (
         <Link
           href={actionHref}
-          className="mt-6 rounded-lg bg-[#094136] px-5 py-3 text-white transition hover:bg-[#7D9D76]"
+          className="mt-6 rounded-lg bg-(image:--gradient-button-bg) px-5 py-3 text-white transition hover:brightness-110"
         >
           {actionLabel}
         </Link>

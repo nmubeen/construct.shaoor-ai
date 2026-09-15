@@ -98,7 +98,7 @@ export default function DashboardStats({
         color={
           stats.unreadMessages > 0
             ? "bg-red-600"
-            : "bg-[#094136]"
+            : "bg-(--color-primary-text)"
         }
       />
 

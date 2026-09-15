@@ -105,10 +105,11 @@ export default function MediaPicker({
       <div className="flex items-center justify-between gap-3">
         <label className="block text-sm font-medium text-slate-700">{label}</label>
 
+        {/* ButtonBackgroundColor (--gradient-button-bg). */}
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="inline-flex items-center gap-2 rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-100"
+          className="inline-flex items-center gap-2 rounded-lg bg-(image:--gradient-button-bg) px-3 py-2 text-sm text-white transition hover:brightness-110"
         >
           <FaPlus />
           Choose from Library
@@ -197,7 +198,7 @@ export default function MediaPicker({
                       key={item.id}
                       type="button"
                       onClick={() => chooseItem(item)}
-                      className="overflow-hidden rounded-md border border-slate-200 bg-white text-left shadow-sm transition hover:border-[#094136] hover:shadow"
+                      className="overflow-hidden rounded-md border border-slate-200 bg-white text-left shadow-sm transition hover:border-(--color-primary-text) hover:shadow"
                     >
                       <div className="relative aspect-4/3 bg-slate-100">
                         {item.type === "IMAGE" ? (
@@ -227,7 +228,7 @@ export default function MediaPicker({
             <div className="border-t border-slate-200 bg-slate-50 px-4 py-3 text-right sm:px-6">
               <Link
                 href="/admin/media/upload"
-                className="text-sm font-medium text-[#094136] hover:underline"
+                className="text-sm font-medium text-(--color-primary-text) hover:underline"
               >
                 Need a new file? Upload in Media Library
               </Link>

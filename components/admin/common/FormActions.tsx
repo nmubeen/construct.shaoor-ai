@@ -21,7 +21,7 @@ export default function FormActions({
 
       <button
         type="submit"
-        className="rounded-lg bg-[#094136] px-6 py-2.5 text-white hover:bg-[#7D9D76]"
+        className="rounded-lg bg-(image:--gradient-button-bg) px-6 py-2.5 text-white hover:brightness-110"
       >
         {submitLabel}
       </button>

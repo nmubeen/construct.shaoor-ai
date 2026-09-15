@@ -36,7 +36,7 @@ export async function addConstructDomainAction(formData: FormData) {
   const context = await requireActiveConstructContext(); requireAdmin(context.role);
   try{await enforceConstructBooleanEntitlement(context.organizationId,"CUSTOM_DOMAIN");}catch(error){redirect(`/dashboard/settings?error=${encodeURIComponent(error instanceof Error?error.message:"Custom domains are unavailable.")}`);}
   const parsed = hostnameSchema.safeParse(formData.get("hostname")); if (!parsed.success) redirect(`/dashboard/settings?error=${encodeURIComponent(parsed.error.issues[0]?.message ?? "Invalid hostname.")}`);
-  if (parsed.data.endsWith(".construct.shaoor-ai.com") || parsed.data === "construct.shaoor-ai.com") redirect("/dashboard/settings?error=Shaoor Construct subdomains are managed by the platform.");
+  if (parsed.data.endsWith(".construct.shaoor-ai.com") || parsed.data === "construct.shaoor-ai.com") redirect("/dashboard/settings?error=Shaoor-AI Construct subdomains are managed by the platform.");
   const prisma = getConstructPrisma();
   try {
     const domain = await prisma.domain.create({ data: { organizationId: context.organizationId, hostname: parsed.data, verificationToken: crypto.randomUUID(), status: "PENDING", isPrimary: false } });
@@ -79,7 +79,7 @@ export async function updateConstructThemeAction(formData: FormData) {
   const context = await requireActiveConstructContext(); requireAdmin(context.role);
   const primaryRaw = String(formData.get("themePrimaryColor") ?? "").trim();
   const accentRaw = String(formData.get("themeAccentColor") ?? "").trim();
-  if (primaryRaw && !isValidHexColor(primaryRaw)) redirect("/dashboard/settings?error=Primary color must be a hex value like %23094136.");
+  if (primaryRaw && !isValidHexColor(primaryRaw)) redirect("/dashboard/settings?error=Primary color must be a hex value like %230375d0.");
   if (accentRaw && !isValidHexColor(accentRaw)) redirect("/dashboard/settings?error=Accent color must be a hex value like %237D9D76.");
   const primary = primaryRaw || null;
   const accent = accentRaw || null;

@@ -68,10 +68,12 @@ export function RazorpayCheckout({
       const razorpay = new window.Razorpay({
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
         subscription_id: data.subscriptionId,
-        name: "Shaoor Construct",
+        name: "Shaoor-AI Construct",
         description: `${workspaceName} — ${planCode}`,
         prefill: userEmail ? { email: userEmail } : undefined,
-        theme: { color: "#094136" },
+        // PrimaryTextColor — hardcoded because Razorpay's own checkout
+        // widget needs a literal color string here, not a CSS variable.
+        theme: { color: "#0375d0" },
         handler: () => {
           // The webhook (app/api/razorpay/webhook) is the actual source of
           // truth for plan state — this redirect is just UX, not trusted.

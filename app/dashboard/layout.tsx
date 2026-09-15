@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { ConstructDashboardSidebar } from "@/components/dashboard/ConstructDashboardSidebar";
 import { requireActiveConstructContext } from "@/lib/auth/construct-context";
 
-export const metadata: Metadata = { title: "Dashboard | Shaoor Construct", robots: { index: false, follow: false } };
+export const metadata: Metadata = { title: "Dashboard | Shaoor-AI Construct", robots: { index: false, follow: false } };
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const context = await requireActiveConstructContext();

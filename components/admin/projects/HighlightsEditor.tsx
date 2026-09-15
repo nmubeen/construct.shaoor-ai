@@ -115,7 +115,7 @@ export default function HighlightsEditor({
           type="button"
           disabled={pending}
           onClick={add}
-          className="rounded-lg bg-[#094136] px-5 py-3 text-white disabled:opacity-50"
+          className="rounded-lg bg-(image:--gradient-button-bg) px-5 py-3 text-white disabled:opacity-50"
         >
           <FaPlus />
         </button>

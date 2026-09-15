@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Account | Shaoor Construct",
+  title: "Account | Shaoor-AI Construct",
   robots: { index: false, follow: false },
 };
 

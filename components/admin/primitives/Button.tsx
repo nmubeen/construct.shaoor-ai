@@ -28,14 +28,16 @@ export default function Button({
   ...props
 }: ButtonProps) {
   const variants = {
+    // ButtonBackgroundColor (--gradient-button-bg) — re-pointing the
+    // variable retints every primary button across the Construct chrome.
     primary:
-      "bg-[#094136] text-white hover:bg-[#7D9D76] focus:ring-[#7D9D76]",
+      "bg-(image:--gradient-button-bg) text-white hover:brightness-110 focus:ring-[#7D9D76]",
 
     secondary:
-      "bg-[#7D9D76] text-white hover:bg-[#094136] focus:ring-[#7D9D76]",
+      "bg-[#7D9D76] text-white hover:bg-(--color-primary-text) focus:ring-[#7D9D76]",
 
     outline:
-      "border border-[#7D9D76] bg-white text-[#094136] hover:bg-[#eef3ec]",
+      "border border-[#7D9D76] bg-white text-(--color-primary-text) hover:bg-[#eef3ec]",
 
     danger:
       "bg-red-600 text-white hover:bg-red-700 focus:ring-red-500",

@@ -74,7 +74,7 @@ export function SeedServicesButton() {
       <button
         type="button"
         onClick={() => void begin()}
-        className="inline-flex items-center gap-2 rounded-md border border-[#7D9D76] bg-white px-4 py-2.5 text-sm font-semibold text-[#094136] hover:bg-[#eef3ec]"
+        className="inline-flex items-center gap-2 rounded-md border border-[#7D9D76] bg-white px-4 py-2.5 text-sm font-semibold text-(--color-primary-text) hover:bg-[#eef3ec]"
       >
         <Sparkles className="size-4" />
         Seed default services
@@ -86,7 +86,7 @@ export function SeedServicesButton() {
 
   return (
     <div className="mx-auto w-full max-w-sm space-y-3 text-left">
-      <div className="flex items-center gap-2 text-sm font-semibold text-[#094136]">
+      <div className="flex items-center gap-2 text-sm font-semibold text-(--color-primary-text)">
         {phase === "running" && <Hourglass className="size-4 animate-pulse" />}
         {phase === "done" && <CheckCircle2 className="size-4 text-emerald-600" />}
         {phase === "error" && <XCircle className="size-4 text-red-600" />}
@@ -100,7 +100,7 @@ export function SeedServicesButton() {
       {phase !== "error" && (
         <div className="h-2 w-full overflow-hidden rounded-full bg-slate-200" role="progressbar" aria-valuenow={percent} aria-valuemin={0} aria-valuemax={100}>
           <div
-            className="h-full rounded-full bg-[#094136] transition-all duration-300"
+            className="h-full rounded-full bg-(--color-primary-text) transition-all duration-300"
             style={{ width: `${percent}%` }}
           />
         </div>
@@ -122,7 +122,7 @@ export function SeedServicesButton() {
           <button
             type="button"
             onClick={() => void (total > 0 ? retry() : begin())}
-            className="w-full rounded-md border border-[#7D9D76] px-4 py-2.5 text-sm font-semibold text-[#094136] hover:bg-[#eef3ec]"
+            className="w-full rounded-md border border-[#7D9D76] px-4 py-2.5 text-sm font-semibold text-(--color-primary-text) hover:bg-[#eef3ec]"
           >
             Try again
           </button>

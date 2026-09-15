@@ -12,7 +12,7 @@ export default function QuickActions() {
 
         <Link
           href="/admin/projects/new"
-          className="block rounded-lg bg-[#094136] px-4 py-3 text-center font-semibold text-white hover:bg-[#0B3A61]"
+          className="block rounded-lg bg-(image:--gradient-button-bg) px-4 py-3 text-center font-semibold text-white hover:brightness-110"
         >
           + New Project
         </Link>

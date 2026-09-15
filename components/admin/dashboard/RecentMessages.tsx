@@ -32,7 +32,7 @@ export default function RecentMessages({
       action={
         <Link
           href="/admin/messages"
-          className="text-sm font-medium text-[#094136] hover:underline"
+          className="text-sm font-medium text-(--color-primary-text) hover:underline"
         >
           View All
         </Link>

@@ -28,7 +28,7 @@ export function StarRatingField({ name, defaultValue = 5, hint }: { name: string
             className="rounded p-0.5"
           >
             <Star
-              className="size-6 text-[#7D9D76]"
+              className="size-6 text-(--color-secondary-text-icon)"
               fill={value <= shown ? "currentColor" : "none"}
               strokeWidth={1.5}
             />

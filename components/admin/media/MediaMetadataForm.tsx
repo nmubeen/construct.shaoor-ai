@@ -124,7 +124,7 @@ export default function MediaMetadataForm({ item }: MediaMetadataFormProps) {
                 type="text"
                 maxLength={160}
                 defaultValue={item.title ?? ""}
-                className="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm text-slate-700 focus:border-[#094136] focus:outline-none focus:ring-2 focus:ring-[#094136]/15"
+                className="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm text-slate-700 focus:border-(--color-primary-text) focus:outline-none focus:ring-2 focus:ring-(--color-primary-text)/15"
               />
             </div>
 
@@ -139,7 +139,7 @@ export default function MediaMetadataForm({ item }: MediaMetadataFormProps) {
                 type="text"
                 maxLength={200}
                 defaultValue={item.altText ?? ""}
-                className="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm text-slate-700 focus:border-[#094136] focus:outline-none focus:ring-2 focus:ring-[#094136]/15"
+                className="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm text-slate-700 focus:border-(--color-primary-text) focus:outline-none focus:ring-2 focus:ring-(--color-primary-text)/15"
               />
             </div>
 
@@ -154,7 +154,7 @@ export default function MediaMetadataForm({ item }: MediaMetadataFormProps) {
                 type="text"
                 maxLength={140}
                 defaultValue={item.folder ?? ""}
-                className="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm text-slate-700 focus:border-[#094136] focus:outline-none focus:ring-2 focus:ring-[#094136]/15"
+                className="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm text-slate-700 focus:border-(--color-primary-text) focus:outline-none focus:ring-2 focus:ring-(--color-primary-text)/15"
               />
             </div>
 
@@ -169,7 +169,7 @@ export default function MediaMetadataForm({ item }: MediaMetadataFormProps) {
                 rows={4}
                 maxLength={1000}
                 defaultValue={item.description ?? ""}
-                className="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm text-slate-700 focus:border-[#094136] focus:outline-none focus:ring-2 focus:ring-[#094136]/15"
+                className="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm text-slate-700 focus:border-(--color-primary-text) focus:outline-none focus:ring-2 focus:ring-(--color-primary-text)/15"
               />
             </div>
           </div>

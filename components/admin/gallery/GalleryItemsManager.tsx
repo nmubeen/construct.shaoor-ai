@@ -267,7 +267,7 @@ export default function GalleryItemsManager({ galleryId, initialItems = [] }: Ga
                     onChange={(event) => updateCaption(item.mediaId, event.target.value)}
                     onBlur={onCaptionBlur}
                     placeholder="Caption (optional)"
-                    className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-700 focus:border-[#094136] focus:outline-none focus:ring-2 focus:ring-[#094136]/15"
+                    className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-700 focus:border-(--color-primary-text) focus:outline-none focus:ring-2 focus:ring-(--color-primary-text)/15"
                   />
 
                   <button

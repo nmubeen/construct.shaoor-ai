@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import PageBanner from "@/components/shared/PageBanner";
 import LeadershipSection from "@/components/website/team/LeadershipSection";
 import { getPublicTeamMembers } from "@/lib/public-site-data";
 import { getSeoPageMetadata } from "@/lib/seo";
@@ -10,5 +11,10 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function TeamPage() {
   const members = await getPublicTeamMembers();
-  return <LeadershipSection title="Meet Our Leadership" subtitle="The people behind our work" members={members} />;
+  return (
+    <>
+      <PageBanner title="Our Team" subtitle="Meet Our Leadership" />
+      <LeadershipSection title="Meet Our Leadership" subtitle="The people behind our work" members={members} />
+    </>
+  );
 }

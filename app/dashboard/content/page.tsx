@@ -3,6 +3,7 @@ import { BookOpen, Building2, ImageIcon, ListTree, MessageSquareQuote, Plus, Spa
 import Image from "next/image";
 
 import { NameSlugFields } from "@/components/dashboard/content/NameSlugFields";
+import { DismissOnEdit } from "@/components/dashboard/shared/DismissOnEdit";
 import { StarRatingField } from "@/components/dashboard/content/StarRatingField";
 import { ImageUrlField, type PickableImage, type PickerFolder } from "@/components/dashboard/media/ImageUrlField";
 import { ConfirmActionButton } from "@/components/dashboard/settings/ConfirmActionButton";
@@ -38,7 +39,7 @@ function Check({ label, name, checked = false, hint }: { label: string; name: st
   return <label className="flex items-start gap-2 text-sm font-medium text-slate-700"><input name={name} type="checkbox" defaultChecked={checked} className="mt-0.5 size-4 accent-[#7D9D76]" /><span>{label}{hint && <span className="block text-[11px] font-normal normal-case text-slate-500">{hint}</span>}</span></label>;
 }
 function FormFooter({ kind, id, active, canDelete }: { kind: string; id?: string; active?: boolean; canDelete: boolean }) {
-  return <div className="sticky bottom-4 flex flex-wrap items-center gap-2 rounded-lg border border-slate-200 bg-white/95 p-4 shadow-lg backdrop-blur sm:col-span-2"><button className="rounded-lg bg-[#094136] px-4 py-2 text-sm font-semibold text-white">{id ? "Save changes" : "Create item"}</button>{id && <><button formAction={toggleConstructContentAction} className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold">{active ? "Deactivate" : "Activate"}</button>{canDelete && <ConfirmActionButton formAction={deleteConstructContentAction} message="Permanently delete this content item?" className="rounded-lg border border-red-200 px-3 py-2 text-sm font-semibold text-red-700" >Delete</ConfirmActionButton>}</>}<input type="hidden" name="kind" value={kind} />{id && <input type="hidden" name="id" value={id} />}</div>;
+  return <div className="sticky bottom-4 flex flex-wrap items-center gap-2 rounded-lg border border-slate-200 bg-white/95 p-4 shadow-lg backdrop-blur sm:col-span-2"><button className="rounded-lg bg-(image:--gradient-button-bg) px-4 py-2 text-sm font-semibold text-white">{id ? "Save changes" : "Create item"}</button>{id && <><button formAction={toggleConstructContentAction} className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold">{active ? "Deactivate" : "Activate"}</button>{canDelete && <ConfirmActionButton formAction={deleteConstructContentAction} message="Permanently delete this content item?" className="rounded-lg border border-red-200 px-3 py-2 text-sm font-semibold text-red-700" >Delete</ConfirmActionButton>}</>}<input type="hidden" name="kind" value={kind} />{id && <input type="hidden" name="id" value={id} />}</div>;
 }
 
 function TeamForm({ item, canDelete, images, folders }: { item?: TeamMember; canDelete: boolean; images: PickableImage[]; folders?: PickerFolder[] }) {
@@ -58,10 +59,10 @@ function Thumbnail({ src, alt }: { src?: string | null; alt: string }) {
   return <div className="grid size-10 shrink-0 place-items-center overflow-hidden rounded-md border border-slate-200 bg-slate-50">{src ? <Image src={src} alt={alt} width={40} height={40} unoptimized className="size-10 object-cover" /> : <ImageIcon className="size-4 text-slate-300" />}</div>;
 }
 function ItemShell({ title, subtitle, active, imageUrl, children }: { title: string; subtitle: string; active: boolean; imageUrl?: string | null; children: React.ReactNode }) {
-  return <details className="overflow-hidden rounded-md border border-slate-200 bg-white"><summary className="flex cursor-pointer list-none items-center justify-between gap-3 p-4"><span className="flex min-w-0 items-center gap-3">{imageUrl !== undefined && <Thumbnail src={imageUrl} alt={title} />}<span className="min-w-0"><span className="font-semibold text-slate-950">{title}</span><span className="ml-2 text-xs text-slate-500">{subtitle}</span></span></span><span className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold ${active ? "bg-[#eef3ec] text-[#7D9D76]" : "bg-slate-100 text-slate-500"}`}>{active ? "Active" : "Inactive"}</span></summary>{children}</details>;
+  return <details className="overflow-hidden rounded-md border border-slate-200 bg-white"><summary className="flex cursor-pointer list-none items-center justify-between gap-3 p-4"><span className="flex min-w-0 items-center gap-3">{imageUrl !== undefined && <Thumbnail src={imageUrl} alt={title} />}<span className="min-w-0"><span className="font-semibold text-slate-950">{title}</span><span className="ml-2 text-xs text-slate-500">{subtitle}</span></span></span><span className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold ${active ? "bg-[#eef3ec] text-(--color-secondary-text-icon)" : "bg-slate-100 text-slate-500"}`}>{active ? "Active" : "Inactive"}</span></summary>{children}</details>;
 }
 function Section({ title, description, icon: Icon, count, addForm, children, canEdit }: { title: string; description: string; icon: typeof Users; count: number; addForm: React.ReactNode; children: React.ReactNode; canEdit: boolean }) {
-  return <section className="rounded-lg border border-slate-200 bg-slate-50/70 p-4"><div className="mb-4 flex items-start justify-between gap-4"><div className="flex gap-3"><span className="grid size-10 shrink-0 place-items-center rounded-md bg-[#eef3ec] text-[#7D9D76]"><Icon className="size-5" /></span><div><h2 className="font-bold text-slate-950">{title} <span className="text-sm font-medium text-slate-400">({count})</span></h2><p className="text-sm text-slate-600">{description}</p></div></div></div>{canEdit && <details className="mb-3 overflow-hidden rounded-md border border-dashed border-[#7D9D76]/60 bg-white"><summary className="flex cursor-pointer list-none items-center gap-2 p-4 text-sm font-semibold text-[#7D9D76]"><Plus className="size-4" />Add new</summary>{addForm}</details>}<div className="grid gap-2">{children}</div></section>;
+  return <section className="rounded-lg border border-slate-200 bg-slate-50/70 p-4"><div className="mb-4 flex items-start justify-between gap-4"><div className="flex gap-3"><span className="grid size-10 shrink-0 place-items-center rounded-md bg-[#eef3ec] text-(--color-secondary-text-icon)"><Icon className="size-5" /></span><div><h2 className="text-lg font-bold text-(--color-primary-text)">{title} <span className="text-sm font-medium text-slate-400">({count})</span></h2><p className="text-sm text-slate-600">{description}</p></div></div></div>{canEdit && <details className="mb-3 overflow-hidden rounded-md border border-dashed border-[#7D9D76]/60 bg-(image:--gradient-form-bg)"><summary className="flex cursor-pointer list-none items-center gap-2 p-4 text-sm font-semibold text-(--color-secondary-text-icon)"><Plus className="size-4" />Add new</summary>{addForm}</details>}<div className="grid gap-2">{children}</div></section>;
 }
 function WhyChooseUsHighlightForm({ item, canDelete }: { item?: WhyChooseUsHighlight; canDelete: boolean }) {
   return <form action={item ? updateConstructWhyChooseUsHighlightAction : createConstructWhyChooseUsHighlightAction} className="grid gap-3 border-t border-slate-200 p-4 sm:grid-cols-2">
@@ -73,7 +74,7 @@ function WhyChooseUsHighlightForm({ item, canDelete }: { item?: WhyChooseUsHighl
     <Field label="Title" name="title" value={item?.title} required minLength={2} maxLength={80} hint="Short highlight heading. 2–80 characters." />
     <Area label="Description" name="description" value={item?.description} required minLength={10} maxLength={240} hint="One or two sentences. 10–240 characters." />
     <div className="sticky bottom-4 flex flex-wrap items-center gap-2 rounded-lg border border-slate-200 bg-white/95 p-4 shadow-lg backdrop-blur sm:col-span-2">
-      <button className="rounded-lg bg-[#094136] px-4 py-2 text-sm font-semibold text-white">{item ? "Save changes" : "Add highlight"}</button>
+      <button className="rounded-lg bg-(image:--gradient-button-bg) px-4 py-2 text-sm font-semibold text-white">{item ? "Save changes" : "Add highlight"}</button>
       {item && canDelete && <ConfirmActionButton formAction={deleteConstructWhyChooseUsHighlightAction} message="Remove this highlight from the homepage?" className="rounded-lg border border-red-200 px-3 py-2 text-sm font-semibold text-red-700">Delete</ConfirmActionButton>}
       {item && <input type="hidden" name="id" value={item.id} />}
     </div>
@@ -81,28 +82,28 @@ function WhyChooseUsHighlightForm({ item, canDelete }: { item?: WhyChooseUsHighl
 }
 function WhyChooseUsSection({ title, subtitle, highlights, canEdit, canDelete }: { title: string; subtitle: string; highlights: WhyChooseUsHighlight[]; canEdit: boolean; canDelete: boolean }) {
   return <section className="rounded-lg border border-slate-200 bg-slate-50/70 p-4">
-    <div className="mb-4 flex items-start gap-3"><span className="grid size-10 shrink-0 place-items-center rounded-md bg-[#eef3ec] text-[#7D9D76]"><Sparkles className="size-5" /></span><div><h2 className="font-bold text-slate-950">Why choose us <span className="text-sm font-medium text-slate-400">({highlights.length})</span></h2><p className="text-sm text-slate-600">The &quot;Why Choose Us&quot; section on the homepage — title, subtitle, and up to {MAX_WHY_CHOOSE_US_HIGHLIGHTS} highlight cards.</p></div></div>
+    <div className="mb-4 flex items-start gap-3"><span className="grid size-10 shrink-0 place-items-center rounded-md bg-[#eef3ec] text-(--color-secondary-text-icon)"><Sparkles className="size-5" /></span><div><h2 className="text-lg font-bold text-(--color-primary-text)">Why choose us <span className="text-sm font-medium text-slate-400">({highlights.length})</span></h2><p className="text-sm text-slate-600">The &quot;Why Choose Us&quot; section on the homepage — title, subtitle, and up to {MAX_WHY_CHOOSE_US_HIGHLIGHTS} highlight cards.</p></div></div>
     {canEdit
-      ? <form action={updateConstructWhyChooseUsSettingsAction} className="mb-3 grid gap-3 rounded-md border border-slate-200 bg-white p-4 sm:grid-cols-2">
+      ? <form action={updateConstructWhyChooseUsSettingsAction} className="mb-3 grid gap-3 rounded-md border border-slate-200 bg-(image:--gradient-form-bg) p-4 sm:grid-cols-2">
           <Field label="Section title" name="whyChooseUsTitle" value={title} required minLength={2} maxLength={160} hint="Shown as the heading above the highlight cards. 2–160 characters." />
           <Area label="Section subtitle" name="whyChooseUsSubtitle" value={subtitle} required minLength={5} maxLength={400} hint="Shown under the title. 5–400 characters." />
-          <div className="sm:col-span-2"><button className="rounded-lg bg-[#094136] px-4 py-2 text-sm font-semibold text-white">Save section text</button></div>
+          <div className="sm:col-span-2"><button className="rounded-lg bg-(image:--gradient-button-bg) px-4 py-2 text-sm font-semibold text-white">Save section text</button></div>
         </form>
       : <div className="mb-3 rounded-md border border-slate-200 bg-white p-4 text-sm"><p className="font-semibold text-slate-950">{title}</p><p className="mt-1 text-slate-600">{subtitle}</p></div>}
-    {canEdit && highlights.length < MAX_WHY_CHOOSE_US_HIGHLIGHTS && <details className="mb-3 overflow-hidden rounded-md border border-dashed border-[#7D9D76]/60 bg-white"><summary className="flex cursor-pointer list-none items-center gap-2 p-4 text-sm font-semibold text-[#7D9D76]"><Plus className="size-4" />Add highlight</summary><WhyChooseUsHighlightForm canDelete={canDelete} /></details>}
+    {canEdit && highlights.length < MAX_WHY_CHOOSE_US_HIGHLIGHTS && <details className="mb-3 overflow-hidden rounded-md border border-dashed border-[#7D9D76]/60 bg-(image:--gradient-form-bg)"><summary className="flex cursor-pointer list-none items-center gap-2 p-4 text-sm font-semibold text-(--color-secondary-text-icon)"><Plus className="size-4" />Add highlight</summary><WhyChooseUsHighlightForm canDelete={canDelete} /></details>}
     <div className="grid gap-2">
       {highlights.length === 0
         ? <p className="text-sm text-slate-500">No highlights yet — the section is hidden on the public site until at least one is added.</p>
         : highlights.map((highlight) => {
           const Icon = (WEBSITE_ICONS[highlight.icon] ?? WEBSITE_ICONS[DEFAULT_WEBSITE_ICON_KEY]).icon;
-          return <details key={highlight.id} className="overflow-hidden rounded-md border border-slate-200 bg-white"><summary className="flex cursor-pointer list-none items-center gap-3 p-4"><span className="grid size-10 shrink-0 place-items-center rounded-md bg-[#eef3ec] text-[#7D9D76]"><Icon className="size-4" /></span><span className="min-w-0 font-semibold text-slate-950">{highlight.title}</span></summary>{canEdit && <WhyChooseUsHighlightForm item={highlight} canDelete={canDelete} />}</details>;
+          return <details key={highlight.id} className="overflow-hidden rounded-md border border-slate-200 bg-white"><summary className="flex cursor-pointer list-none items-center gap-3 p-4"><span className="grid size-10 shrink-0 place-items-center rounded-md bg-[#eef3ec] text-(--color-secondary-text-icon)"><Icon className="size-4" /></span><span className="min-w-0 font-semibold text-slate-950">{highlight.title}</span></summary>{canEdit && <WhyChooseUsHighlightForm item={highlight} canDelete={canDelete} />}</details>;
         })}
     </div>
   </section>;
 }
 function TaxonomySection({ title, description, kind, values, canEdit }: { title: string; description: string; kind: "CATEGORY" | "STATUS"; values: string[]; canEdit: boolean }) {
   return <section className="rounded-lg border border-slate-200 bg-slate-50/70 p-4">
-    <div className="mb-4 flex items-start gap-3"><span className="grid size-10 shrink-0 place-items-center rounded-md bg-[#eef3ec] text-[#7D9D76]"><ListTree className="size-5" /></span><div><h2 className="font-bold text-slate-950">{title} <span className="text-sm font-medium text-slate-400">({values.length})</span></h2><p className="text-sm text-slate-600">{description}</p></div></div>
+    <div className="mb-4 flex items-start gap-3"><span className="grid size-10 shrink-0 place-items-center rounded-md bg-[#eef3ec] text-(--color-secondary-text-icon)"><ListTree className="size-5" /></span><div><h2 className="text-lg font-bold text-(--color-primary-text)">{title} <span className="text-sm font-medium text-slate-400">({values.length})</span></h2><p className="text-sm text-slate-600">{description}</p></div></div>
     <div className="mb-3 flex flex-wrap gap-2">
       {values.length === 0
         ? <p className="text-sm text-slate-500">None yet.</p>
@@ -113,7 +114,7 @@ function TaxonomySection({ title, description, kind, values, canEdit }: { title:
           </span>
         ))}
     </div>
-    {canEdit && <form action={createConstructProjectTaxonomyAction} className="flex gap-2"><input type="hidden" name="kind" value={kind} /><input name="value" required maxLength={19} placeholder="e.g. RESIDENTIAL" className={`${inputClass} max-w-56 uppercase`} style={{ textTransform: "uppercase" }} /><button className="shrink-0 rounded-lg bg-[#094136] px-3 py-2 text-xs font-semibold text-white">Add</button></form>}
+    {canEdit && <form action={createConstructProjectTaxonomyAction} className="flex gap-2"><input type="hidden" name="kind" value={kind} /><input name="value" required maxLength={19} placeholder="e.g. RESIDENTIAL" className={`${inputClass} max-w-56 uppercase`} style={{ textTransform: "uppercase" }} /><button className="shrink-0 rounded-lg bg-(image:--gradient-button-bg) px-3 py-2 text-xs font-semibold text-white">Add</button></form>}
     <p className="mt-2 text-[11px] text-slate-500">Always saved in UPPERCASE, under 20 characters — shown as-is on public project cards.</p>
   </section>;
 }
@@ -140,8 +141,8 @@ export default async function ContentPage({ searchParams }: { searchParams: Prom
   const clientNames = clients.map((client) => client.name);
   const projectNames = projects.map((project) => project.title);
   const canEdit = context.role !== "VIEWER"; const canDelete = context.role === "OWNER" || context.role === "ADMIN";
-  return <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8"><header className="mb-6"><p className="text-xs font-bold uppercase tracking-[0.2em] text-[#7D9D76]">Website CMS</p><h1 className="mt-2 text-3xl font-bold">Content</h1><p className="mt-2 text-sm text-slate-600">Manage reusable people, customer proof, and help content across the public website.</p></header>
-    {(query.saved || query.deleted) && <p className="mb-5 rounded-md border border-[#7D9D76]/40 bg-[#eef3ec] p-3 text-sm text-[#7D9D76]">Content updated successfully.</p>}{query.error && <p className="mb-5 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">{query.error}</p>}
+  return <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8"><header className="mb-6"><p className="text-xs font-bold uppercase tracking-[0.2em] text-(--color-secondary-text-icon)">Website CMS</p><h1 className="mt-2 text-3xl font-bold text-(--color-primary-text)">Content</h1><p className="mt-2 text-sm text-slate-600">Manage reusable people, customer proof, and help content across the public website.</p></header>
+    {(query.saved || query.deleted) && <DismissOnEdit><p className="mb-5 rounded-md border border-[#7D9D76]/40 bg-[#eef3ec] p-3 text-sm font-semibold text-(--color-primary-text)">Content updated successfully.</p></DismissOnEdit>}{query.error && <p className="mb-5 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">{query.error}</p>}
     {!canEdit && <p className="mb-5 rounded-md border border-blue-200 bg-blue-50 p-3 text-sm text-blue-800">You have read-only access to this content.</p>}
     <div className="grid gap-5">
       <Section title="Leadership profiles" description="People shown on the team and homepage sections." icon={Users} count={team.length} canEdit={canEdit} addForm={<TeamForm canDelete={canDelete} images={images} folders={folders} />}>{team.map(item => <ItemShell key={item.id} title={item.name} subtitle={item.designation} active={item.isActive} imageUrl={item.photoUrl}>{canEdit && <TeamForm item={item} canDelete={canDelete} images={images} folders={folders} />}</ItemShell>)}</Section>

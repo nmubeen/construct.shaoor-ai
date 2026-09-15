@@ -1,5 +1,5 @@
 // Centralizes Construct's identity within the shared shaoor-ai.com auth
-// system, so "construct"/"Shaoor Construct" strings aren't scattered across
+// system, so "construct"/"Shaoor-AI Construct" strings aren't scattered across
 // the app — mirrors TuiTrak's lib/auth/config.ts (authAppConfig).
 //
 // key MUST match the "key" column already registered for this app in the
@@ -10,5 +10,5 @@
 // lib/auth/actions.ts).
 export const authAppConfig = {
   key: process.env.NEXT_PUBLIC_APP_KEY || "construct",
-  name: process.env.NEXT_PUBLIC_APP_NAME || "Shaoor Construct",
+  name: process.env.NEXT_PUBLIC_APP_NAME || "Shaoor-AI Construct",
 };

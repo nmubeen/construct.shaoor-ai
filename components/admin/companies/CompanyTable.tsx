@@ -58,7 +58,7 @@ function CompanyActions({ company, editing, setEditing, onOtpGenerated }: { comp
         }}
       >
         <input type="hidden" name="id" value={company.id} />
-        <button className="rounded bg-slate-900 px-3 py-2 text-white">Save</button>
+        <button className="rounded bg-(image:--gradient-button-bg) px-3 py-2 text-white">Save</button>
         <button type="button" onClick={() => setEditing(false)} className="rounded border px-3 py-2">Cancel</button>
       </form>
     );

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -16,26 +17,36 @@ const capabilities = [
 ];
 
 export function ConstructPortalHome() {
+  // PrimaryBackgroundColor (--gradient-primary-bg) — re-pointing the
+  // variable retints this header along with every other one.
   return (
-    <main className="min-h-screen overflow-hidden bg-linear-to-b from-[#094136] to-black text-white">
-      <div className="absolute inset-x-0 top-0 h-160 bg-[radial-gradient(circle_at_20%_20%,rgba(125,157,118,.38),transparent_34%),radial-gradient(circle_at_82%_8%,rgba(255,255,255,.14),transparent_38%)]" />
+    <main className="min-h-screen overflow-hidden bg-(image:--gradient-primary-bg) text-white">
+      <div className="absolute inset-x-0 top-0 h-160 bg-[radial-gradient(circle_at_20%_20%,rgba(3,117,208,.38),transparent_34%),radial-gradient(circle_at_82%_8%,rgba(255,255,255,.14),transparent_38%)]" />
       <header className="relative z-10 mx-auto flex max-w-7xl items-center justify-between px-5 py-6 sm:px-8">
         <Link href="/" className="flex items-center gap-3">
-          <span className="grid size-11 place-items-center rounded-md bg-[#7D9D76] text-lg font-black shadow-lg shadow-black/20">
-            S
+          <span className="rounded-lg bg-white p-1.5 shadow-md">
+            <Image
+              src="/images/brand/shaoor-ai-construct-logo.png"
+              alt="Shaoor-AI Construct"
+              width={56}
+              height={56}
+              className="size-14 object-contain"
+            />
           </span>
           <span>
-            <span className="block text-lg font-bold leading-tight">
-              Shaoor Construct
+            {/* PrimaryBackgroundColor backgrounds show the wordmark in white. */}
+            <span className="block text-lg font-bold leading-tight text-white">
+              Shaoor-AI Construct
             </span>
-            <span className="block text-[10px] font-bold uppercase tracking-[.24em] text-[#7D9D76]">
+            <span className="block text-[10px] font-bold uppercase tracking-[.24em] text-(--color-secondary-text-icon)">
               by Shaoor AI Tech
             </span>
           </span>
         </Link>
+        {/* ButtonBackgroundColor (--gradient-button-bg). */}
         <Link
           href="/account/login"
-          className="rounded-md border border-white/15 bg-white/5 px-4 py-2.5 text-sm font-semibold backdrop-blur transition hover:bg-white/10"
+          className="rounded-md bg-(image:--gradient-button-bg) px-4 py-2.5 text-sm font-semibold text-white transition hover:brightness-110"
         >
           Customer sign in
         </Link>
@@ -43,7 +54,9 @@ export function ConstructPortalHome() {
 
       <section className="relative z-10 mx-auto max-w-7xl px-5 pb-20 pt-14 sm:px-8 lg:pb-28 lg:pt-24">
         <div className="max-w-4xl">
-          <div className="inline-flex items-center gap-2 rounded-full border border-[#b9cdb5]/30 bg-[#7D9D76]/20 px-4 py-2 text-xs font-bold uppercase tracking-[.18em] text-[#dce7d9]">
+          {/* SecondaryBackgroundColor (--gradient-secondary-bg) — re-pointing
+              the variable retints this badge and the Start a Trial box below. */}
+          <div className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-(image:--gradient-secondary-bg) px-4 py-2 text-xs font-bold uppercase tracking-[.18em] text-white">
             <Sparkles className="size-4" />
             Construction websites, ready to manage
           </div>
@@ -57,21 +70,22 @@ export function ConstructPortalHome() {
         </div>
 
         <div className="mt-12 max-w-xl">
-          <article className="group rounded-lg border border-[#7D9D76]/60 bg-linear-to-br from-[#7D9D76]/75 to-[#062f27]/80 p-7 shadow-2xl sm:p-9">
+          <article className="group rounded-lg border border-white/30 bg-(image:--gradient-secondary-bg) p-7 shadow-2xl sm:p-9">
             <div className="flex size-13 items-center justify-center rounded-md bg-white/12 text-white">
               <Building2 className="size-6" />
             </div>
-            <p className="mt-7 text-xs font-bold uppercase tracking-[.2em] text-[#dce7d9]">
+            <p className="mt-7 text-xs font-bold uppercase tracking-[.2em] text-white/80">
               Create your own workspace
             </p>
             <h2 className="mt-2 text-3xl font-bold">Start a Trial</h2>
-            <p className="mt-4 leading-7 text-slate-200">
+            <p className="mt-4 leading-7 text-slate-100">
               Sign in, create your organization, and prepare a private website
               workspace controlled by the Trial plan.
             </p>
+            {/* ButtonBackgroundColor (--gradient-button-bg). */}
             <Link
               href="/account/login"
-              className="mt-8 inline-flex items-center gap-2 rounded-md bg-white px-5 py-3 font-bold text-[#094136] transition group-hover:bg-[#dce7d9]"
+              className="mt-8 inline-flex items-center gap-2 rounded-md bg-(image:--gradient-button-bg) px-5 py-3 font-bold text-white transition hover:brightness-110"
             >
               Start trial setup <ArrowRight className="size-4" />
             </Link>
@@ -82,10 +96,10 @@ export function ConstructPortalHome() {
       <section className="relative z-10 border-t border-white/10 bg-[#f5f7f4] text-slate-950">
         <div className="mx-auto grid max-w-7xl gap-12 px-5 py-20 sm:px-8 lg:grid-cols-[.85fr_1.15fr] lg:py-24">
           <div>
-            <p className="text-xs font-bold uppercase tracking-[.2em] text-[#7D9D76]">
+            <p className="text-xs font-bold uppercase tracking-[.2em] text-(--color-secondary-text-icon)">
               One managed platform
             </p>
-            <h2 className="mt-3 text-4xl font-black tracking-tight text-[#094136]">
+            <h2 className="mt-3 text-4xl font-black tracking-tight text-(--color-primary-text)">
               Everything needed to present and operate your website.
             </h2>
             <p className="mt-5 leading-7 text-slate-600">
@@ -99,7 +113,7 @@ export function ConstructPortalHome() {
                 key={item}
                 className="rounded-lg border border-[#7D9D76] bg-white p-5 shadow-[0_8px_24px_rgba(9,65,54,.06)]"
               >
-                <span className="mb-4 grid size-9 place-items-center rounded-md bg-[#eef3ec] text-[#094136]">
+                <span className="mb-4 grid size-9 place-items-center rounded-md bg-[#eef3ec] text-(--color-primary-text)">
                   {index === 1 ? (
                     <LayoutDashboard className="size-4" />
                   ) : index === 2 ? (

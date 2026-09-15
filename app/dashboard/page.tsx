@@ -31,20 +31,27 @@ export default async function ConstructDashboardPage() {
 
   return (
     <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
-      <header className="construct-card p-6">
-        <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#7D9D76]">
+      {/* Standardized page-header band: PrimaryBackgroundColor
+          (--gradient-primary-bg), same as the admin panel and the login
+          screens — re-pointing the variable retints all of them. */}
+      <header className="rounded-md bg-(image:--gradient-primary-bg) p-6 text-white">
+        <p className="text-xs font-bold uppercase tracking-[0.2em] text-(--color-secondary-text-icon)">
           Construct workspace
         </p>
         <div className="mt-2 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight text-slate-950">
+            {/* Explicit text-white: .construct-admin-surface's global
+                h1/h2/h3 rule (globals.css) targets <h1> directly and beats
+                the inherited white from this header, so it must be set
+                here, not just on an ancestor. */}
+            <h1 className="text-3xl font-bold tracking-tight text-white">
               {context.organization.name}
             </h1>
-            <p className="mt-2 text-sm text-slate-600">
+            <p className="mt-2 text-sm text-slate-200">
               Your PostgreSQL-backed CMS workspace is active.
             </p>
           </div>
-          <span className="w-fit rounded-full bg-[#eef3ec] px-3 py-1 text-xs font-bold uppercase text-[#094136]">
+          <span className="w-fit rounded-full bg-white/15 px-3 py-1 text-xs font-bold uppercase text-white">
             {publication?.status.toLowerCase() ?? "draft"}
           </span>
         </div>
@@ -57,7 +64,7 @@ export default async function ConstructDashboardPage() {
           >
             <div className="flex items-center justify-between">
               <p className="text-sm font-medium text-slate-600">{label}</p>
-              <span className="grid size-10 place-items-center rounded-md bg-[#eef3ec] text-[#094136]">
+              <span className="grid size-10 place-items-center rounded-md bg-[#eef3ec] text-(--color-primary-text)">
                 <Icon className="size-5" />
               </span>
             </div>
@@ -67,7 +74,7 @@ export default async function ConstructDashboardPage() {
       </section>
       <section className="grid gap-5 xl:grid-cols-[1.3fr_0.7fr]">
         <article className="construct-card p-6">
-          <h2 className="text-lg font-bold text-slate-950">
+          <h2 className="text-lg font-bold text-(--color-primary-text)">
             CMS migration status
           </h2>
           <p className="mt-2 text-sm leading-6 text-slate-600">
@@ -75,15 +82,17 @@ export default async function ConstructDashboardPage() {
             media, team, enquiries, SEO, domains and publication controls now
             use Supabase PostgreSQL.
           </p>
+          {/* SecondaryBackgroundColor (--gradient-secondary-bg). */}
           <div className="mt-5 h-2 overflow-hidden rounded-full bg-slate-100">
-            <div className="h-full w-full rounded-full bg-gradient-to-r from-[#094136] to-[#7D9D76]" />
+            <div className="h-full w-full rounded-full bg-(image:--gradient-secondary-bg)" />
           </div>
-          <p className="mt-2 text-xs font-medium text-[#094136]">
+          <p className="mt-2 text-xs font-medium text-(--color-primary-text)">
             Core tenant CMS migration complete
           </p>
         </article>
-        <article className="rounded-lg border border-[#094136] bg-[#094136] p-6 text-white shadow-[0_12px_30px_rgba(9,65,54,.18)]">
-          <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#b9cdb5]">
+        {/* PrimaryBackgroundColor (--gradient-primary-bg). */}
+        <article className="rounded-lg border border-transparent bg-(image:--gradient-primary-bg) p-6 text-white shadow-[0_12px_30px_rgba(9,65,54,.18)]">
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-(--color-secondary-text-icon)">
             Website address
           </p>
           <p className="mt-3 break-all font-semibold">
@@ -94,11 +103,12 @@ export default async function ConstructDashboardPage() {
             Domain status: {primaryDomain?.status.toLowerCase() ?? "active"} ·
             Website: {publication?.status.toLowerCase() ?? "draft"}
           </p>
+          {/* FormBackgroundColor (--gradient-form-bg) + PrimaryTextColor. */}
           <a
             href={`https://${primaryDomain?.hostname ?? `${context.organization.slug}.construct.shaoor-ai.com`}`}
             target="_blank"
             rel="noreferrer"
-            className="mt-5 inline-flex items-center gap-2 rounded-md bg-white/10 px-4 py-2.5 text-sm font-semibold text-white hover:bg-white/15"
+            className="mt-5 inline-flex items-center gap-2 rounded-md bg-(image:--gradient-form-bg) px-4 py-2.5 text-sm font-semibold text-(--color-primary-text) transition hover:brightness-95"
           >
             <ExternalLink className="size-4" />
             Open website preview

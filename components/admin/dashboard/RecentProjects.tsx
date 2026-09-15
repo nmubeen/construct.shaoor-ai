@@ -48,7 +48,7 @@ export default function RecentProjects({
       action={
         <Link
           href="/admin/projects"
-          className="text-sm font-medium text-[#094136] hover:underline"
+          className="text-sm font-medium text-(--color-primary-text) hover:underline"
         >
           View All
         </Link>

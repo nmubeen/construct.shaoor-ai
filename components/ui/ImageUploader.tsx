@@ -118,7 +118,7 @@ export default function ImageUploader({
           type="button"
           disabled={uploading}
           onClick={chooseImage}
-          className="rounded-lg bg-[#094136] px-5 py-2 text-white disabled:cursor-not-allowed disabled:opacity-60"
+          className="rounded-lg bg-(--color-primary-text) px-5 py-2 text-white disabled:cursor-not-allowed disabled:opacity-60"
         >
           {uploading
             ? "Uploading..."

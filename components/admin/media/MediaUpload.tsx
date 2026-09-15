@@ -150,8 +150,8 @@ export default function MediaUpload({ folders }: { folders: string[] }) {
           {...getRootProps()}
           className={`cursor-pointer rounded-md border-2 border-dashed p-10 text-center transition ${
             isDragActive
-              ? "border-[#094136] bg-[#094136]/5"
-              : "border-slate-300 bg-slate-50 hover:border-[#094136]/60"
+              ? "border-(--color-primary-text) bg-(--color-primary-text)/5"
+              : "border-slate-300 bg-slate-50 hover:border-(--color-primary-text)/60"
           }`}
         >
           <input
@@ -230,7 +230,7 @@ export default function MediaUpload({ folders }: { folders: string[] }) {
             type="button"
             onClick={uploadAll}
             disabled={isPending || files.length === 0}
-            className="rounded-lg bg-[#094136] px-6 py-2.5 font-medium text-white transition hover:bg-[#7D9D76] disabled:cursor-not-allowed disabled:opacity-60"
+            className="rounded-lg bg-(image:--gradient-button-bg) px-6 py-2.5 font-medium text-white transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isPending ? "Uploading..." : "Upload Files"}
           </button>

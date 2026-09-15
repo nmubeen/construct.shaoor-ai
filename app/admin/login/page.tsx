@@ -39,7 +39,7 @@ export default function AdminLoginPage() {
             </div>
 
             <button
-              className="w-full rounded-lg bg-[#094136] p-4 font-semibold text-white"
+              className="w-full rounded-lg bg-(--color-primary-text) p-4 font-semibold text-white"
             >
               Login
             </button>

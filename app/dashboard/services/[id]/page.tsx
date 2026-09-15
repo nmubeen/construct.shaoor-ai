@@ -14,5 +14,5 @@ export default async function EditServicePage({ params }: { params: Promise<{ id
     getConstructPrisma().$queryRaw<{ text: string }[]>`SELECT text FROM construct.sub_services WHERE service_id = ${id}::uuid ORDER BY sort_order ASC`,
     getConstructMediaPickerData(context.organizationId),
   ]);
-  return <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8"><header className="mb-6"><p className="text-xs font-bold uppercase tracking-[0.2em] text-[#7D9D76]">Services</p><h1 className="mt-2 text-3xl font-bold">Edit service</h1></header><ServiceForm service={service} subServices={subServices.map((s) => s.text)} images={images} folders={folders} /></div>;
+  return <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8"><header className="mb-6"><p className="text-xs font-bold uppercase tracking-[0.2em] text-(--color-secondary-text-icon)">Services</p><h1 className="mt-2 text-3xl font-bold text-(--color-primary-text)">Edit service</h1></header><ServiceForm service={service} subServices={subServices.map((s) => s.text)} images={images} folders={folders} /></div>;
 }

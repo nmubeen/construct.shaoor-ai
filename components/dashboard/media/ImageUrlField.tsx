@@ -27,10 +27,10 @@ function PickerDialog({ dialogRef, images, folders = [], onPick }: { dialogRef: 
       <div className={`flex max-h-[65vh] ${hasFolders ? "" : ""}`}>
         {hasFolders && (
           <nav className="w-48 shrink-0 overflow-y-auto border-r border-slate-200 p-2">
-            <button type="button" onClick={() => setActiveFolder(undefined)} className={`mb-0.5 flex w-full items-center gap-1.5 rounded-md px-2 py-1.5 text-left text-xs font-medium ${activeFolder === undefined ? "bg-[#eef3ec] text-[#094136]" : "text-slate-600 hover:bg-slate-100"}`}>
+            <button type="button" onClick={() => setActiveFolder(undefined)} className={`mb-0.5 flex w-full items-center gap-1.5 rounded-md px-2 py-1.5 text-left text-xs font-medium ${activeFolder === undefined ? "bg-[#eef3ec] text-(--color-primary-text)" : "text-slate-600 hover:bg-slate-100"}`}>
               <Folder className="size-3.5 shrink-0" />All images
             </button>
-            <button type="button" onClick={() => setActiveFolder("none")} className={`mb-1 flex w-full items-center gap-1.5 rounded-md px-2 py-1.5 text-left text-xs font-medium ${activeFolder === "none" ? "bg-[#eef3ec] text-[#094136]" : "text-slate-600 hover:bg-slate-100"}`}>
+            <button type="button" onClick={() => setActiveFolder("none")} className={`mb-1 flex w-full items-center gap-1.5 rounded-md px-2 py-1.5 text-left text-xs font-medium ${activeFolder === "none" ? "bg-[#eef3ec] text-(--color-primary-text)" : "text-slate-600 hover:bg-slate-100"}`}>
               <Folder className="size-3.5 shrink-0" />No folder
             </button>
             <div className="space-y-0.5 border-t border-slate-100 pt-1">
@@ -41,7 +41,7 @@ function PickerDialog({ dialogRef, images, folders = [], onPick }: { dialogRef: 
                   onClick={() => setActiveFolder(folder.id)}
                   style={{ paddingLeft: `${0.5 + folder.depth * 0.75}rem` }}
                   title={folder.name}
-                  className={`flex w-full items-center gap-1.5 truncate rounded-md py-1.5 pr-2 text-left text-xs font-medium ${activeFolder === folder.id ? "bg-[#eef3ec] text-[#094136]" : "text-slate-600 hover:bg-slate-100"}`}
+                  className={`flex w-full items-center gap-1.5 truncate rounded-md py-1.5 pr-2 text-left text-xs font-medium ${activeFolder === folder.id ? "bg-[#eef3ec] text-(--color-primary-text)" : "text-slate-600 hover:bg-slate-100"}`}
                 >
                   <Folder className="size-3.5 shrink-0" /><span className="truncate">{folder.name}</span>
                 </button>
@@ -53,7 +53,7 @@ function PickerDialog({ dialogRef, images, folders = [], onPick }: { dialogRef: 
           {visibleImages.length === 0 ? (
             <p className="col-span-full py-8 text-center text-sm text-slate-500">
               {images.length === 0 ? (
-                <>No images uploaded yet. <a href="/dashboard/media" target="_blank" rel="noreferrer" className="font-semibold text-[#7D9D76] underline">Upload some in the Media Library</a>.</>
+                <>No images uploaded yet. <a href="/dashboard/media" target="_blank" rel="noreferrer" className="font-semibold text-(--color-secondary-text-icon) underline">Upload some in the Media Library</a>.</>
               ) : (
                 "No images in this folder."
               )}
@@ -77,7 +77,7 @@ function PickerDialog({ dialogRef, images, folders = [], onPick }: { dialogRef: 
         </div>
       </div>
       <div className="border-t border-slate-200 p-3 text-right">
-        <a href="/dashboard/media" target="_blank" rel="noreferrer" className="text-xs font-semibold text-[#7D9D76] hover:underline">
+        <a href="/dashboard/media" target="_blank" rel="noreferrer" className="text-xs font-semibold text-(--color-secondary-text-icon) hover:underline">
           Upload more in Media Library →
         </a>
       </div>
@@ -124,10 +124,11 @@ export function ImageUrlField({
           className={inputClassName ?? "min-w-0 flex-1 rounded-md border border-slate-300 px-3.5 py-2.5 text-sm font-normal outline-none focus:border-[#7D9D76] focus:ring-4 focus:ring-[#7D9D76]/25 disabled:bg-slate-100"}
         />
         {!disabled && (
+          // ButtonBackgroundColor (--gradient-button-bg).
           <button
             type="button"
             onClick={() => dialogRef.current?.showModal()}
-            className="inline-flex shrink-0 items-center gap-1.5 rounded-md border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-md bg-(image:--gradient-button-bg) px-3 py-2 text-xs font-semibold text-white transition hover:brightness-110"
           >
             <Images className="size-3.5" />
             Browse
@@ -166,10 +167,11 @@ export function ImageUrlListField({
     <div>
       <div className="flex items-center justify-between gap-2">
         <h2 className="font-bold text-slate-950">{label}</h2>
+        {/* ButtonBackgroundColor (--gradient-button-bg). */}
         <button
           type="button"
           onClick={() => dialogRef.current?.showModal()}
-          className="inline-flex shrink-0 items-center gap-1.5 rounded-md border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+          className="inline-flex shrink-0 items-center gap-1.5 rounded-md bg-(image:--gradient-button-bg) px-3 py-2 text-xs font-semibold text-white transition hover:brightness-110"
         >
           <Images className="size-3.5" />
           Add from library

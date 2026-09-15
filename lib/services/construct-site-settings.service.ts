@@ -25,7 +25,7 @@ export async function ensureConstructSiteSettingsDefaults(organizationId: string
       organizationId,
       companyName: organization.name,
       tagline: "Building with confidence",
-      description: `${organization.name} is a construction company website managed with Shaoor Construct.`,
+      description: `${organization.name} is a construction company website managed with Shaoor-AI Construct.`,
       phone: "",
       email: "",
       addressLine1: "",

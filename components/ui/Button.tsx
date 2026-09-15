@@ -31,12 +31,13 @@ export default function Button(props: ButtonProps) {
     "inline-flex items-center justify-center rounded-md px-6 py-3 font-semibold shadow-sm transition duration-300";
 
   const variantClasses: Record<Variant, string> = {
+    // ButtonBackgroundColor (--gradient-button-bg).
     primary:
-      "bg-[#094136] text-white hover:-translate-y-0.5 hover:bg-[#7D9D76] hover:shadow-md",
+      "bg-(image:--gradient-button-bg) text-white hover:-translate-y-0.5 hover:brightness-110 hover:shadow-md",
     secondary:
-      "bg-[#7D9D76] text-white hover:-translate-y-0.5 hover:bg-[#094136]",
+      "bg-[#7D9D76] text-white hover:-translate-y-0.5 hover:bg-(--color-primary-text)",
     outline:
-      "border-2 border-[#7D9D76] bg-transparent text-[#094136] hover:bg-[#eef3ec]",
+      "border-2 border-[#7D9D76] bg-transparent text-(--color-primary-text) hover:bg-[#eef3ec]",
   };
 
   const classes = `${baseClasses} ${variantClasses[variant]} ${className}`;

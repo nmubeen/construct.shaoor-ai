@@ -182,7 +182,7 @@ export function EmailOtpForm() {
           <button
             type="submit"
             disabled={busy || (!destination && remaining > 0)}
-            className="w-full rounded-md bg-[#094136] px-4 py-3 font-semibold text-white transition hover:bg-[#7D9D76] disabled:opacity-50"
+            className="w-full rounded-md bg-(image:--gradient-button-bg) px-4 py-3 font-semibold text-white transition hover:brightness-110 disabled:opacity-50"
           >
             {busy ? "Please wait…" : destination ? "Verify and sign in" : "Send code"}
           </button>
@@ -195,7 +195,7 @@ export function EmailOtpForm() {
                 type="button"
                 disabled={busy || remaining > 0}
                 onClick={() => void request(false)}
-                className="font-semibold text-[#7D9D76] hover:underline disabled:opacity-50"
+                className="font-semibold text-(--color-secondary-text-icon) hover:underline disabled:opacity-50"
               >
                 Resend code{remaining > 0 ? ` (${remaining}s)` : ""}
               </button>

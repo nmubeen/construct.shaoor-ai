@@ -19,7 +19,7 @@ import "../globals.css";
 export async function generateMetadata(): Promise<Metadata> {
   if (await isConstructPortalRequest()) {
     return {
-      title: "Shaoor Construct | Construction websites made manageable",
+      title: "Shaoor-AI Construct | Construction websites made manageable",
       description:
         "Launch and manage a professional construction company website with a secure, plan-controlled CMS.",
       robots: { index: true, follow: true },
@@ -30,7 +30,7 @@ export async function generateMetadata(): Promise<Metadata> {
     !(await resolvePublicConstructOrganization())
   ) {
     return {
-      title: "Workspace unavailable | Shaoor Construct",
+      title: "Workspace unavailable | Shaoor-AI Construct",
       robots: { index: false, follow: false },
     };
   }
@@ -94,8 +94,8 @@ export default async function WebsiteLayout({
     return (
       <main className="grid min-h-screen place-items-center bg-[var(--site-primary)] px-6 text-center text-white">
         <div>
-          <p className="text-xs font-bold uppercase tracking-[.22em] text-[#b9cdb5]">
-            Shaoor Construct
+          <p className="text-xs font-bold uppercase tracking-[.22em] text-white">
+            Shaoor-AI Construct
           </p>
           <h1 className="mt-4 text-3xl font-bold">Workspace unavailable</h1>
           <p className="mt-3 text-sm text-slate-400">
@@ -113,8 +113,8 @@ export default async function WebsiteLayout({
       return (
         <main className="grid min-h-screen place-items-center bg-[var(--site-primary)] px-6 text-center text-white">
           <div>
-            <p className="text-xs font-bold uppercase tracking-[.22em] text-[#b9cdb5]">
-              Shaoor Construct
+            <p className="text-xs font-bold uppercase tracking-[.22em] text-white">
+              Shaoor-AI Construct
             </p>
             <h1 className="mt-4 text-3xl font-bold">Website coming soon</h1>
             <p className="mt-3 text-sm text-slate-400">
