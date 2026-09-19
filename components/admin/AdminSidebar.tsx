@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { BrandLogo } from "@/components/brand/BrandLogo";
 import Link from "next/link";
 import {
   FaHouse,
@@ -107,15 +107,7 @@ export default function AdminSidebar({
       <div className="border-b border-white/10 px-5 py-7">
         {superAdmin ? (
           <div className="flex items-center gap-3">
-            <span className="inline-block shrink-0 rounded-lg bg-white p-1.5 shadow-md">
-              <Image
-                src="/images/brand/shaoor-ai-construct-logo.png"
-                alt="Shaoor-AI Construct"
-                width={56}
-                height={56}
-                className="size-14 object-contain"
-              />
-            </span>
+            <BrandLogo />
             {/* PrimaryBackgroundColor backgrounds show the wordmark in white. */}
             <h2 className="text-lg font-bold leading-tight text-white">Shaoor-AI Construct</h2>
           </div>

@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { BrandLogo } from "@/components/brand/BrandLogo";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -24,15 +24,7 @@ export function ConstructPortalHome() {
       <div className="absolute inset-x-0 top-0 h-160 bg-[radial-gradient(circle_at_20%_20%,rgba(3,117,208,.38),transparent_34%),radial-gradient(circle_at_82%_8%,rgba(255,255,255,.14),transparent_38%)]" />
       <header className="relative z-10 mx-auto flex max-w-7xl items-center justify-between px-5 py-6 sm:px-8">
         <Link href="/" className="flex items-center gap-3">
-          <span className="rounded-lg bg-white p-1.5 shadow-md">
-            <Image
-              src="/images/brand/shaoor-ai-construct-logo.png"
-              alt="Shaoor-AI Construct"
-              width={56}
-              height={56}
-              className="size-14 object-contain"
-            />
-          </span>
+          <BrandLogo />
           <span>
             {/* PrimaryBackgroundColor backgrounds show the wordmark in white. */}
             <span className="block text-lg font-bold leading-tight text-white">

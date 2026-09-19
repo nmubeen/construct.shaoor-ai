@@ -1,5 +1,5 @@
 import { BookOpen, Building2, FolderKanban, Gauge, ImageIcon, LayoutTemplate, LogOut, Mail, Search, Settings, Users, Wrench } from "lucide-react";
-import Image from "next/image";
+import { BrandLogo } from "@/components/brand/BrandLogo";
 import Link from "next/link";
 
 import { constructSignOutAction } from "@/lib/auth/actions";
@@ -22,15 +22,7 @@ export function ConstructDashboardSidebar({ organizationName, role, organization
   return (
     <aside className="flex w-full flex-col border-b border-white/10 bg-(image:--gradient-primary-bg) text-white shadow-[12px_0_35px_rgba(9,65,54,.14)] lg:fixed lg:inset-y-0 lg:w-72 lg:border-r">
       <div className="flex items-center gap-3 border-b border-white/10 px-5 py-5">
-        <span className="shrink-0 rounded-lg bg-white p-1.5 shadow-md">
-          <Image
-            src="/images/brand/shaoor-ai-construct-logo.png"
-            alt="Shaoor-AI Construct"
-            width={56}
-            height={56}
-            className="size-14 object-contain"
-          />
-        </span>
+        <BrandLogo />
         <div className="min-w-0">
           <p className="truncate font-bold text-white">Shaoor-AI Construct</p>
           <p className="truncate text-xs text-(--color-secondary-text-icon)">{organizationName}</p>
