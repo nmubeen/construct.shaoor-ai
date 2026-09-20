@@ -36,9 +36,9 @@ export default async function Footer() {
               <Image
                 src={settings.logo}
                 alt={settings.companyName}
-                width={56}
-                height={56}
-                className="h-14 w-14 object-contain"
+                width={240}
+                height={60}
+                className="h-15 w-auto max-w-60 shrink-0"
               />
             ) : (
               <div className="flex h-14 w-14 items-center justify-center rounded-md bg-[var(--site-accent)] text-xl font-bold text-white">

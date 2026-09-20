@@ -37,9 +37,9 @@ export default function HeaderClient({
               <Image
                 src={settings.logo}
                 alt={settings.companyName}
-                width={44}
-                height={44}
-                className="h-11 w-11 object-contain"
+                width={208}
+                height={60}
+                className="h-15 w-auto max-w-52 shrink-0"
               />
             ) : (
               <div className="flex h-11 w-11 items-center justify-center rounded-md bg-[var(--site-accent)] font-bold text-white">
