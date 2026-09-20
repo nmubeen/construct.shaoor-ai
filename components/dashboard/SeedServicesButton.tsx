@@ -19,7 +19,11 @@ export function SeedServicesButton() {
   const [phase, setPhase] = useState<Phase>("idle");
   const [completed, setCompleted] = useState(0);
   const [total, setTotal] = useState(0);
-  const [currentTitle, setCurrentTitle] = useState("");
+  // Known up front (returned by the start action) so the label can name the
+  // service being added *while* its request is in flight — a title only
+  // learned from a step's result arrives after that step is done, and gets
+  // overwritten by the next one before React ever paints it.
+  const [titles, setTitles] = useState<string[]>([]);
   const [error, setError] = useState("");
 
   async function runSteps(fromIndex: number, stepsTotal: number) {
@@ -27,14 +31,12 @@ export function SeedServicesButton() {
     setError("");
 
     for (let index = fromIndex; index < stepsTotal; index += 1) {
-      setCurrentTitle("");
       const result = await seedConstructDefaultServiceStepAction(index);
       if (!result.ok) {
         setPhase("error");
         setError(result.error);
         return;
       }
-      setCurrentTitle(result.title);
       setCompleted(index + 1);
     }
 
@@ -56,6 +58,7 @@ export function SeedServicesButton() {
       return;
     }
     setTotal(start.total);
+    setTitles(start.titles);
     await runSteps(0, start.total);
   }
 
@@ -91,7 +94,7 @@ export function SeedServicesButton() {
         {phase === "done" && <CheckCircle2 className="size-4 text-emerald-600" />}
         {phase === "error" && <XCircle className="size-4 text-red-600" />}
         <span>
-          {phase === "running" && (currentTitle ? `Adding "${currentTitle}"…` : "Starting…")}
+          {phase === "running" && (titles[completed] ? `Adding "${titles[completed]}"…` : "Starting…")}
           {phase === "done" && `Added ${total} default services.`}
           {phase === "error" && "Seeding stopped."}
         </span>

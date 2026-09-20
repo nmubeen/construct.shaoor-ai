@@ -1,10 +1,8 @@
 import "server-only";
 
-import sharp from "sharp";
-
 import { getConstructPrisma } from "@/lib/construct-prisma";
 import { createClient } from "@/lib/supabase/server";
-import { resolveSiteTheme } from "@/lib/theme";
+import { SAMPLE_SERVICE_IMAGE_BASE64, SAMPLE_SERVICE_IMAGE_HEIGHT, SAMPLE_SERVICE_IMAGE_WIDTH } from "@/lib/services/construct-sample-service-image";
 
 // Sourced from Seed/Services.xml (a 15-service, 10-sub-service-each
 // construction company catalogue) — parsed once and pasted here as
@@ -43,69 +41,7 @@ export const DEFAULT_CONSTRUCT_SERVICES: DefaultServiceSeed[] = [
 ];
 
 const BUCKET = "construct-media";
-const IMAGE_WIDTH = 1200;
-const IMAGE_HEIGHT = 800;
-
-// No text baked into the image: sharp rasterizes SVG via librsvg, and
-// font availability for SVG <text> is not guaranteed in every deployment
-// environment (Vercel's serverless runtime included) — a missing font
-// silently drops the text instead of failing loudly. Pure vector shapes
-// (lines, circles, rects, paths) have no such dependency. The service
-// title already appears as real text next to/under the image everywhere
-// it's shown, so the placeholder doesn't need to repeat it.
-//
-// Three independent, decorrelated dimensions (motif shape, gradient
-// angle, motif position) with periods that share no common factor with
-// the 15-item default list, so nothing visibly repeats across the set —
-// a naive single-modulo approach did, at exactly items 6 and 12.
-const MOTIF_COUNT = 7;
-function buildPlaceholderSvg(index: number, primary: string, accent: string): string {
-  const gridLines: string[] = [];
-  for (let x = 0; x <= IMAGE_WIDTH; x += 60) gridLines.push(`<line x1="${x}" y1="0" x2="${x}" y2="${IMAGE_HEIGHT}" stroke="${accent}" stroke-opacity="0.12" stroke-width="1" />`);
-  for (let y = 0; y <= IMAGE_HEIGHT; y += 60) gridLines.push(`<line x1="0" y1="${y}" x2="${IMAGE_WIDTH}" y2="${y}" stroke="${accent}" stroke-opacity="0.12" stroke-width="1" />`);
-
-  // A pseudo-random but deterministic offset, decorrelated from the
-  // motif/gradient choices below (different multiplier, no shared
-  // period) rather than a plain index % 3.
-  const hash = (index * 2654435761) % 1000;
-  const cx = IMAGE_WIDTH / 2 + ((hash % 240) - 120);
-  const cy = IMAGE_HEIGHT / 2 + (((hash * 7) % 160) - 80);
-
-  const motifs = [
-    `<circle cx="${cx}" cy="${cy}" r="150" fill="none" stroke="${accent}" stroke-width="6" stroke-opacity="0.55" />`,
-    `<rect x="${cx - 115}" y="${cy - 115}" width="230" height="230" fill="none" stroke="${accent}" stroke-width="6" stroke-opacity="0.55" transform="rotate(45 ${cx} ${cy})" />`,
-    `<path d="M ${cx - 150} ${cy} L ${cx} ${cy - 150} L ${cx + 150} ${cy} L ${cx} ${cy + 150} Z" fill="none" stroke="${accent}" stroke-width="6" stroke-opacity="0.55" />`,
-    `<circle cx="${cx}" cy="${cy}" r="150" fill="none" stroke="${accent}" stroke-width="6" stroke-opacity="0.55" /><circle cx="${cx}" cy="${cy}" r="95" fill="none" stroke="${accent}" stroke-width="4" stroke-opacity="0.4" />`,
-    `<rect x="${cx - 140}" y="${cy - 60}" width="280" height="120" fill="none" stroke="${accent}" stroke-width="6" stroke-opacity="0.55" />`,
-    `<path d="M ${cx} ${cy - 150} L ${cx + 130} ${cy - 45} L ${cx + 80} ${cy + 130} L ${cx - 80} ${cy + 130} L ${cx - 130} ${cy - 45} Z" fill="none" stroke="${accent}" stroke-width="6" stroke-opacity="0.55" />`,
-    `<line x1="${cx - 150}" y1="${cy}" x2="${cx + 150}" y2="${cy}" stroke="${accent}" stroke-width="6" stroke-opacity="0.55" /><line x1="${cx}" y1="${cy - 150}" x2="${cx}" y2="${cy + 150}" stroke="${accent}" stroke-width="6" stroke-opacity="0.55" />`,
-  ];
-  const gradientAngles = [
-    { x1: "0%", y1: "0%", x2: "100%", y2: "100%" },
-    { x1: "100%", y1: "0%", x2: "0%", y2: "100%" },
-    { x1: "0%", y1: "100%", x2: "100%", y2: "0%" },
-    { x1: "50%", y1: "0%", x2: "50%", y2: "100%" },
-  ];
-  const angle = gradientAngles[index % gradientAngles.length];
-
-  return `<svg width="${IMAGE_WIDTH}" height="${IMAGE_HEIGHT}" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <linearGradient id="bg" x1="${angle.x1}" y1="${angle.y1}" x2="${angle.x2}" y2="${angle.y2}">
-        <stop offset="0%" stop-color="${primary}" />
-        <stop offset="100%" stop-color="#000000" />
-      </linearGradient>
-    </defs>
-    <rect width="${IMAGE_WIDTH}" height="${IMAGE_HEIGHT}" fill="url(#bg)" />
-    ${gridLines.join("")}
-    ${motifs[index % MOTIF_COUNT]}
-    <rect x="0" y="${IMAGE_HEIGHT - 14}" width="${IMAGE_WIDTH}" height="14" fill="${accent}" />
-  </svg>`;
-}
-
-async function renderPlaceholderImage(index: number, primary: string, accent: string) {
-  const svg = buildPlaceholderSvg(index, primary, accent);
-  return sharp(Buffer.from(svg)).png().toBuffer();
-}
+const SAMPLE_IMAGE_FILE_NAME = "sample-service-image.png";
 
 // Raw SQL: construct.media_folders exists in Postgres but the generated
 // client here couldn't be regenerated (dev server holds the query engine
@@ -126,11 +62,65 @@ async function ensureServicesFolder(organizationId: string): Promise<string> {
   return created[0].id;
 }
 
+// One shared "sample image" for all default services, instead of a
+// generated image per service. Created on first use and reused by name
+// afterwards, so re-running the seed (or the remaining steps after a
+// failure) never uploads a second copy. Replacing a service's image in
+// the dashboard just points that service at something else; the shared
+// file stays for the others.
+async function getOrCreateSampleImageUrl(organizationId: string, folderId: string): Promise<string> {
+  const prisma = getConstructPrisma();
+  const existing = await prisma.media.findFirst({
+    where: { organizationId, originalName: SAMPLE_IMAGE_FILE_NAME },
+    select: { url: true },
+  });
+  if (existing) return existing.url;
+
+  const supabase = await createClient();
+  const buffer = Buffer.from(SAMPLE_SERVICE_IMAGE_BASE64, "base64");
+  const storagePath = `${organizationId}/services/${crypto.randomUUID()}-${SAMPLE_IMAGE_FILE_NAME}`;
+
+  const { error: uploadError } = await supabase.storage.from(BUCKET).upload(storagePath, buffer, {
+    contentType: "image/png",
+    upsert: false,
+  });
+  if (uploadError) throw new Error(`Could not upload the sample image: ${uploadError.message}`);
+
+  const { data: publicData } = supabase.storage.from(BUCKET).getPublicUrl(storagePath);
+
+  try {
+    const media = await prisma.media.create({
+      data: {
+        organizationId,
+        fileName: SAMPLE_IMAGE_FILE_NAME,
+        originalName: SAMPLE_IMAGE_FILE_NAME,
+        storagePath,
+        url: publicData.publicUrl,
+        folder: "services",
+        mimeType: "image/png",
+        extension: "png",
+        fileSize: buffer.byteLength,
+        width: SAMPLE_SERVICE_IMAGE_WIDTH,
+        height: SAMPLE_SERVICE_IMAGE_HEIGHT,
+        type: "IMAGE",
+        title: "Sample service image (replace with your own)",
+      },
+    });
+    // folderId isn't on the generated client's Media input yet (same
+    // regen block noted throughout this feature) — set it directly.
+    await prisma.$executeRaw`UPDATE construct.media SET folder_id = ${folderId}::uuid WHERE id = ${media.id}::uuid`;
+  } catch (error) {
+    await supabase.storage.from(BUCKET).remove([storagePath]);
+    throw error;
+  }
+  return publicData.publicUrl;
+}
+
 export function getConstructDefaultServiceSeedTotal() {
   return DEFAULT_CONSTRUCT_SERVICES.length;
 }
 
-export type SeedStartResult = { started: true; total: number } | { started: false; reason: "not-empty" };
+export type SeedStartResult = { started: true; total: number; titles: string[] } | { started: false; reason: "not-empty" };
 
 // No "already seeded" flag by design: a tenant who deletes every service
 // back down to zero and wants to start over from the defaults again
@@ -141,7 +131,7 @@ export type SeedStartResult = { started: true; total: number } | { started: fals
 export async function startConstructDefaultServiceSeed(organizationId: string): Promise<SeedStartResult> {
   const existingCount = await getConstructPrisma().service.count({ where: { organizationId } });
   if (existingCount > 0) return { started: false, reason: "not-empty" };
-  return { started: true, total: DEFAULT_CONSTRUCT_SERVICES.length };
+  return { started: true, total: DEFAULT_CONSTRUCT_SERVICES.length, titles: DEFAULT_CONSTRUCT_SERVICES.map((service) => service.title) };
 }
 
 export type SeedStepResult =
@@ -169,48 +159,11 @@ export async function seedConstructDefaultServiceAtIndex(organizationId: string,
   });
   if (already) return { ok: true, title: seed.title, index, total: DEFAULT_CONSTRUCT_SERVICES.length };
 
-  const [siteSettings, folderId] = await Promise.all([
-    prisma.siteSettings.findUnique({ where: { organizationId }, select: { themePrimaryColor: true, themeAccentColor: true } }),
-    ensureServicesFolder(organizationId),
-  ]);
-  const theme = resolveSiteTheme(siteSettings?.themePrimaryColor, siteSettings?.themeAccentColor);
-  const supabase = await createClient();
-
   try {
-    const buffer = await renderPlaceholderImage(index, theme.primary, theme.accent);
-    const fileName = `${seed.slug}.png`;
-    const storagePath = `${organizationId}/services/${crypto.randomUUID()}-${fileName}`;
-
-    const { error: uploadError } = await supabase.storage.from(BUCKET).upload(storagePath, buffer, {
-      contentType: "image/png",
-      upsert: false,
-    });
-    if (uploadError) throw new Error(`Could not upload placeholder image for "${seed.title}": ${uploadError.message}`);
-
-    const { data: publicData } = supabase.storage.from(BUCKET).getPublicUrl(storagePath);
+    const folderId = await ensureServicesFolder(organizationId);
+    const imageUrl = await getOrCreateSampleImageUrl(organizationId, folderId);
 
     await prisma.$transaction(async (tx) => {
-      const media = await tx.media.create({
-        data: {
-          organizationId,
-          fileName,
-          originalName: fileName,
-          storagePath,
-          url: publicData.publicUrl,
-          folder: "services",
-          mimeType: "image/png",
-          extension: "png",
-          fileSize: buffer.byteLength,
-          width: IMAGE_WIDTH,
-          height: IMAGE_HEIGHT,
-          type: "IMAGE",
-          title: `${seed.title} (placeholder)`,
-        },
-      });
-      // folderId isn't on the generated client's Media input yet (same
-      // regen block noted throughout this feature) — set it directly.
-      await tx.$executeRaw`UPDATE construct.media SET folder_id = ${folderId}::uuid WHERE id = ${media.id}::uuid`;
-
       const service = await tx.service.create({
         data: {
           organizationId,
@@ -218,7 +171,7 @@ export async function seedConstructDefaultServiceAtIndex(organizationId: string,
           slug: seed.slug,
           shortDescription: seed.shortDescription,
           description: seed.description,
-          imageUrl: publicData.publicUrl,
+          imageUrl,
           displayOrder: index,
           isActive: true,
           seoTitle: seed.seoTitle,
