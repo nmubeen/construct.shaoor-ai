@@ -27,6 +27,9 @@ export interface SeoMetadataResult {
   facebookAppId: string | null;
   siteName: string;
   siteUrl: string;
+  // Tenant-chosen browser-tab icons (Construct workspaces only).
+  faviconUrl?: string | null;
+  appleTouchIconUrl?: string | null;
 }
 
 function normalizeOptionalText(value: string | null | undefined) {
@@ -389,6 +392,7 @@ export const getDefaultSEO = cache(async (): Promise<SeoMetadataResult> => {
       verification: { google: normalizeOptionalText(settings.googleVerification), bing: normalizeOptionalText(settings.bingVerification) },
       twitterHandle: normalizeOptionalText(settings.twitterHandle), facebookAppId: normalizeOptionalText(settings.facebookAppId),
       siteName: settings.siteName, siteUrl: settings.siteUrl,
+      faviconUrl: normalizeOptionalText(settings.faviconUrl), appleTouchIconUrl: normalizeOptionalText(settings.appleTouchIconUrl),
     };
   }
   await ensureSeoDefaults();

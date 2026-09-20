@@ -34,11 +34,28 @@ export async function generateMetadata(): Promise<Metadata> {
       robots: { index: false, follow: false },
     };
   }
-  const seo = await getDefaultSEO();
+  const [seo, siteSettings] = await Promise.all([
+    getDefaultSEO(),
+    getPublicSiteSettings(),
+  ]);
   const baseUrl = resolveBaseUrl(seo.siteUrl);
+  // The tenant's own icon replaces the platform default served from app/.
+  // SEO settings win over the Site settings favicon; the Apple touch icon
+  // falls back to the favicon so iOS doesn't show the platform logo.
+  const favicon = seo.faviconUrl?.trim() || siteSettings.favicon?.trim() || null;
+  const appleIcon = seo.appleTouchIconUrl?.trim() || favicon;
 
   return {
     metadataBase: new URL(baseUrl),
+    ...(favicon
+      ? {
+          icons: {
+            icon: favicon,
+            shortcut: favicon,
+            ...(appleIcon ? { apple: appleIcon } : {}),
+          },
+        }
+      : {}),
     title: seo.title,
     description: seo.description,
     keywords: seo.keywords ?? undefined,

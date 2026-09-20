@@ -22,6 +22,17 @@ export const metadata: Metadata = {
   },
   description:
     "A complete construction company website and CMS platform by Shaoor AI Tech.",
+  // Platform default tab icons. Declared here rather than as app/icon.*
+  // files because Next always injects file-based icons ahead of any
+  // `icons` metadata, which would stop a tenant's own favicon (set in
+  // app/(website)/layout.tsx) from taking precedence on their site.
+  icons: {
+    icon: [
+      { url: "/images/brand/favicon.ico", sizes: "48x48" },
+      { url: "/images/brand/icon.png", type: "image/png", sizes: "512x512" },
+    ],
+    apple: { url: "/images/brand/apple-icon.png", sizes: "180x180" },
+  },
 };
 
 export default async function RootLayout({
