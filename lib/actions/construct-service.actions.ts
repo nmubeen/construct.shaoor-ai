@@ -111,13 +111,28 @@ export async function deleteConstructServiceAction(formData: FormData) {
   const context = await requireActiveConstructContext();
   if (context.role !== "OWNER" && context.role !== "ADMIN") redirect("/dashboard/services?error=Only Owners and Admins can delete services.");
   const id = String(formData.get("id") ?? "");
-  const service = await getConstructPrisma().service.findFirst({ where: { id, organizationId: context.organizationId }, select: { title: true } });
-  if (!service) redirect("/dashboard/services?error=Service not found.");
-  await getConstructPrisma().$transaction([
-    getConstructPrisma().service.delete({ where: { id } }),
-    getConstructPrisma().auditLog.create({ data: { organizationId: context.organizationId, actorUserId: context.userId, module: "services", action: "delete", recordId: id, title: `Service deleted: ${service.title}` } }),
-  ]);
-  revalidatePath("/dashboard"); revalidatePath("/dashboard/services"); redirect("/dashboard/services?deleted=1");
+  const result = await getConstructPrisma().$transaction(async (tx) => {
+    // Serialize deletions and publication changes for this tenant, including
+    // requests from different tabs that would otherwise both see two services.
+    await tx.$queryRaw`SELECT id FROM construct.organizations WHERE id = ${context.organizationId}::uuid FOR UPDATE`;
+    const service = await tx.service.findFirst({ where: { id, organizationId: context.organizationId }, select: { title: true } });
+    if (!service) return "missing";
+    const publication = await tx.sitePublication.findUnique({ where: { organizationId: context.organizationId } });
+    const count = await tx.service.count({ where: { organizationId: context.organizationId } });
+    const mustUnpublish = publication?.status === "PUBLISHED" && count === 1;
+    if (mustUnpublish && formData.get("unpublish") !== "yes") return "confirm";
+    if (mustUnpublish) {
+      await tx.sitePublication.update({ where: { organizationId: context.organizationId }, data: { status: "UNPUBLISHED" } });
+      await tx.auditLog.create({ data: { organizationId: context.organizationId, actorUserId: context.userId, module: "publication", action: "unpublished", recordId: context.organizationId, title: "Website unpublished before deleting its last service", details: { from: "PUBLISHED", to: "UNPUBLISHED" } } });
+    }
+    await tx.service.delete({ where: { id } });
+    await tx.auditLog.create({ data: { organizationId: context.organizationId, actorUserId: context.userId, module: "services", action: "delete", recordId: id, title: `Service deleted: ${service.title}` } });
+    return mustUnpublish ? "unpublished" : "deleted";
+  });
+  if (result === "missing") redirect("/dashboard/services?error=Service not found.");
+  if (result === "confirm") redirect(`/dashboard/services?confirmDelete=${encodeURIComponent(id)}`);
+  revalidatePath("/", "layout");
+  redirect(`/dashboard/services?deleted=1${result === "unpublished" ? "&unpublished=1" : ""}`);
 }
 
 // Available only from the empty-state button on /dashboard/services (see

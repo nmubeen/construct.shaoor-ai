@@ -25,11 +25,17 @@ export async function updateConstructWorkspaceAction(formData: FormData) {
 export async function updateConstructPublicationAction(formData: FormData) {
   const context = await requireActiveConstructContext(); requireAdmin(context.role);
   const status = String(formData.get("status") ?? ""); if (status !== "DRAFT" && status !== "PUBLISHED" && status !== "UNPUBLISHED") redirect("/dashboard/settings?error=Invalid publication state.");
-  const prisma = getConstructPrisma(); const current = await prisma.sitePublication.findUnique({ where: { organizationId: context.organizationId } });
-  await prisma.$transaction([
-    prisma.sitePublication.upsert({ where: { organizationId: context.organizationId }, update: { status, publishedAt: status === "PUBLISHED" ? new Date() : current?.publishedAt, publishedById: status === "PUBLISHED" ? context.userId : current?.publishedById }, create: { organizationId: context.organizationId, status, publishedAt: status === "PUBLISHED" ? new Date() : null, publishedById: status === "PUBLISHED" ? context.userId : null } }),
-    prisma.auditLog.create({ data: { organizationId: context.organizationId, actorUserId: context.userId, module: "publication", action: status.toLowerCase(), recordId: context.organizationId, title: `Website ${status.toLowerCase()}`, details: { from: current?.status ?? null, to: status } } }),
-  ]); revalidatePath("/dashboard"); revalidatePath("/", "layout"); redirect("/dashboard/settings?saved=publication");
+  const prisma = getConstructPrisma();
+  const updated = await prisma.$transaction(async (tx) => {
+    await tx.$queryRaw`SELECT id FROM construct.organizations WHERE id = ${context.organizationId}::uuid FOR UPDATE`;
+    if (status === "PUBLISHED" && await tx.service.count({ where: { organizationId: context.organizationId } }) === 0) return false;
+    const current = await tx.sitePublication.findUnique({ where: { organizationId: context.organizationId } });
+    await tx.sitePublication.upsert({ where: { organizationId: context.organizationId }, update: { status, publishedAt: status === "PUBLISHED" ? new Date() : current?.publishedAt, publishedById: status === "PUBLISHED" ? context.userId : current?.publishedById }, create: { organizationId: context.organizationId, status, publishedAt: status === "PUBLISHED" ? new Date() : null, publishedById: status === "PUBLISHED" ? context.userId : null } });
+    await tx.auditLog.create({ data: { organizationId: context.organizationId, actorUserId: context.userId, module: "publication", action: status.toLowerCase(), recordId: context.organizationId, title: `Website ${status.toLowerCase()}`, details: { from: current?.status ?? null, to: status } } });
+    return true;
+  });
+  if (!updated) redirect("/dashboard/settings?error=Add at least one service before publishing your website.");
+  revalidatePath("/dashboard"); revalidatePath("/", "layout"); redirect("/dashboard/settings?saved=publication");
 }
 
 export async function addConstructDomainAction(formData: FormData) {

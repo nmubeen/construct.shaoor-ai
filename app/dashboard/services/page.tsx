@@ -14,13 +14,29 @@ function Thumbnail({ src, alt }: { src: string | null; alt: string }) {
   );
 }
 
-export default async function ServicesPage({ searchParams }: { searchParams: Promise<{ saved?: string; deleted?: string; error?: string; seeded?: string }> }) {
+export default async function ServicesPage({ searchParams }: { searchParams: Promise<{ saved?: string; deleted?: string; error?: string; seeded?: string; confirmDelete?: string; unpublished?: string }> }) {
   const context = await requireActiveConstructContext();
   const services = await getConstructPrisma().service.findMany({ where: { organizationId: context.organizationId }, orderBy: [{ displayOrder: "asc" }, { title: "asc" }] });
   const query = await searchParams;
   const canEdit = context.role !== "VIEWER";
+  const pendingDelete = (context.role === "OWNER" || context.role === "ADMIN")
+    ? services.find(service => service.id === query.confirmDelete)
+    : undefined;
   return <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8"><header className="mb-6 flex items-end justify-between gap-4"><div><p className="text-xs font-bold uppercase tracking-[0.2em] text-(--color-secondary-text-icon)">Website CMS</p><h1 className="mt-2 text-3xl font-bold text-(--color-primary-text)">Services</h1><p className="mt-2 text-sm text-slate-600">Manage the capabilities presented on your website.</p></div>{canEdit && <Link href="/dashboard/services/new" className="inline-flex items-center gap-2 rounded-md bg-(image:--gradient-button-bg) px-4 py-2.5 text-sm font-semibold text-white"><Plus className="size-4" />New service</Link>}</header>
     {query.seeded && <p className="mb-5 rounded-md border border-[#7D9D76]/40 bg-[#eef3ec] p-3 text-sm text-(--color-secondary-text-icon)">Seeded {query.seeded} default services with placeholder images — edit, replace or delete any of them to make them your own.</p>}{(query.saved || query.deleted) && <p className="mb-5 rounded-md border border-[#7D9D76]/40 bg-[#eef3ec] p-3 text-sm font-semibold text-(--color-primary-text)">Services updated successfully.</p>}{query.error && <p className="mb-5 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">{query.error}</p>}
+    {query.unpublished && <p role="status" className="mb-5 rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">Your website is now unpublished. Add at least one service before publishing it again.</p>}
+    {pendingDelete && <section role="alert" aria-labelledby="last-service-heading" className="mb-5 rounded-lg border border-amber-300 bg-amber-50 p-5 text-amber-950">
+      <h2 id="last-service-heading" className="font-bold">Keep at least one service to stay published</h2>
+      <p className="mt-2 text-sm">Deleting &quot;{pendingDelete.title}&quot; would leave your published website without any services. Keep this service, or unpublish your website and delete it. Unpublishing takes your website offline.</p>
+      <div className="mt-4 flex flex-wrap items-start gap-3">
+        <Link href="/dashboard/services" className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-semibold">Keep service</Link>
+        <form action={deleteConstructServiceAction}>
+          <input type="hidden" name="id" value={pendingDelete.id} />
+          <input type="hidden" name="unpublish" value="yes" />
+          <button className="rounded-lg border border-red-200 bg-white px-3 py-2 text-sm font-semibold text-red-700">Unpublish and delete</button>
+        </form>
+      </div>
+    </section>}
     <div className="grid gap-4">{services.length === 0 ? <div className="rounded-lg border border-dashed border-slate-300 bg-white p-10 text-center text-slate-500"><p>No services yet.</p>{canEdit && <>
       <p className="mt-1">Create the first service for this tenant, or start from a ready-made catalogue.</p>
       <div className="mt-4 flex justify-center"><SeedServicesButton /></div>
