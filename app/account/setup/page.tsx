@@ -2,7 +2,7 @@ import { TriangleAlert } from "lucide-react";
 import { redirect } from "next/navigation";
 
 import { ConstructAuthShell } from "@/components/auth/ConstructAuthShell";
-import { completeConstructSetupAction } from "@/lib/auth/actions";
+import { completeConstructSetupAction, constructSignOutAction } from "@/lib/auth/actions";
 import { getOptionalConstructContext } from "@/lib/auth/construct-context";
 
 // The one place a Construct workspace's name and permanent slug are ever
@@ -86,6 +86,16 @@ export default async function ConstructSetupPage({
         </div>
         <button className="w-full rounded-md bg-(image:--gradient-button-bg) px-4 py-3 font-semibold text-white hover:brightness-110">
           Create workspace
+        </button>
+      </form>
+      {/* /account/login skips itself for anyone already holding a session
+          (shared across Shaoor apps) and lands here when that identity has
+          no Construct workspace yet — without this, a returning user on the
+          wrong account has no way back to the sign-in form. */}
+      <form action={constructSignOutAction} className="mt-5 border-t border-slate-200 pt-4 text-center text-sm text-slate-600">
+        Signed in as <strong className="break-all">{context.authUser.email}</strong>.{" "}
+        <button className="font-semibold text-(--color-secondary-text-icon) hover:underline">
+          Sign in with a different account
         </button>
       </form>
     </ConstructAuthShell>

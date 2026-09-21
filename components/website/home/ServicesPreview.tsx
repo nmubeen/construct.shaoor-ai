@@ -5,6 +5,7 @@ import { getPublicServices } from "@/lib/public-site-data";
 import PageSection from "@/components/website/shared/PageSection";
 import SectionHeader from "@/components/website/shared/SectionHeader";
 import { websiteDesign } from "@/components/website/shared/design";
+import EnquireButton from "@/components/website/enquiry/EnquireButton";
 
 export default async function ServicesPreview() {
   const services = (await getPublicServices()).slice(0, 3);
@@ -50,12 +51,19 @@ export default async function ServicesPreview() {
                 {service.shortDescription}
               </p>
 
-              <Link
-                href={`/services/${service.slug}`}
-                className="mt-4 inline-block text-sm font-semibold text-[var(--site-primary)] hover:underline"
-              >
-                Learn More →
-              </Link>
+              <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2">
+                <EnquireButton
+                  service={{ id: String(service.id), title: service.title }}
+                  className="rounded-md bg-[var(--site-primary)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[var(--site-accent)]"
+                />
+
+                <Link
+                  href={`/services/${service.slug}`}
+                  className="text-sm font-semibold text-[var(--site-primary)] hover:underline"
+                >
+                  Learn More →
+                </Link>
+              </div>
             </div>
           </article>
         ))}

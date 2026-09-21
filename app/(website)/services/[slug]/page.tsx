@@ -9,6 +9,7 @@ import PageHero from "@/components/website/shared/PageHero";
 import Container from "@/components/ui/Container";
 import { websiteDesign } from "@/components/website/shared/design";
 import JsonLd from "@/components/shared/JsonLd";
+import EnquireButton from "@/components/website/enquiry/EnquireButton";
 import {
   buildBreadcrumbSchema,
   buildServiceSchema,
@@ -135,6 +136,12 @@ export default async function ServiceDetailsPage({
                   ))}
                 </ul>
               )}
+
+              <EnquireButton
+                service={{ id: String(service.id), title: service.title }}
+                label="Enquire About This Service"
+                className={`${websiteDesign.primaryButton} mt-8`}
+              />
 
             </div>
 

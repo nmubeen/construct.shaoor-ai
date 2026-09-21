@@ -128,6 +128,7 @@ model Organization {
   testimonials    Testimonial[]
   faqs            Faq[]
   messages        ContactMessage[]
+  serviceEnquiryQuestions ServiceEnquiryQuestion[]
   seoSettings     SeoSettings?
   seoPages        SeoPage[]
   navigationItems NavigationItem[]
@@ -588,6 +589,8 @@ model Service {
 
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   subServices  SubService[]
+  enquiryQuestions ServiceEnquiryQuestion[]
+  enquiries    ContactMessage[]
 
   @@unique([organizationId, slug])
   @@index([organizationId, isActive])
@@ -610,6 +613,31 @@ model SubService {
 
   @@index([organizationId, serviceId])
   @@map("sub_services")
+  @@schema("construct")
+}
+
+// One tenant-configured question on a service's public enquiry form.
+// `options` is a JSON string array, only meaningful for single_select /
+// multi_select. `questionType` is validated in the server action against
+// lib/enquiry/questions.ts (mirrored by a CHECK constraint in the DB).
+model ServiceEnquiryQuestion {
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  serviceId      String   @map("service_id") @db.Uuid
+  questionText   String   @map("question_text")
+  questionType   String   @map("question_type")
+  options        Json?
+  isRequired     Boolean  @default(false) @map("is_required")
+  isActive       Boolean  @default(true) @map("is_active")
+  displayOrder   Int      @default(0) @map("display_order")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @default(now()) @updatedAt @map("updated_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  service      Service      @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, serviceId, displayOrder])
+  @@map("service_enquiry_questions")
   @@schema("construct")
 }
 
@@ -716,16 +744,26 @@ model ContactMessage {
   email           String
   phone           String?
   subject         String?
-  message         String
+  message         String        @default("")
+  // Snapshot of the service title at submit time (kept even if the service
+  // is later renamed or deleted); serviceId links back while it still exists.
   projectInterest String?       @map("project_interest")
+  serviceId       String?       @map("service_id") @db.Uuid
+  subService      String?       @map("sub_service")
+  projectLocation String?       @map("project_location")
+  preferredContactMethod String? @map("preferred_contact_method")
+  // [{ questionId, question, type, answer }] — see lib/enquiry/questions.ts.
+  answers         Json?
   status          MessageStatus @default(NEW)
   consentAt       DateTime?     @map("consent_at")
   createdAt       DateTime      @default(now()) @map("created_at")
   updatedAt       DateTime      @updatedAt @map("updated_at")
 
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  service      Service?     @relation(fields: [serviceId], references: [id], onDelete: SetNull)
 
   @@index([organizationId, status, createdAt])
+  @@index([organizationId, serviceId])
   @@map("contact_messages")
   @@schema("construct")
 }

@@ -8,6 +8,7 @@ import PageHero from "@/components/website/shared/PageHero";
 import Container from "@/components/ui/Container";
 import { websiteDesign } from "@/components/website/shared/design";
 import FaqSection from "@/components/website/services/FaqSection";
+import EnquireButton from "@/components/website/enquiry/EnquireButton";
 
 export async function generateMetadata(): Promise<Metadata> {
   return getSeoPageMetadata({
@@ -54,12 +55,19 @@ export default async function ServicesPage() {
                     {service.shortDescription}
                   </p>
 
-                  <Link
-                    href={`/services/${service.slug}`}
-                    className="mt-6 inline-flex font-semibold text-[var(--site-primary)] hover:underline"
-                  >
-                    Read More →
-                  </Link>
+                  <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2">
+                    <EnquireButton
+                      service={{ id: String(service.id), title: service.title }}
+                      className="rounded-md bg-[var(--site-primary)] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[var(--site-accent)]"
+                    />
+
+                    <Link
+                      href={`/services/${service.slug}`}
+                      className="inline-flex font-semibold text-[var(--site-primary)] hover:underline"
+                    >
+                      Read More →
+                    </Link>
+                  </div>
                 </div>
               </article>
             ))}

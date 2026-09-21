@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 import Container from "@/components/ui/Container";
 import PageBanner from "@/components/shared/PageBanner";
-import ContactForm from "@/components/website/contact/ContactForm";
+import ServiceEnquiryForm from "@/components/website/enquiry/ServiceEnquiryForm";
 import ContactInfo from "@/components/website/contact/ContactInfo";
 import CTA from "@/components/website/home/CTA";
 import { websiteDesign } from "@/components/website/shared/design";
@@ -52,7 +52,13 @@ export default async function ContactPage() {
       <section className={websiteDesign.sectionY}>
         <Container>
           <div className="grid gap-16 lg:grid-cols-2">
-            <ContactForm services={services.map((service) => service.title)} />
+            {/* Same form the service dialogs use, inline: picking a service
+                loads that service's questions underneath, no navigation. */}
+            <div className="rounded-lg bg-slate-50 p-5 shadow-sm sm:p-8">
+              <h2 className="mb-2 text-3xl font-bold">Enquiry Details</h2>
+              <p className="mb-8 text-slate-600">Share your requirements and our team will get back to you.</p>
+              <ServiceEnquiryForm services={services.map((service) => ({ id: String(service.id), title: service.title }))} />
+            </div>
 
             <ContactInfo settings={settings} />
           </div>
