@@ -143,12 +143,22 @@ model Organization {
 // the shared control.plan_entitlements — each product's local plan table
 // is its own enforcement source, kept in sync with control.plans (the
 // admin-editable copy) by whoever edits /admin/plans on shaoor-ai.com.
+// Deliberately thin — mirrors TuiTrak's tuitrakweb.plans design (the
+// reference implementation, C:\Projects\TuiTrakWeb, see its
+// 0039_control_plans_live_read.sql): only what has no equivalent in the
+// shared shaoor-ai.com control plane's own control.plans lives here.
+// Pricing/marketing fields (price, currency, billing interval,
+// feature_lines, trial length) are read live from control.plans instead —
+// see lib/services/construct-plan-catalog.service.ts — so an edit made in
+// the shared /admin/plans UI takes effect immediately, with no deploy.
+// `name` is the one exception, kept local (not dropped, unlike TuiTrak's
+// version): lib/control/construct-subscription.service.ts's
+// getConstructCommercialAccess() reads it for fast, local-only gating
+// error messages, and that function is explicitly local-state-only by
+// design — not part of this live-read migration.
 model Plan {
   code            String   @id
   name            String
-  priceAmount     Int?     @map("price_amount")
-  priceCurrency   String   @default("INR") @map("price_currency")
-  billingInterval String?  @map("billing_interval")
   isTrial         Boolean  @default(false) @map("is_trial")
   isFreeForever   Boolean  @default(false) @map("is_free_forever")
   seatLimit       Int?     @map("seat_limit")

@@ -104,7 +104,14 @@ export default function Modal({
         aria-modal="true"
         aria-label={title ?? "Dialog"}
         tabIndex={-1}
-        className="relative z-10 max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-white p-4 shadow-2xl outline-none sm:p-6"
+        // dvh (dynamic viewport height), not vh: on a phone, vh is fixed to
+        // the viewport height *without* the on-screen keyboard, so once a
+        // text field inside the dialog is focused and the keyboard is later
+        // dismissed, a 90vh box doesn't shrink back and leaves a blank gap
+        // roughly the keyboard's height where it used to be, above whatever
+        // content comes after it (Additional Requirements, here). dvh tracks
+        // the keyboard's presence and resizes with it.
+        className="relative z-10 max-h-[90dvh] w-full max-w-2xl overflow-y-auto rounded-lg bg-white p-4 shadow-2xl outline-none sm:p-6"
       >
         <div className="flex items-start justify-between gap-4">
           {title && <h2 className="text-2xl font-bold text-slate-900">{title}</h2>}

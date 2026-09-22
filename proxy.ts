@@ -15,6 +15,7 @@ const RESERVED = new Set([
   // silently rewritten to "/" instead of 404ing. Confirmed live.
   "demo",
   "login",
+  "pricing",
   "change-password",
   "api",
   "_next",

@@ -35,13 +35,18 @@ export function ConstructPortalHome() {
             </span>
           </span>
         </Link>
-        {/* ButtonBackgroundColor (--gradient-button-bg). */}
-        <Link
-          href="/account/login"
-          className="rounded-md bg-(image:--gradient-button-bg) px-4 py-2.5 text-sm font-semibold text-white transition hover:brightness-110"
-        >
-          Customer sign in
-        </Link>
+        <div className="flex items-center gap-5">
+          <Link href="/pricing" className="text-sm font-semibold text-slate-200 hover:text-white">
+            Pricing
+          </Link>
+          {/* ButtonBackgroundColor (--gradient-button-bg). */}
+          <Link
+            href="/account/login"
+            className="rounded-md bg-(image:--gradient-button-bg) px-4 py-2.5 text-sm font-semibold text-white transition hover:brightness-110"
+          >
+            Customer sign in
+          </Link>
+        </div>
       </header>
 
       <section className="relative z-10 mx-auto max-w-7xl px-5 pb-20 pt-14 sm:px-8 lg:pb-28 lg:pt-24">

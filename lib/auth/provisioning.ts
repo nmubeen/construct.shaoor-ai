@@ -35,9 +35,13 @@ import type { User as SupabaseUser } from "@supabase/supabase-js";
 
 import { getConstructPrisma } from "@/lib/construct-prisma";
 import { syncSubscriptionToControlPlane } from "@/lib/control-sync";
+import { getConstructControlPlan } from "@/lib/services/construct-plan-catalog.service";
 import { logAuthDiagnostic } from "./diagnostics";
 
-const TRIAL_DAYS = 14;
+// Falls back to this only if control.plans' own TRIAL row can't be read
+// (control-plane hiccup, or the row is ever removed there) — every new
+// signup must still get a trial rather than fail outright.
+const FALLBACK_TRIAL_DAYS = 14;
 
 async function upsertConstructUser(authUser: SupabaseUser) {
   const email = authUser.email?.trim().toLowerCase();
@@ -124,6 +128,13 @@ export async function createConstructOrganizationForCurrentUser(
     const slugTaken = await prisma.organization.findUnique({ where: { slug: input.slug }, select: { id: true } });
     if (slugTaken) return { ok: false, error: "slug-taken" };
 
+    // Trial length lives in the shared control plane's own control.plans
+    // (see lib/services/construct-plan-catalog.service.ts) — read live so
+    // it can never drift from what /pricing and the billing settings page
+    // both already say, with no deploy needed to change it.
+    const trialPlan = await getConstructControlPlan("TRIAL");
+    const trialDays = trialPlan?.trialDays ?? FALLBACK_TRIAL_DAYS;
+
     const organizationId = await prisma.$transaction(async (tx) => {
       const org = await tx.organization.create({
         data: {
@@ -131,7 +142,7 @@ export async function createConstructOrganizationForCurrentUser(
           slug: input.slug,
           status: "ACTIVE",
           planCode: "TRIAL",
-          trialEndsAt: new Date(Date.now() + TRIAL_DAYS * 24 * 60 * 60 * 1000),
+          trialEndsAt: new Date(Date.now() + trialDays * 24 * 60 * 60 * 1000),
         },
       });
 
