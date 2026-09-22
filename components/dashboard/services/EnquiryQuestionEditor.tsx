@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useActionState, useEffect, useRef, useState } from "react";
 
 import { saveEnquiryQuestionAction } from "@/lib/actions/construct-enquiry-question.actions";
 import { hasOptions, MAX_OPTION_LENGTH, MAX_OPTIONS, MAX_QUESTION_LENGTH, QUESTION_TYPES, QUESTION_TYPE_LABELS, type QuestionType } from "@/lib/enquiry/questions";
@@ -10,11 +11,57 @@ const input = "mt-1.5 w-full rounded-md border border-slate-300 px-3.5 py-2.5 te
 
 export type EditableQuestion = { id: string; questionText: string; questionType: QuestionType; options: string[]; isRequired: boolean; isActive: boolean };
 
+// Owns only what needs to survive across "Save & Add New" — everything
+// else (question type, options, the action's own pending/error state)
+// resets for free by remounting <EnquiryQuestionFields> under a bumped
+// key, rather than by hand-resetting each piece of state.
+export function EnquiryQuestionEditor({ serviceId, question, cancelHref }: { serviceId: string; question?: EditableQuestion; cancelHref: string }) {
+  const router = useRouter();
+  const [resetKey, setResetKey] = useState(0);
+  const [justAdded, setJustAdded] = useState(false);
+
+  return (
+    <EnquiryQuestionFields
+      key={resetKey}
+      serviceId={serviceId}
+      question={question}
+      cancelHref={cancelHref}
+      justAdded={justAdded}
+      onDirty={() => setJustAdded(false)}
+      onSaved={() => router.push(`${cancelHref}?saved=1`)}
+      onSavedAndAddAnother={() => {
+        setJustAdded(true);
+        setResetKey((key) => key + 1);
+        router.refresh(); // picks up the new question in the list below, without leaving this form
+      }}
+    />
+  );
+}
+
 // Add / edit one question. Options are plain text inputs sharing the name
 // "options" (the server reads them in order), each with a stable key so
 // removing one in the middle doesn't shuffle what's typed in the others.
-export function EnquiryQuestionEditor({ serviceId, question, cancelHref }: { serviceId: string; question?: EditableQuestion; cancelHref: string }) {
+function EnquiryQuestionFields({ serviceId, question, cancelHref, justAdded, onDirty, onSaved, onSavedAndAddAnother }: {
+  serviceId: string;
+  question?: EditableQuestion;
+  cancelHref: string;
+  justAdded: boolean;
+  onDirty: () => void;
+  onSaved: () => void;
+  onSavedAndAddAnother: () => void;
+}) {
   const [state, formAction, pending] = useActionState(saveEnquiryQuestionAction, null);
+  // The action itself only returns state — it doesn't redirect() (that
+  // combination, from an action bound with useActionState, was surfacing
+  // to the client as an uncaught error even though the save had already
+  // succeeded, see saveEnquiryQuestionAction). This reacts to a plain
+  // successful result instead.
+  useEffect(() => {
+    if (!state || !("ok" in state)) return;
+    if (state.intent === "save-and-add") onSavedAndAddAnother();
+    else onSaved();
+  }, [state, onSaved, onSavedAndAddAnother]);
+
   const [type, setType] = useState<QuestionType>(question?.questionType ?? "short_text");
   const [nextKey, setNextKey] = useState(() => (question?.options.length ?? 0) + 1);
   // Key of the option input that should grab the cursor once it renders —
@@ -28,14 +75,15 @@ export function EnquiryQuestionEditor({ serviceId, question, cancelHref }: { ser
   });
 
   return (
-    <form action={formAction} className="mb-6 space-y-4 rounded-lg border border-slate-200 bg-(image:--gradient-form-bg) p-6 shadow-sm">
+    <form action={formAction} onInputCapture={onDirty} onChangeCapture={onDirty} className="mb-6 space-y-4 rounded-lg border border-slate-200 bg-(image:--gradient-form-bg) p-6 shadow-sm">
       <h2 className="font-bold text-(--color-primary-text)">{question ? "Edit question" : "Add question"}</h2>
       <input type="hidden" name="serviceId" value={serviceId} />
       {question && <input type="hidden" name="id" value={question.id} />}
-      {state?.error && <p role="alert" className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">{state.error}</p>}
+      {state && "error" in state && <p role="alert" className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">{state.error}</p>}
+      {justAdded && <p role="status" className="rounded-md border border-[#7D9D76]/40 bg-[#eef3ec] p-3 text-sm font-semibold text-(--color-primary-text)">Question added. Add the next one below, or Cancel when you&apos;re done.</p>}
 
       <label className="block text-sm font-semibold text-slate-700">Question
-        <input className={input} name="questionText" defaultValue={question?.questionText} required minLength={3} maxLength={MAX_QUESTION_LENGTH} placeholder="e.g. What type of property is this?" />
+        <input className={input} name="questionText" autoFocus={!question} defaultValue={question?.questionText} required minLength={3} maxLength={MAX_QUESTION_LENGTH} placeholder="e.g. What type of property is this?" />
       </label>
 
       <label className="block text-sm font-semibold text-slate-700">Question type
@@ -66,9 +114,19 @@ export function EnquiryQuestionEditor({ serviceId, question, cancelHref }: { ser
         </fieldset>
       )}
 
-      <div className="flex justify-end gap-3">
+      <div className="flex flex-wrap justify-end gap-3">
         <Link href={cancelHref} className="rounded-md border border-slate-300 px-4 py-2.5 text-sm font-semibold">Cancel</Link>
-        <button disabled={pending} className="rounded-md bg-(image:--gradient-button-bg) px-5 py-2.5 text-sm font-semibold text-white hover:brightness-110 disabled:opacity-60">{pending ? "Saving..." : "Save question"}</button>
+        {/* Only offered while adding: saves this question and reopens a
+            blank form for the next one, for building out a questionnaire
+            without a round trip back to the list each time. */}
+        {!question && (
+          <button type="submit" name="intent" value="save-and-add" disabled={pending} className="rounded-md border border-slate-300 px-5 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-60">
+            {pending ? "Saving..." : "Save & Add New"}
+          </button>
+        )}
+        <button type="submit" name="intent" value="save" disabled={pending} className="rounded-md bg-(image:--gradient-button-bg) px-5 py-2.5 text-sm font-semibold text-white hover:brightness-110 disabled:opacity-60">
+          {pending ? "Saving..." : question ? "Save changes" : "Save question"}
+        </button>
       </div>
     </form>
   );

@@ -21,7 +21,7 @@ const questionSchema = z.object({
   questionType: z.enum(QUESTION_TYPES, "Choose a question type."),
 });
 
-export type SaveQuestionState = { error: string } | null;
+export type SaveQuestionState = { error: string } | { ok: true; intent: "save" | "save-and-add" } | null;
 
 function requireEditor(role: string, serviceId: string) {
   if (role === "VIEWER") redirect(`${formPath(serviceId)}?error=You do not have permission to change the enquiry form.`);
@@ -57,6 +57,10 @@ export async function saveEnquiryQuestionAction(_prev: SaveQuestionState, formDa
   }
   const isRequired = formData.get("isRequired") === "on";
   const isActive = formData.get("isActive") === "on";
+  // Which submit button was pressed (only "Add question" offers the second
+  // one) — carried back to the client so it knows whether to navigate away
+  // or reset the form and stay for the next question.
+  const intent = formData.get("intent") === "save-and-add" ? "save-and-add" as const : "save" as const;
 
   const prisma = getConstructPrisma();
   const service = await prisma.service.findFirst({ where: { id: serviceId, organizationId: context.organizationId }, select: { id: true, title: true } });
@@ -78,7 +82,15 @@ export async function saveEnquiryQuestionAction(_prev: SaveQuestionState, formDa
     return { error: error instanceof Error && error.message === "QUESTION_NOT_FOUND" ? "Question not found." : "The question could not be saved." };
   }
   revalidatePath(formPath(serviceId));
-  redirect(`${formPath(serviceId)}?saved=1`);
+  // Not redirect() here: this action is bound with useActionState, and a
+  // redirect thrown from inside one of those (unlike a plain <form
+  // action={...}> submission, e.g. the toggle/delete actions below) was
+  // surfacing to the client as an uncaught error instead of a navigation —
+  // the save itself succeeded, but the visitor saw app/error.tsx and,
+  // reasonably, retried, creating duplicate questions. Returning a plain
+  // "ok" result and letting EnquiryQuestionEditor navigate client-side
+  // avoids that entirely.
+  return { ok: true, intent };
 }
 
 // The remaining actions only receive a question id: the service is read
