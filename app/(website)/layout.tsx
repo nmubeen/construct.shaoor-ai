@@ -40,9 +40,16 @@ export async function generateMetadata(): Promise<Metadata> {
   ]);
   const baseUrl = resolveBaseUrl(seo.siteUrl);
   // The tenant's own icon replaces the platform default served from app/.
-  // SEO settings win over the Site settings favicon; the Apple touch icon
-  // falls back to the favicon so iOS doesn't show the platform logo.
-  const favicon = seo.faviconUrl?.trim() || siteSettings.favicon?.trim() || null;
+  // Site settings' favicon (Dashboard > Site > Company identity, the
+  // obvious/only place most tenants ever touch this) wins over the SEO
+  // page's own, separately-editable copy — SEO Settings' faviconUrl is
+  // seeded from Site settings' once, the first time SEO defaults are
+  // provisioned for an organization, and never kept in sync after that.
+  // Preferring it here meant a favicon change on the Site page could
+  // silently have no visible effect if that one-time copy had since gone
+  // stale. The Apple touch icon falls back to the favicon so iOS doesn't
+  // show the platform logo.
+  const favicon = siteSettings.favicon?.trim() || seo.faviconUrl?.trim() || null;
   const appleIcon = seo.appleTouchIconUrl?.trim() || favicon;
 
   return {
