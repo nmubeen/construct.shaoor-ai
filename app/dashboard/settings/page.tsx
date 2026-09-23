@@ -21,8 +21,8 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
     prisma.domain.findMany({ where: { organizationId: context.organizationId }, orderBy: [{ isPrimary: "desc" }, { createdAt: "asc" }] }),
     prisma.auditLog.findMany({ where: { organizationId: context.organizationId }, orderBy: { createdAt: "desc" }, take: 20 }),
     getConstructPlanUsage(context.organizationId),
-    // Local: only the seat/project/media limits and the isTrial/isFreeForever
-    // flags this app's own cron/gating logic read — no equivalent in control.plans.
+    // Local: only the seat/project/media limits and the isFreeForever flag
+    // this app's own gating logic reads — no equivalent in control.plans.
     prisma.plan.findUnique({ where: { code: context.organization.planCode } }),
     // Name/price/billing-interval: read live from the shared control plane
     // (see lib/services/construct-plan-catalog.service.ts) so an edit made
@@ -35,7 +35,12 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
   const controlPlan = controlPlans.find(p => p.code === context.organization.planCode);
   const primaryDomain = domains.find(domain => domain.isPrimary);
   const cnameTarget = process.env.CONSTRUCT_CNAME_TARGET ?? "construct.shaoor-ai.com";
-  const isTrialing = plan?.isTrial && context.organization.trialEndsAt;
+  // subscription.status is the authoritative flag (set by the Razorpay
+  // webhook), same convention TuiTrak's own billing page uses — not
+  // derived from which plan code the org happens to be on: a trial runs
+  // directly on the real plan being trialed (see lib/auth/provisioning.ts),
+  // so there's no separate "Trial" plan code to check for any more.
+  const isTrialing = subscription?.status === "TRIALING" && context.organization.trialEndsAt;
   const isPaying = subscription?.status === "ACTIVE" && subscription.razorpaySubscriptionId;
   const priceLabel = controlPlan?.priceMonthlyInr ? new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(controlPlan.priceMonthlyInr) : null;
   // Whichever plan the shared admin has flagged as top tier, for the
@@ -48,7 +53,12 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
       <ProductAccessCard usage={usage} workspaceStatus={context.organization.status} role={context.role}/>
       <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm"><div className="mb-4 flex items-center gap-2"><CreditCard className="size-5 text-(--color-secondary-text-icon)"/><h2 className="font-bold text-(--color-primary-text)">Billing</h2></div>
         <div className="flex flex-wrap items-center justify-between gap-4"><div><div className="flex items-center gap-2 text-sm font-semibold">{controlPlan?.name ?? plan?.name ?? context.organization.planCode}{isTrialing && <span className="rounded-full bg-amber-50 px-2 py-0.5 text-xs font-bold text-amber-700">trial</span>}{subscription?.status === "PAST_DUE" && <span className="rounded-full bg-red-50 px-2 py-0.5 text-xs font-bold text-red-700">past due</span>}</div><p className="mt-1 text-xs text-slate-500">{isTrialing ? `Ends ${context.organization.trialEndsAt!.toLocaleDateString()}${priceLabel ? ` · then ${priceLabel}/mo` : ""} · no card required` : priceLabel ? `${priceLabel}/mo` : "Contact sales for pricing"}</p></div>
-          {isOwner && (isPaying ? <CancelSubscriptionButton organizationId={context.organizationId} className="rounded-md border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50"/> : <RazorpayCheckout organizationId={context.organizationId} planCode={plan?.isTrial || plan?.isFreeForever ? suggestedUpgradeCode : context.organization.planCode} workspaceName={context.organization.name} userEmail={context.authUser.email} className="rounded-md bg-(image:--gradient-button-bg) px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-60">Add card</RazorpayCheckout>)}</div>
+          {/* A trialing org is already on the real plan it's trialing (e.g.
+              GROWTH_MONTHLY) — "Add card" charges for that same plan, not
+              a possibly-different suggested one. Only a Free-tier org
+              (never trialed, or a lapsed trial that was downgraded) needs
+              a plan suggested to it. */}
+          {isOwner && (isPaying ? <CancelSubscriptionButton organizationId={context.organizationId} className="rounded-md border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50"/> : <RazorpayCheckout organizationId={context.organizationId} planCode={plan?.isFreeForever ? suggestedUpgradeCode : context.organization.planCode} workspaceName={context.organization.name} userEmail={context.authUser.email} className="rounded-md bg-(image:--gradient-button-bg) px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-60">Add card</RazorpayCheckout>)}</div>
         {!isOwner && <p className="mt-3 text-xs text-slate-500">Only the workspace owner can manage billing.</p>}
         <a href="/pricing" target="_blank" rel="noreferrer" className="mt-3 inline-block text-xs font-semibold text-(--color-secondary-text-icon) hover:underline">See all plans →</a>
         <p className="mt-4 text-xs leading-5 text-slate-500">Payments are processed by Razorpay — Shaoor-AI Construct never stores your card or UPI details directly. Cancelling keeps this plan through the period you&apos;ve already paid for; after that the workspace moves to the free tier automatically, same as a trial that lapses without a card.</p>

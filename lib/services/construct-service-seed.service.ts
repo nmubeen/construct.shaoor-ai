@@ -1,7 +1,10 @@
 import "server-only";
 
+import { Prisma } from "@prisma/construct-client";
+
 import { getConstructPrisma } from "@/lib/construct-prisma";
 import { createClient } from "@/lib/supabase/server";
+import type { QuestionType } from "@/lib/enquiry/questions";
 import { SAMPLE_SERVICE_IMAGE_BASE64, SAMPLE_SERVICE_IMAGE_HEIGHT, SAMPLE_SERVICE_IMAGE_WIDTH } from "@/lib/services/construct-sample-service-image";
 
 // Sourced from Seed/Services.xml (a 15-service, 10-sub-service-each
@@ -39,6 +42,130 @@ export const DEFAULT_CONSTRUCT_SERVICES: DefaultServiceSeed[] = [
   { title: "Design & Pre-Construction", slug: "design-and-pre-construction", subServices: ["Architectural Planning", "Floor Plans", "Structural Design", "3D Elevation & Visualization", "Interior Design", "Site Survey", "Quantity Estimation", "BOQ Preparation", "Cost Estimation", "Construction Planning"], shortDescription: "Architectural planning, floor plans, 3D elevations, and cost and quantity estimation.", description: "Before construction begins, our design and pre-construction team develops architectural plans, floor plans, and structural designs tailored to the client's needs and site conditions. We produce 3D elevations and visualizations along with interior design concepts, so clients can see the finished project before ground is broken. Supporting services include site surveys, quantity estimation, BOQ preparation, cost estimation, and detailed construction planning to keep the project on budget and on schedule.", seoTitle: "Design & Pre-Construction Services | Planning, 3D & Estimation", seoDescription: "Architectural planning, floor plans, structural design, 3D elevations, site survey, BOQ preparation & cost estimation before construction starts.", seoKeywords: "architectural planning, floor plan design, structural design, 3D elevation, interior design, site survey, quantity estimation, BOQ preparation, cost estimation, construction planning" },
   { title: "Project Management", slug: "project-management", subServices: ["Construction Project Management", "Site Supervision", "Planning & Scheduling", "Cost & Budget Control", "Contractor Coordination", "Vendor Coordination", "Material Procurement", "Quality Control", "Safety Management", "Progress Monitoring & Reporting"], shortDescription: "Site supervision, scheduling, cost control, and coordination for smooth project delivery.", description: "Our project management services oversee construction from start to finish, providing site supervision along with detailed planning and scheduling to keep work on track. We manage cost and budget control, contractor and vendor coordination, and material procurement so resources are available when needed. Ongoing quality control, safety management, and progress monitoring and reporting keep clients informed and projects accountable at every stage.", seoTitle: "Construction Project Management | Site Supervision & Cost Control", seoDescription: "Project management services: site supervision, scheduling, cost & budget control, contractor coordination, quality control & progress reporting.", seoKeywords: "construction project management, site supervision, project scheduling, cost and budget control, contractor coordination, vendor coordination, material procurement, quality control, safety management, progress reporting" },
 ];
+
+export type DefaultEnquiryQuestionSeed = {
+  questionText: string;
+  questionType: QuestionType;
+  options?: string[];
+  /** Only false right now (see the comment below) — kept so a future
+   * addition here can mark one required without changing the type. */
+  isRequired: boolean;
+  isActive: boolean;
+};
+
+// Reconstructed from one tenant's actual enquiry-question configuration
+// (2Yards Studios), after that organization was deleted — see the
+// question-text and type only, printed to a terminal earlier while
+// diagnosing an unrelated save bug, was the one surviving record of it.
+// Two things that print did NOT capture, and this data honestly can't
+// recover:
+//   - isRequired — every question below defaults to false (optional).
+//     This is a safe default, not reconstructed data: it means a
+//     seeded tenant never gets a public form that blocks submission over
+//     a question the previous tenant happened to mark required. Any of
+//     these can be flipped on via Configure Enquiry Form same as always.
+//   - the actual answer options on every single_select/multi_select
+//     question. Rather than invent plausible-sounding choices and ship
+//     them as if they were real, every one of those seeds inactive with
+//     a placeholder option (isActive: false) — present so the question
+//     text isn't lost, but never shown live in this state. Look for
+//     "NEEDS REAL OPTIONS" below; there are 34 across these 6 services.
+// This is a deliberately partial, interim set — see
+// prisma/migrations-construct's history around 2026-09-23 for context.
+// It gets rebuilt from a complete, freshly re-entered configuration once
+// the rest of that tenant's ~195 original questions exist again.
+const NEEDS_REAL_OPTIONS = ["NEEDS REAL OPTIONS — placeholder only, inactive until replaced"];
+
+export const DEFAULT_ENQUIRY_QUESTIONS_BY_SLUG: Record<string, DefaultEnquiryQuestionSeed[]> = {
+  "building-construction": [
+    { questionText: "What type of construction are you planning?", questionType: "multi_select", options: NEEDS_REAL_OPTIONS, isRequired: false, isActive: false },
+    { questionText: "If you selected Building Extension / Additional Floor in the 1st question, How old is the existing building?", questionType: "short_text", isRequired: false, isActive: true },
+    { questionText: "If you selected Building Extension / Additional Floor in the 1st question, Has its structural capacity for additional floors been assessed?", questionType: "yes_no", isRequired: false, isActive: true },
+    { questionText: "Where is your project located?", questionType: "short_text", isRequired: false, isActive: true },
+    { questionText: "What is the approximate plot/size area? (number + sq ft / sq yd)", questionType: "short_text", isRequired: false, isActive: true },
+    { questionText: "What approximate built up area are you planning? (number + sq ft)", questionType: "short_text", isRequired: false, isActive: true },
+    { questionText: "How many floors are planned?", questionType: "single_select", options: NEEDS_REAL_OPTIONS, isRequired: false, isActive: false },
+    { questionText: "What is the current status of the site?", questionType: "single_select", options: NEEDS_REAL_OPTIONS, isRequired: false, isActive: false },
+    { questionText: "Do you already have architectural/structural drawings?", questionType: "single_select", options: NEEDS_REAL_OPTIONS, isRequired: false, isActive: false },
+    { questionText: "What scope do you require?", questionType: "single_select", options: NEEDS_REAL_OPTIONS, isRequired: false, isActive: false },
+    { questionText: "If you selected Turnkey for scope, Do you require design, approvals, construction and interiors as part of the turnkey scope?", questionType: "yes_no", isRequired: false, isActive: true },
+    { questionText: "What level of finish are you looking for?", questionType: "single_select", options: NEEDS_REAL_OPTIONS, isRequired: false, isActive: false },
+    { questionText: "What is your approximate construction budget?", questionType: "short_text", isRequired: false, isActive: true },
+    { questionText: "When would you like construction to start?", questionType: "single_select", options: NEEDS_REAL_OPTIONS, isRequired: false, isActive: false },
+    { questionText: "Would you like us to arrange a site visit/consultation?", questionType: "yes_no", isRequired: false, isActive: true },
+  ],
+  "renovation-and-remodeling": [
+    { questionText: "What would you like to renovate?", questionType: "multi_select", options: NEEDS_REAL_OPTIONS, isRequired: false, isActive: false },
+    { questionText: "If you selected Kitchen Renovation, what is the approximate kitchen size/layout?", questionType: "short_text", isRequired: false, isActive: true },
+    { questionText: "If you selected Bathroom Renovation, what is the number of bathrooms?", questionType: "number", isRequired: false, isActive: true },
+    { questionText: "If you selected Structural Alteration, whether drawings /  structural assessment exist?", questionType: "yes_no", isRequired: false, isActive: true },
+    { questionText: "What type of property is it?", questionType: "single_select", options: NEEDS_REAL_OPTIONS, isRequired: false, isActive: false },
+    { questionText: "Where is the property located?", questionType: "short_text", isRequired: false, isActive: true },
+    { questionText: "What is the approximate area being renovated? (sq ft)", questionType: "short_text", isRequired: false, isActive: true },
+    { questionText: "How old is the property?", questionType: "single_select", options: NEEDS_REAL_OPTIONS, isRequired: false, isActive: false },
+    { questionText: "What work do you expect to include?", questionType: "multi_select", options: NEEDS_REAL_OPTIONS, isRequired: false, isActive: false },
+    { questionText: "What finish level are you looking for?", questionType: "single_select", options: NEEDS_REAL_OPTIONS, isRequired: false, isActive: false },
+    { questionText: "If you selected Other, list what work you expect to include.", questionType: "short_text", isRequired: false, isActive: true },
+    { questionText: "Are structural changes required?", questionType: "single_select", options: NEEDS_REAL_OPTIONS, isRequired: false, isActive: false },
+    { questionText: "Will the property be occupied during renovation?", questionType: "yes_no", isRequired: false, isActive: true },
+    { questionText: "What is your approximate budget?", questionType: "short_text", isRequired: false, isActive: true },
+    { questionText: "By when do you want the work started?", questionType: "date", isRequired: false, isActive: true },
+    { questionText: "By when do you want the work completed?", questionType: "date", isRequired: false, isActive: true },
+    { questionText: "Can we inspect the property before estimating?", questionType: "yes_no", isRequired: false, isActive: true },
+  ],
+  "civil-and-structural-works": [
+    { questionText: "What civil/structural work do you require?", questionType: "single_select", options: NEEDS_REAL_OPTIONS, isRequired: false, isActive: false },
+    { questionText: "If you selected Structural Repair, what kind of repair are you looking for?", questionType: "multi_select", options: NEEDS_REAL_OPTIONS, isRequired: false, isActive: false },
+    { questionText: "If you selected Demolition, what is the scope?", questionType: "single_select", options: NEEDS_REAL_OPTIONS, isRequired: false, isActive: false },
+    { questionText: "If you selected Demolition, how many floors are to be demolished?", questionType: "number", isRequired: false, isActive: true },
+    { questionText: "Where is the site?", questionType: "short_text", isRequired: false, isActive: true },
+    { questionText: "Is this for a new or existing structure?", questionType: "single_select", options: NEEDS_REAL_OPTIONS, isRequired: false, isActive: false },
+    { questionText: "What type of building/site is involved?", questionType: "single_select", options: NEEDS_REAL_OPTIONS, isRequired: false, isActive: false },
+    { questionText: "What is the approximate work area/quantity? (number + sq ft)", questionType: "short_text", isRequired: false, isActive: true },
+    { questionText: "Do you have drawings/specifications?", questionType: "single_select", options: NEEDS_REAL_OPTIONS, isRequired: false, isActive: false },
+    { questionText: "Has a structural engineer assessed the work?", questionType: "single_select", options: NEEDS_REAL_OPTIONS, isRequired: false, isActive: false },
+    { questionText: "What is the current condition/site status?", questionType: "long_text", isRequired: false, isActive: true },
+    { questionText: "Do you require labour only or labour + material?", questionType: "single_select", options: NEEDS_REAL_OPTIONS, isRequired: false, isActive: false },
+    { questionText: "Are there access or working-hour restrictions?", questionType: "yes_no", isRequired: false, isActive: true },
+    { questionText: "Provide details of  working-hour restrictions:", questionType: "long_text", isRequired: false, isActive: true },
+    { questionText: "When is the work expected to start?", questionType: "date", isRequired: false, isActive: true },
+    { questionText: "When is the work expected to complete?", questionType: "date", isRequired: false, isActive: true },
+    { questionText: "Would you like a site assessment?", questionType: "yes_no", isRequired: false, isActive: true },
+  ],
+  "interior-and-fit-out-works": [
+    { questionText: "Which interior/fit-out service are you interested in?", questionType: "single_select", options: NEEDS_REAL_OPTIONS, isRequired: false, isActive: false },
+    { questionText: "What is the type of property?", questionType: "single_select", options: NEEDS_REAL_OPTIONS, isRequired: false, isActive: false },
+    { questionText: "Where is the property located?", questionType: "short_text", isRequired: false, isActive: true },
+    { questionText: "What is the approximate interior area in sq ft?", questionType: "short_text", isRequired: false, isActive: true },
+    { questionText: "Is this a new property or renovation of an existing interior?", questionType: "single_select", options: NEEDS_REAL_OPTIONS, isRequired: false, isActive: false },
+    { questionText: "Which spaces need work?", questionType: "multi_select", options: NEEDS_REAL_OPTIONS, isRequired: false, isActive: false },
+    { questionText: "What work is required?", questionType: "multi_select", options: NEEDS_REAL_OPTIONS, isRequired: false, isActive: false },
+    { questionText: "Do you already have an interior design/drawings?", questionType: "yes_no", isRequired: false, isActive: true },
+    { questionText: "What style/finish are you looking for?", questionType: "single_select", options: NEEDS_REAL_OPTIONS, isRequired: false, isActive: false },
+    { questionText: "What is your approximate budget range?", questionType: "short_text", isRequired: false, isActive: true },
+    { questionText: "What is your desired completion date?", questionType: "date", isRequired: false, isActive: true },
+    { questionText: "Would you like a design consultation/site measurement?", questionType: "yes_no", isRequired: false, isActive: true },
+  ],
+  "flooring-tiling-and-stone-works": [
+    { questionText: "Which flooring/tiling service do you require?", questionType: "multi_select", options: NEEDS_REAL_OPTIONS, isRequired: false, isActive: false },
+    { questionText: "Where will it be installed?", questionType: "multi_select", options: NEEDS_REAL_OPTIONS, isRequired: false, isActive: false },
+    { questionText: "What is the approximate area in sq ft?", questionType: "short_text", isRequired: false, isActive: true },
+    { questionText: "Is this new installation or replacement of existing flooring?", questionType: "single_select", options: NEEDS_REAL_OPTIONS, isRequired: false, isActive: false },
+    { questionText: "If replacement, does existing flooring need removal?", questionType: "yes_no", isRequired: false, isActive: true },
+    { questionText: "Have you already selected/purchased the tiles/stone/material?", questionType: "yes_no", isRequired: false, isActive: true },
+    { questionText: "What material/finish do you prefer?", questionType: "short_text", isRequired: false, isActive: true },
+    { questionText: "Does the floor require levelling or base preparation?", questionType: "yes_no", isRequired: false, isActive: true },
+    { questionText: "Do you require skirting, borders or special patterns?", questionType: "yes_no", isRequired: false, isActive: true },
+    { questionText: "Labour only or supply + installation?", questionType: "single_select", options: NEEDS_REAL_OPTIONS, isRequired: false, isActive: false },
+    { questionText: "When do you require the work to start?", questionType: "date", isRequired: false, isActive: true },
+    { questionText: "1. Would you like a site measurement?", questionType: "yes_no", isRequired: false, isActive: true },
+  ],
+  "electrical-works": [
+    { questionText: "Which electrical service do you require?", questionType: "multi_select", options: NEEDS_REAL_OPTIONS, isRequired: false, isActive: false },
+    { questionText: "What type of property is this?", questionType: "single_select", options: NEEDS_REAL_OPTIONS, isRequired: false, isActive: false },
+    { questionText: "Is this new construction, renovation or repair?", questionType: "single_select", options: NEEDS_REAL_OPTIONS, isRequired: false, isActive: false },
+  ],
+};
 
 const BUCKET = "construct-media";
 const SAMPLE_IMAGE_FILE_NAME = "sample-service-image.png";
@@ -184,6 +311,24 @@ export async function seedConstructDefaultServiceAtIndex(organizationId: string,
       // switch to tx.subService.createMany once available.
       for (const [subIndex, text] of seed.subServices.entries()) {
         await tx.$executeRaw`INSERT INTO construct.sub_services (organization_id, service_id, text, sort_order) VALUES (${organizationId}::uuid, ${service.id}::uuid, ${text}, ${subIndex})`;
+      }
+
+      const questions = DEFAULT_ENQUIRY_QUESTIONS_BY_SLUG[seed.slug];
+      if (questions) {
+        for (const [questionIndex, question] of questions.entries()) {
+          await tx.serviceEnquiryQuestion.create({
+            data: {
+              organizationId,
+              serviceId: service.id,
+              questionText: question.questionText,
+              questionType: question.questionType,
+              options: question.options ?? Prisma.DbNull,
+              isRequired: question.isRequired,
+              isActive: question.isActive,
+              displayOrder: questionIndex,
+            },
+          });
+        }
       }
     });
 

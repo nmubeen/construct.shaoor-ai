@@ -35,13 +35,16 @@ import type { User as SupabaseUser } from "@supabase/supabase-js";
 
 import { getConstructPrisma } from "@/lib/construct-prisma";
 import { syncSubscriptionToControlPlane } from "@/lib/control-sync";
-import { getConstructControlPlan } from "@/lib/services/construct-plan-catalog.service";
+import { getConstructTopTierTrial } from "@/lib/services/construct-plan-catalog.service";
 import { logAuthDiagnostic } from "./diagnostics";
 
-// Falls back to this only if control.plans' own TRIAL row can't be read
-// (control-plane hiccup, or the row is ever removed there) — every new
-// signup must still get a trial rather than fail outright.
-const FALLBACK_TRIAL_DAYS = 14;
+// Falls back to this only if control.plans has no plan currently flagged
+// is_top_tier (a control-plane hiccup, or nothing has been flagged yet) —
+// mirrors tuitrakweb.handle_new_user()'s own fallback exactly (its
+// v_top_plan_code := 'free' branch). A signup must always land somewhere
+// rather than fail outright.
+const FALLBACK_PLAN_CODE = "FREE";
+const FALLBACK_TRIAL_DAYS = 0;
 
 async function upsertConstructUser(authUser: SupabaseUser) {
   const email = authUser.email?.trim().toLowerCase();
@@ -128,12 +131,20 @@ export async function createConstructOrganizationForCurrentUser(
     const slugTaken = await prisma.organization.findUnique({ where: { slug: input.slug }, select: { id: true } });
     if (slugTaken) return { ok: false, error: "slug-taken" };
 
-    // Trial length lives in the shared control plane's own control.plans
-    // (see lib/services/construct-plan-catalog.service.ts) — read live so
-    // it can never drift from what /pricing and the billing settings page
-    // both already say, with no deploy needed to change it.
-    const trialPlan = await getConstructControlPlan("TRIAL");
-    const trialDays = trialPlan?.trialDays ?? FALLBACK_TRIAL_DAYS;
+    // Which plan a brand-new workspace starts trialing, and for how long,
+    // lives in the shared control plane's own control.plans (see
+    // lib/services/construct-plan-catalog.service.ts) — read live so it
+    // can never drift from what /pricing and the billing settings page
+    // both already say, with no deploy needed to change it. Not a
+    // dedicated "Trial" plan code: the workspace lands directly on
+    // whichever real plan is flagged top-tier (e.g. GROWTH_MONTHLY),
+    // exactly like every other org already on that plan — only
+    // subscription.status (TRIALING, set below) distinguishes it, the
+    // same distinction the Razorpay webhook already makes when a trial
+    // converts to a paid subscription without the plan code changing.
+    const topTier = await getConstructTopTierTrial();
+    const planCode = topTier?.code ?? FALLBACK_PLAN_CODE;
+    const trialDays = topTier?.trialDays ?? FALLBACK_TRIAL_DAYS;
 
     const organizationId = await prisma.$transaction(async (tx) => {
       const org = await tx.organization.create({
@@ -141,8 +152,8 @@ export async function createConstructOrganizationForCurrentUser(
           name: input.name,
           slug: input.slug,
           status: "ACTIVE",
-          planCode: "TRIAL",
-          trialEndsAt: new Date(Date.now() + trialDays * 24 * 60 * 60 * 1000),
+          planCode,
+          trialEndsAt: trialDays > 0 ? new Date(Date.now() + trialDays * 24 * 60 * 60 * 1000) : null,
         },
       });
 
@@ -162,7 +173,7 @@ export async function createConstructOrganizationForCurrentUser(
           action: "provision",
           recordId: org.id,
           title: "Construct organization provisioned",
-          details: { slug: input.slug, accessMode: "trial", trialStartedAt: new Date().toISOString() },
+          details: { slug: input.slug, planCode, accessMode: trialDays > 0 ? "trial" : "free", trialStartedAt: new Date().toISOString() },
         },
       });
 

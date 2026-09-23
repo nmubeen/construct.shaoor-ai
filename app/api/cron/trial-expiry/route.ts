@@ -18,10 +18,15 @@ export async function GET(request: Request) {
   // A trial with no card on file never got a subscriptions row past
   // TRIALING — those are the only orgs this sweep should touch. Orgs
   // already ACTIVE/PAST_DUE (real billing in progress) are left alone.
+  // Not filtered by which plan is being trialed (mirrors TuiTrak's own
+  // trial-expiry cron exactly — trial_ends_at + status is a complete
+  // signal on its own): a trial now runs directly on the real top-tier
+  // plan's code (see lib/auth/provisioning.ts), not a separate "Trial"
+  // plan, so a plan-code filter here would silently stop catching every
+  // lapsed trial the moment that changed.
   const expired = await prisma.organization.findMany({
     where: {
       trialEndsAt: { not: null, lt: new Date() },
-      plan: { isTrial: true },
       OR: [{ subscription: null }, { subscription: { status: "TRIALING" } }],
     },
     select: { id: true },

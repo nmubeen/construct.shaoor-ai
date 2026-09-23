@@ -16,7 +16,7 @@ import { getConstructPrisma } from "@/lib/construct-prisma";
 //
 // construct.plans (the Plan model) keeps only what has no equivalent
 // here — seat/project/media limits, the Razorpay plan ids, and the
-// isTrial/isFreeForever flags this app's own cron and gating logic read.
+// isFreeForever flag this app's own gating logic reads.
 export type ConstructControlPlan = {
   code: string;
   name: string;
@@ -83,4 +83,17 @@ export const getConstructControlPlans = cache(async (): Promise<ConstructControl
 export const getConstructControlPlan = cache(async (code: string): Promise<ConstructControlPlan | null> => {
   const plans = await getConstructControlPlans();
   return plans.find((plan) => plan.code === code) ?? null;
+});
+
+// What a brand-new signup actually gets — mirrors TuiTrak's
+// getTopTierTrial()/tuitrakweb.handle_new_user() exactly (the reference
+// implementation, C:\Projects\TuiTrakWeb\lib\plan-catalog.ts): a fresh
+// workspace trials whichever plan currently has is_top_tier set in
+// control.plans (not necessarily the priciest one — mirrors the shared
+// /admin/plans UI's own "Set top tier" flag), not a separate dedicated
+// "Trial" plan code. See lib/auth/provisioning.ts.
+export const getConstructTopTierTrial = cache(async (): Promise<{ code: string; trialDays: number } | null> => {
+  const plans = await getConstructControlPlans();
+  const top = plans.find((plan) => plan.isTopTier && plan.isActive);
+  return top ? { code: top.code, trialDays: top.trialDays ?? 0 } : null;
 });

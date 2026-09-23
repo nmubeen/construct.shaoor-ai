@@ -159,7 +159,13 @@ model Organization {
 model Plan {
   code            String   @id
   name            String
-  isTrial         Boolean  @default(false) @map("is_trial")
+  // No isTrial flag, and no dedicated "TRIAL" row (removed 2026-09-23): a
+  // trial now runs directly on the real top-tier plan (whichever
+  // control.plans flags is_top_tier — see lib/auth/provisioning.ts and
+  // lib/services/construct-plan-catalog.service.ts's getConstructTopTierTrial()),
+  // mirroring TuiTrak's model. subscriptions.status ("TRIALING" vs
+  // "ACTIVE") is what distinguishes a trial from a paid subscription on
+  // the same plan code, not the plan code itself.
   isFreeForever   Boolean  @default(false) @map("is_free_forever")
   seatLimit       Int?     @map("seat_limit")
   projectLimit    Int?     @map("project_limit")
