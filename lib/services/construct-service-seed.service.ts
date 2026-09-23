@@ -290,34 +290,40 @@ export async function seedConstructDefaultServiceAtIndex(organizationId: string,
     const folderId = await ensureServicesFolder(organizationId);
     const imageUrl = await getOrCreateSampleImageUrl(organizationId, folderId);
 
-    await prisma.$transaction(async (tx) => {
-      const service = await tx.service.create({
-        data: {
-          organizationId,
-          title: seed.title,
-          slug: seed.slug,
-          shortDescription: seed.shortDescription,
-          description: seed.description,
-          imageUrl,
-          displayOrder: index,
-          isActive: true,
-          seoTitle: seed.seoTitle,
-          seoDescription: seed.seoDescription,
-          seoKeywords: seed.seoKeywords,
-        },
-      });
+    await prisma.$transaction(
+      async (tx) => {
+        const service = await tx.service.create({
+          data: {
+            organizationId,
+            title: seed.title,
+            slug: seed.slug,
+            shortDescription: seed.shortDescription,
+            description: seed.description,
+            imageUrl,
+            displayOrder: index,
+            isActive: true,
+            seoTitle: seed.seoTitle,
+            seoDescription: seed.seoDescription,
+            seoKeywords: seed.seoKeywords,
+          },
+        });
 
-      // Raw SQL: same SubService regen note as elsewhere in this feature —
-      // switch to tx.subService.createMany once available.
-      for (const [subIndex, text] of seed.subServices.entries()) {
-        await tx.$executeRaw`INSERT INTO construct.sub_services (organization_id, service_id, text, sort_order) VALUES (${organizationId}::uuid, ${service.id}::uuid, ${text}, ${subIndex})`;
-      }
+        // Raw SQL: same SubService regen note as elsewhere in this feature —
+        // switch to tx.subService.createMany once available. Batched into a
+        // single multi-row INSERT (rather than one round trip per sub-service)
+        // so a 10-sub-service, 15-question service like Building Construction
+        // doesn't rack up enough sequential round trips over the pooled
+        // connection to blow past $transaction's timeout mid-transaction —
+        // that's what produced the "Transaction not found" seeding error.
+        if (seed.subServices.length > 0) {
+          const rows = seed.subServices.map((text, subIndex) => Prisma.sql`(${organizationId}::uuid, ${service.id}::uuid, ${text}, ${subIndex})`);
+          await tx.$executeRaw`INSERT INTO construct.sub_services (organization_id, service_id, text, sort_order) VALUES ${Prisma.join(rows)}`;
+        }
 
-      const questions = DEFAULT_ENQUIRY_QUESTIONS_BY_SLUG[seed.slug];
-      if (questions) {
-        for (const [questionIndex, question] of questions.entries()) {
-          await tx.serviceEnquiryQuestion.create({
-            data: {
+        const questions = DEFAULT_ENQUIRY_QUESTIONS_BY_SLUG[seed.slug];
+        if (questions && questions.length > 0) {
+          await tx.serviceEnquiryQuestion.createMany({
+            data: questions.map((question, questionIndex) => ({
               organizationId,
               serviceId: service.id,
               questionText: question.questionText,
@@ -326,11 +332,15 @@ export async function seedConstructDefaultServiceAtIndex(organizationId: string,
               isRequired: question.isRequired,
               isActive: question.isActive,
               displayOrder: questionIndex,
-            },
+            })),
           });
         }
-      }
-    });
+      },
+      // Safety margin above the 5s default: even batched, this goes over a
+      // pooled cross-region connection (see CONSTRUCT_DATABASE_URL), and a
+      // slow round trip shouldn't be able to expire the transaction.
+      { timeout: 20000 },
+    );
 
     return { ok: true, title: seed.title, index, total: DEFAULT_CONSTRUCT_SERVICES.length };
   } catch (error) {
