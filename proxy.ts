@@ -16,6 +16,7 @@ const RESERVED = new Set([
   "demo",
   "login",
   "pricing",
+  "proposals",
   "change-password",
   "api",
   "_next",

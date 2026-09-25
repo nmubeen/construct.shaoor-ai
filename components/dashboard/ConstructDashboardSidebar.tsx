@@ -1,4 +1,4 @@
-import { BookOpen, Building2, FolderKanban, Gauge, ImageIcon, LayoutTemplate, ListChecks, LogOut, Mail, Search, Settings, Users, Wrench } from "lucide-react";
+import { BookOpen, Building2, FileText, FolderKanban, Gauge, ImageIcon, LayoutTemplate, ListChecks, LogOut, Mail, Search, Settings, Users, Wrench } from "lucide-react";
 import { BrandLogo } from "@/components/brand/BrandLogo";
 import Link from "next/link";
 
@@ -14,6 +14,7 @@ const navigation = [
   { href: "/dashboard/content", label: "Content", icon: BookOpen, available: true, sections: ["Leadership profiles", "Clients", "Testimonials", "Why choose us", "Project categories", "Project statuses", "FAQs"] },
   { href: "/dashboard/team", label: "Team", icon: Users, available: true, sections: ["Invite a team member", "Members", "Pending invitations"] },
   { href: "/dashboard/messages", label: "Enquiries", icon: Mail, available: true, sections: ["Message list", "Message detail"] },
+  { href: "/dashboard/proposals", label: "Proposals", icon: FileText, available: true, sections: ["Prepare from an enquiry", "Draft editor", "Approve & publish", "Customer responses"] },
   { href: "/dashboard/seo", label: "SEO", icon: Search, available: true, sections: ["Global settings", "Page metadata"] },
   { href: "/dashboard/settings", label: "Settings", icon: Settings, available: true, sections: ["Workspace identity", "Website theme", "Publication", "Plan usage", "Billing", "Custom domains", "Recent activity"] },
 ] as const;

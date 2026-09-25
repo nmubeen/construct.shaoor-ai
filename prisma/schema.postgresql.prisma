@@ -133,6 +133,11 @@ model Organization {
   seoPages        SeoPage[]
   navigationItems NavigationItem[]
   auditLogs       AuditLog[]
+  proposals               Proposal[]
+  proposalRevisions       ProposalRevision[]
+  proposalPortfolioItems  ProposalPortfolioItem[]
+  proposalTestimonialItems ProposalTestimonialItem[]
+  proposalResponses       ProposalResponse[]
 
   @@map("organizations")
   @@schema("construct")
@@ -228,6 +233,9 @@ model User {
   invitationsSent Invitation[]      @relation("InvitationsSent")
   auditLogs       AuditLog[]
   publications    SitePublication[] @relation("PublishedBy")
+  proposalsCreated   Proposal[]         @relation("ProposalCreatedBy")
+  proposalsPublished Proposal[]         @relation("ProposalPublishedBy")
+  proposalRevisionsPublished ProposalRevision[] @relation("ProposalRevisionPublishedBy")
 
   @@map("users")
   @@schema("construct")
@@ -432,6 +440,7 @@ model Project {
   organization Organization         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   highlights   ProjectHighlight[]
   galleryItems ProjectGalleryItem[]
+  proposalPortfolioItems ProposalPortfolioItem[]
 
   @@unique([organizationId, slug])
   @@index([organizationId, status])
@@ -739,6 +748,7 @@ model Testimonial {
   updatedAt      DateTime @updatedAt @map("updated_at")
 
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  proposalTestimonialItems ProposalTestimonialItem[]
 
   @@index([organizationId, isActive])
   @@map("testimonials")
@@ -788,6 +798,7 @@ model ContactMessage {
 
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   service      Service?     @relation(fields: [serviceId], references: [id], onDelete: SetNull)
+  proposals    Proposal[]
 
   @@index([organizationId, status, createdAt])
   @@index([organizationId, serviceId])
@@ -859,6 +870,247 @@ model NavigationItem {
 
   @@index([organizationId, displayOrder])
   @@map("navigation_items")
+  @@schema("construct")
+}
+
+// --- Project Proposals -----------------------------------------------
+// A personalised, branded proposal an owner prepares from an existing
+// enquiry and shares with the customer via a private, unguessable link.
+// Gated behind the PROJECT_PROPOSALS boolean entitlement (see
+// lib/control/construct-subscription.service.ts's
+// enforceConstructBooleanEntitlement, same mechanism CUSTOM_DOMAIN
+// already uses) — enforced server-side on create/edit/publish, never by
+// hiding a button alone.
+//
+// Lifecycle is deliberately 3 states, matching the product spec exactly:
+// DRAFT (editable, never externally accessible) -> PUBLISHED (a
+// ProposalRevision snapshot exists and is what the public link actually
+// serves) -> REVOKED (link stops resolving). PUBLISHED -> REVOKED ->
+// PUBLISHED again is allowed (republish reuses the same token). There is
+// no separate "Approved" status: approving and publishing are the same
+// server-enforced transition (approveAndPublishConstructProposalAction,
+// Owner/Admin only) — editing a draft can never by itself make it
+// externally accessible, since the public route only ever reads the
+// latest ProposalRevision, never Proposal's own live-editable fields.
+enum ProposalStatus {
+  DRAFT
+  PUBLISHED
+  REVOKED
+
+  @@schema("construct")
+}
+
+enum ProposalPriceMode {
+  DISCUSS
+  FIXED
+  RANGE
+
+  @@schema("construct")
+}
+
+enum ProposalResponseType {
+  DISCUSS
+  SITE_VISIT
+
+  @@schema("construct")
+}
+
+model Proposal {
+  id             String         @id @default(uuid()) @db.Uuid
+  organizationId String         @map("organization_id") @db.Uuid
+  enquiryId      String         @map("enquiry_id") @db.Uuid
+  status         ProposalStatus @default(DRAFT)
+
+  // Short, human-shown identifier (e.g. "PRP-0007"), distinct from id.
+  reference String
+
+  // --- Customer-facing content (the live, editable working copy) ---
+  // Publishing snapshots these fields (plus branding, portfolio and
+  // testimonial selections at that moment) into a new ProposalRevision.
+  // Editing these after publish only changes the working copy; the
+  // public link keeps serving the last published revision until
+  // re-approved and republished.
+  title               String
+  introduction        String  @default("")
+  // Deterministic plain-language summary generated from the enquiry's
+  // stored answers (lib/services/construct-proposal-draft.service.ts) —
+  // editable afterward, never regenerated silently over a staff edit.
+  requirementsSummary String  @default("") @map("requirements_summary")
+  scopeOfWork         String  @default("") @map("scope_of_work")
+  exclusions          String  @default("")
+  assumptions         String  @default("")
+  closingMessage      String  @default("") @map("closing_message")
+  indicativeTimeline  String? @map("indicative_timeline")
+
+  // --- Pricing: explicit mode, never auto-generated (see price mode
+  // comment below) — DISCUSS carries no amount, FIXED uses
+  // priceAmountMinor, RANGE uses the min/max pair. Amounts are integer
+  // minor units (paise for INR), the only money-representation
+  // precedent anywhere in this system (control.plans.price_amount) —
+  // deliberately not a float, to avoid rounding drift.
+  priceMode           ProposalPriceMode @default(DISCUSS) @map("price_mode")
+  priceCurrency       String            @default("INR") @map("price_currency")
+  priceAmountMinor    Int?              @map("price_amount_minor")
+  priceMinAmountMinor Int?              @map("price_min_amount_minor")
+  priceMaxAmountMinor Int?              @map("price_max_amount_minor")
+  pricingBasis        String?           @map("pricing_basis")
+  taxNote              String?          @map("tax_note")
+
+  // Staff-only — never included in a ProposalRevision snapshot, never
+  // rendered on the public page.
+  internalNotes String? @map("internal_notes")
+
+  expiresAt DateTime? @map("expires_at")
+
+  // The raw bearer token (high-entropy, base64url — see
+  // lib/proposal-token.ts), stored directly rather than hashed:  unlike
+  // e.g. Invitation.tokenHash (a one-time, emailed-and-forgotten accept
+  // link), the dashboard's own "Copy link" action needs to redisplay
+  // this indefinitely, which a one-way hash would make impossible after
+  // creation. The real protections are the token's entropy, HTTPS-only
+  // transmission and never logging it (see the public route's own
+  // comments) — same bearer-link trust model as a Calendly/Docusign
+  // share link, not a password-reset-style secret. One token per
+  // proposal, reused across republished revisions (see lifecycle
+  // comment above) — a leaked link is revoked by status, not by
+  // rotating the token.
+  token String @unique
+
+  currentRevisionNumber Int @default(0) @map("current_revision_number")
+
+  // Aggregate view activity — see the "excludes owner previews" comment
+  // on the public route: the dashboard preview never touches that route,
+  // so nothing here needs to distinguish owner vs customer after the
+  // fact. firstOpenedAt/lastOpenedAt/openCount only advance from actual
+  // public-link requests; lastOpenedAt-based deduping (see
+  // recordConstructProposalView) absorbs refreshes within a short
+  // window rather than counting each as a new open.
+  firstOpenedAt DateTime? @map("first_opened_at")
+  lastOpenedAt  DateTime? @map("last_opened_at")
+  openCount     Int       @default(0) @map("open_count")
+
+  createdById   String?   @map("created_by_id") @db.Uuid
+  publishedById String?   @map("published_by_id") @db.Uuid
+  approvedAt    DateTime? @map("approved_at")
+  publishedAt   DateTime? @map("published_at")
+  revokedAt     DateTime? @map("revoked_at")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  organization  Organization              @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  enquiry       ContactMessage            @relation(fields: [enquiryId], references: [id], onDelete: Cascade)
+  createdBy     User?                     @relation("ProposalCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  publishedBy   User?                     @relation("ProposalPublishedBy", fields: [publishedById], references: [id], onDelete: SetNull)
+  portfolioItems     ProposalPortfolioItem[]
+  testimonialItems   ProposalTestimonialItem[]
+  revisions          ProposalRevision[]
+  responses          ProposalResponse[]
+
+  // Enforces "at most one open draft per enquiry" at the database level
+  // (partial unique index — added via raw SQL in the migration, Prisma's
+  // schema DSL has no WHERE clause on @@unique) so a double-click or a
+  // retried request can't create a duplicate draft; reuse the existing
+  // one instead. Multiple non-draft (published/revoked) historical
+  // proposals per enquiry remain allowed.
+  @@index([organizationId, status, updatedAt])
+  @@index([organizationId, enquiryId])
+  @@map("proposals")
+  @@schema("construct")
+}
+
+// One immutable, fully self-contained snapshot per published/republished
+// version — everything the public page renders comes from `snapshot`
+// (Json), never a live join, so a later edit to the org's branding,
+// services or the working-copy Proposal fields can never silently change
+// what a customer already has a link to. See
+// lib/services/construct-proposal-snapshot.service.ts for the exact
+// shape written into `snapshot`.
+model ProposalRevision {
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  proposalId     String   @map("proposal_id") @db.Uuid
+  revisionNumber Int      @map("revision_number")
+  snapshot       Json
+  publishedAt    DateTime @default(now()) @map("published_at")
+  publishedById  String?  @map("published_by_id") @db.Uuid
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  proposal    Proposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  publishedBy User?    @relation("ProposalRevisionPublishedBy", fields: [publishedById], references: [id], onDelete: SetNull)
+
+  @@unique([proposalId, revisionNumber])
+  @@index([organizationId, proposalId])
+  @@map("proposal_revisions")
+  @@schema("construct")
+}
+
+// Draft-time portfolio selection — a real FK to Project (not an id
+// embedded in JSON) so organization ownership is a plain join check, not
+// app-level trust; frozen into the revision snapshot at publish time, so
+// removing or editing the project afterward doesn't change an already
+// published proposal.
+model ProposalPortfolioItem {
+  id             String  @id @default(uuid()) @db.Uuid
+  organizationId String  @map("organization_id") @db.Uuid
+  proposalId     String  @map("proposal_id") @db.Uuid
+  projectId      String  @map("project_id") @db.Uuid
+  // Short, human-facing suggestion reason ("Same service — Interior &
+  // Fit-Out Works"); null for a manually added project.
+  reason    String?
+  sortOrder Int     @default(0) @map("sort_order")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  proposal Proposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  project  Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([proposalId, projectId])
+  @@index([organizationId, proposalId])
+  @@map("proposal_portfolio_items")
+  @@schema("construct")
+}
+
+model ProposalTestimonialItem {
+  id             String @id @default(uuid()) @db.Uuid
+  organizationId String @map("organization_id") @db.Uuid
+  proposalId     String @map("proposal_id") @db.Uuid
+  testimonialId  String @map("testimonial_id") @db.Uuid
+  sortOrder      Int    @default(0) @map("sort_order")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  proposal    Proposal    @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  testimonial Testimonial @relation(fields: [testimonialId], references: [id], onDelete: Cascade)
+
+  @@unique([proposalId, testimonialId])
+  @@index([organizationId, proposalId])
+  @@map("proposal_testimonial_items")
+  @@schema("construct")
+}
+
+// A customer's "Discuss this proposal" / "Request a site visit" click
+// through the bearer link — an unverified request, not confirmed
+// identity or contractual acceptance (see the public response action's
+// own comment). revisionNumber records which version they were looking
+// at when they responded.
+model ProposalResponse {
+  id             String               @id @default(uuid()) @db.Uuid
+  organizationId String               @map("organization_id") @db.Uuid
+  proposalId     String               @map("proposal_id") @db.Uuid
+  revisionNumber Int                  @map("revision_number")
+  type           ProposalResponseType
+  message        String?
+  preferredDate  DateTime?            @map("preferred_date")
+  preferredTime  String?              @map("preferred_time")
+  // Hashed, not raw — enough to rate-limit/de-duplicate abuse from one
+  // source without storing a customer's raw IP.
+  requesterIpHash String?             @map("requester_ip_hash")
+  createdAt      DateTime             @default(now()) @map("created_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  proposal Proposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, proposalId])
+  @@map("proposal_responses")
   @@schema("construct")
 }
 
