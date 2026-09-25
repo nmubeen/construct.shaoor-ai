@@ -12,6 +12,12 @@ export type EnquiryServiceOption = { id: string; title: string };
 // Value of the service dropdown's catch-all entry (no service_id is stored).
 const GENERAL = "general";
 const sectionTitleClass = "text-lg font-bold text-slate-900";
+// A visible rule between sections instead of the plain vertical gap
+// space-y-6 already gives every top-level child — without this, a
+// service with several enquiry questions (or the "no preference"
+// stretch before them) reads as one long blank scroll with no sense of
+// where one group of fields ends and the next begins.
+const Divider = () => <hr className="border-t border-slate-200" />;
 
 // THE enquiry form. Every entry point renders this same component:
 //  - Home / Services list / Service detail: inside a dialog with
@@ -116,20 +122,23 @@ export default function ServiceEnquiryForm({ services, lockedServiceId, subServi
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8">
+    <form onSubmit={handleSubmit} className="space-y-6">
       <div className="hidden" aria-hidden="true">
         <label>Company website<input name="companyWebsite" tabIndex={-1} autoComplete="off" /></label>
       </div>
 
       {lockedServiceId && (
-        <div className="border-l-4 border-[var(--site-accent)] pl-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Enquire About</p>
-          <p className="mt-1 text-2xl font-bold text-[var(--site-primary)]">{service?.title}</p>
-          {subService && <p className="mt-0.5 text-slate-600">{subService}</p>}
-        </div>
+        <>
+          <div className="border-l-4 border-[var(--site-accent)] pl-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Enquire About</p>
+            <p className="mt-1 text-2xl font-bold text-[var(--site-primary)]">{service?.title}</p>
+            {subService && <p className="mt-0.5 text-slate-600">{subService}</p>}
+          </div>
+          <Divider />
+        </>
       )}
 
-      <section className="space-y-5">
+      <section className="py-0 space-y-5">
         <h3 className={sectionTitleClass}>Contact Details</h3>
         <label className={enquiryLabelClass}>Name <span className="text-red-600">*</span>
           <input className={enquiryInputClass} name="name" type="text" required minLength={2} maxLength={120} placeholder="Your name" autoComplete="name" />
@@ -156,38 +165,46 @@ export default function ServiceEnquiryForm({ services, lockedServiceId, subServi
       </section>
 
       {!lockedServiceId && (
-        <section>
-          <label className={enquiryLabelClass}>Service Interested In <span className="text-red-600">*</span>
-            <select className={enquiryInputClass} required value={pickedId} onChange={(event) => setPickedId(event.target.value)}>
-              <option value="">Select a service</option>
-              {services.map((item) => <option key={item.id} value={item.id}>{item.title}</option>)}
-              <option value={GENERAL}>Other / General enquiry</option>
-            </select>
-          </label>
-        </section>
+        <>
+          <Divider />
+          <section className="py-0">
+            <label className={enquiryLabelClass}>Service Interested In <span className="text-red-600">*</span>
+              <select className={enquiryInputClass} required value={pickedId} onChange={(event) => setPickedId(event.target.value)}>
+                <option value="">Select a service</option>
+                {services.map((item) => <option key={item.id} value={item.id}>{item.title}</option>)}
+                <option value={GENERAL}>Other / General enquiry</option>
+              </select>
+            </label>
+          </section>
+        </>
       )}
 
       {loading && <p role="status" className="text-sm text-slate-500">Loading a few questions about {service?.title ?? "this service"}…</p>}
 
       {questions.length > 0 && (
-        <section className="space-y-5">
-          <h3 className={sectionTitleClass}>{lockedServiceId ? "Help us understand your project" : `Tell us about your ${service?.title ?? ""} requirement`}</h3>
-          {questions.map((question) => (
-            <EnquiryQuestionField
-              key={question.id}
-              question={question}
-              value={answers[question.id]}
-              error={errors[question.id]}
-              onChange={(value) => {
-                setAnswers((current) => ({ ...current, [question.id]: value }));
-                setErrors((current) => ({ ...current, [question.id]: "" }));
-              }}
-            />
-          ))}
-        </section>
+        <>
+          <Divider />
+          <section className="py-0 space-y-5">
+            <h3 className={sectionTitleClass}>{lockedServiceId ? "Help us understand your project" : `Tell us about your ${service?.title ?? ""} requirement`}</h3>
+            {questions.map((question) => (
+              <EnquiryQuestionField
+                key={question.id}
+                question={question}
+                value={answers[question.id]}
+                error={errors[question.id]}
+                onChange={(value) => {
+                  setAnswers((current) => ({ ...current, [question.id]: value }));
+                  setErrors((current) => ({ ...current, [question.id]: "" }));
+                }}
+              />
+            ))}
+          </section>
+        </>
       )}
 
-      <section className="space-y-5">
+      <Divider />
+      <section className="py-0 space-y-5">
+        <h3 className={sectionTitleClass}>Additional Details</h3>
         <label className={enquiryLabelClass}>Additional Requirements{!activeServiceId && <span className="text-red-600"> *</span>}
           <textarea
             className={`${enquiryInputClass} min-h-28 resize-y`}
