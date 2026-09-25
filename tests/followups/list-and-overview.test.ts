@@ -7,6 +7,7 @@ import {
   isFollowUpOverdue,
   listFollowUps,
 } from "@/lib/services/construct-followup.service";
+import { getTodayBoundsInZone } from "@/lib/followups/timezone";
 import { createTestEnquiry, createTestFollowUp, createTestMembership, createTestOrganization, createTestUser, testPrisma } from "./fixtures";
 
 const HOUR = 60 * 60 * 1000;
@@ -30,8 +31,16 @@ describe("follow-up list filters, overview counts and overdue derivation", () =>
     await createTestMembership(prisma, organizationId, userId, "EDITOR", "ACTIVE");
 
     const now = new Date();
+    // "Due today" must land strictly between now and the end of today in
+    // the org's own timezone (Asia/Kolkata) — a fixed "+1 hour" offset
+    // can cross into tomorrow whenever the test happens to run within an
+    // hour of IST midnight, which is exactly the kind of boundary bug
+    // this feature's own DST/timezone tests exist to catch. Clamp to
+    // whichever is earlier: +1 hour, or 1 minute before midnight.
+    const { startOfTomorrow } = getTodayBoundsInZone("Asia/Kolkata", now);
+    const dueTodayAt = new Date(Math.min(now.getTime() + HOUR, startOfTomorrow.getTime() - 60_000));
     const overdue = await createTestFollowUp(prisma, organizationId, { enquiryId }, { title: "Overdue task", dueAt: new Date(now.getTime() - 2 * DAY), status: "OPEN", assigneeId: userId });
-    const dueToday = await createTestFollowUp(prisma, organizationId, { enquiryId }, { title: "Due today task", dueAt: new Date(now.getTime() + HOUR), status: "OPEN", assigneeId: userId });
+    const dueToday = await createTestFollowUp(prisma, organizationId, { enquiryId }, { title: "Due today task", dueAt: dueTodayAt, status: "OPEN", assigneeId: userId });
     const upcoming = await createTestFollowUp(prisma, organizationId, { enquiryId }, { title: "Upcoming task", dueAt: new Date(now.getTime() + 10 * DAY), status: "OPEN", assigneeId: userId });
     const completed = await createTestFollowUp(prisma, organizationId, { enquiryId }, { title: "Completed task", dueAt: new Date(now.getTime() - 3 * DAY), status: "COMPLETED", assigneeId: userId });
     const cancelled = await createTestFollowUp(prisma, organizationId, { enquiryId }, { title: "Cancelled task", dueAt: new Date(now.getTime() + 3 * DAY), status: "CANCELLED", assigneeId: userId });

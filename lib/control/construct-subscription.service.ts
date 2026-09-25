@@ -14,7 +14,7 @@ export type ConstructCommercialAccess = {
   accessAllowed: boolean;
 };
 export type ConstructEntitlement={featureCode:string;valueType:"BOOLEAN"|"NUMBER";booleanValue:boolean|null;numericValue:number|null};
-export type ConstructPlanUsage={access:ConstructCommercialAccess;items:Array<{featureCode:string;label:string;used:number;limit:number}>;customDomain:boolean};
+export type ConstructPlanUsage={access:ConstructCommercialAccess;items:Array<{featureCode:string;label:string;used:number;limit:number}>;customDomain:boolean;privateProjectProgress:boolean};
 export class ConstructEntitlementError extends Error { constructor(message:string){super(message);this.name="ConstructEntitlementError";} }
 
 // Reads Construct's OWN local tables (organizations.plan_code/trial_ends_at
@@ -79,5 +79,5 @@ export async function getConstructPlanUsage(organizationId:string):Promise<Const
  const current:Record<string,number>={MAX_PROJECTS:projects,MAX_TEAM_MEMBERS:members,MAX_MEDIA_ITEMS:media};
  const labels:Record<string,string>={MAX_PROJECTS:"Projects",MAX_TEAM_MEMBERS:"Team seats",MAX_MEDIA_ITEMS:"Media items"};
  const items=state.entitlements.filter(item=>item.valueType==="NUMBER"&&item.numericValue!==null&&item.featureCode in current).map(item=>({featureCode:item.featureCode,label:labels[item.featureCode],used:current[item.featureCode],limit:item.numericValue!}));
- return{access:state.access,items,customDomain:Boolean(state.entitlements.find(item=>item.featureCode==="CUSTOM_DOMAIN")?.booleanValue)};
+ return{access:state.access,items,customDomain:Boolean(state.entitlements.find(item=>item.featureCode==="CUSTOM_DOMAIN")?.booleanValue),privateProjectProgress:Boolean(state.entitlements.find(item=>item.featureCode==="PRIVATE_PROJECT_PROGRESS")?.booleanValue)};
 }

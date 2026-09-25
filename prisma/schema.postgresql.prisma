@@ -147,6 +147,11 @@ model Organization {
   proposalTestimonialItems ProposalTestimonialItem[]
   proposalResponses       ProposalResponse[]
   followUps               FollowUp[]
+  progressProjects        ProgressProject[]
+  progressMilestones      ProgressMilestone[]
+  progressUpdates         ProgressUpdate[]
+  progressPhotos          ProgressPhoto[]
+  progressSnapshots       ProgressSnapshot[]
 
   @@map("organizations")
   @@schema("construct")
@@ -248,6 +253,12 @@ model User {
   followUpsAssigned  FollowUp[]         @relation("FollowUpAssignee")
   followUpsCreated   FollowUp[]         @relation("FollowUpCreatedBy")
   followUpsCompleted FollowUp[]         @relation("FollowUpCompletedBy")
+  progressProjectsCreated   ProgressProject[]  @relation("ProgressProjectCreatedBy")
+  progressUpdatesCreated    ProgressUpdate[]   @relation("ProgressUpdateCreatedBy")
+  progressUpdatesPublished  ProgressUpdate[]   @relation("ProgressUpdatePublishedBy")
+  progressUpdatesWithdrawn  ProgressUpdate[]   @relation("ProgressUpdateWithdrawnBy")
+  progressPhotosCreated     ProgressPhoto[]    @relation("ProgressPhotoCreatedBy")
+  progressSnapshotsPublished ProgressSnapshot[] @relation("ProgressSnapshotPublishedBy")
 
   @@map("users")
   @@schema("construct")
@@ -453,6 +464,7 @@ model Project {
   highlights   ProjectHighlight[]
   galleryItems ProjectGalleryItem[]
   proposalPortfolioItems ProposalPortfolioItem[]
+  progressProjects ProgressProject[]
 
   @@unique([organizationId, slug])
   @@index([organizationId, status])
@@ -812,6 +824,7 @@ model ContactMessage {
   service      Service?     @relation(fields: [serviceId], references: [id], onDelete: SetNull)
   proposals    Proposal[]
   followUps    FollowUp[]
+  progressProjects ProgressProject[]
 
   @@index([organizationId, status, createdAt])
   @@index([organizationId, serviceId])
@@ -1020,6 +1033,7 @@ model Proposal {
   revisions          ProposalRevision[]
   responses          ProposalResponse[]
   followUps          FollowUp[]
+  progressProjects   ProgressProject[]
 
   // Enforces "at most one open draft per enquiry" at the database level
   // (partial unique index — added via raw SQL in the migration, Prisma's
@@ -1146,6 +1160,271 @@ model AuditLog {
   @@index([organizationId, createdAt])
   @@index([organizationId, module])
   @@map("audit_logs")
+  @@schema("construct")
+}
+
+// --- Private customer project progress --------------------------------
+// A private construction-delivery project, distinct from a public
+// portfolio Project (marketing content) — a company must be able to
+// track customer work without ever publishing it on its website. May
+// optionally link to the enquiry/proposal it came from and/or an
+// existing public portfolio Project purely for staff traceability;
+// linking never copies or exposes anything from those records into the
+// customer-facing payload (see ProgressSnapshot). Gated behind the
+// PRIVATE_PROJECT_PROGRESS boolean entitlement — enforced server-side
+// on create/edit/upload/publish/issue-access, never by hiding a button
+// alone (same mechanism as PROJECT_PROPOSALS/CUSTOM_DOMAIN). Losing the
+// entitlement blocks new work but never deletes data, and never
+// silently re-enables a link a staff member explicitly revoked — see
+// lib/services/construct-progress-public.service.ts's own comment.
+enum ProgressLifecycle {
+  PLANNED
+  ACTIVE
+  ON_HOLD
+  COMPLETED
+  ARCHIVED
+
+  @@schema("construct")
+}
+
+enum ProgressMilestoneStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+
+  @@schema("construct")
+}
+
+// DRAFT -> PUBLISHED (visible to the customer) -> WITHDRAWN (pulled
+// back, history kept — distinct from DRAFT so "was once published,
+// then withdrawn" stays distinguishable from "never published").
+// Owners/Admins can edit a PUBLISHED update in place (unlike a
+// Proposal's frozen revisions) — see construct-progress.actions.ts's
+// own comment for why that doesn't need snapshot/revision treatment
+// the way the project summary + milestones do.
+enum ProgressUpdateStatus {
+  DRAFT
+  PUBLISHED
+  WITHDRAWN
+
+  @@schema("construct")
+}
+
+model ProgressProject {
+  id             String @id @default(uuid()) @db.Uuid
+  organizationId String @map("organization_id") @db.Uuid
+
+  title        String
+  customerName String @map("customer_name")
+
+  // Private — never read into ProgressSnapshot or the public payload.
+  customerEmail String? @map("customer_email")
+  customerPhone String? @map("customer_phone")
+
+  location                String?
+  // Off by default: a site address is exactly the kind of detail that
+  // must be explicitly opted in before it can appear on a page anyone
+  // holding the link can open.
+  locationCustomerVisible Boolean @default(false) @map("location_customer_visible")
+
+  customerSummary String  @default("") @map("customer_summary")
+  // Staff-only, same treatment as Proposal.internalNotes.
+  internalNotes   String? @map("internal_notes")
+
+  // Optional cross-links, all nullable/SetNull — purely staff-side
+  // traceability, never a data source for the public payload.
+  enquiryId          String? @map("enquiry_id") @db.Uuid
+  proposalId         String? @map("proposal_id") @db.Uuid
+  portfolioProjectId String? @map("portfolio_project_id") @db.Uuid
+
+  // Presented to the customer as planned dates, not guarantees — see
+  // ProgressContentView's copy.
+  plannedStartDate     DateTime? @map("planned_start_date")
+  targetCompletionDate DateTime? @map("target_completion_date")
+
+  lifecycle           ProgressLifecycle @default(PLANNED)
+  currentStage        String?           @map("current_stage")
+  nextPlannedActivity String?           @map("next_planned_activity")
+
+  // Working-copy fields above can be edited by any non-Viewer; only an
+  // explicit "Publish changes" (Owner/Admin) snapshots them here into
+  // customer visibility — see ProgressSnapshot. currentRevisionNumber
+  // mirrors Proposal.currentRevisionNumber exactly.
+  currentRevisionNumber Int @default(0) @map("current_revision_number")
+
+  // Bearer-link access. Hash-only (unlike Proposal.token) — see
+  // lib/progress-token.ts's comment: these are private construction
+  // photographs, not a sales pitch that needs indefinite "Copy link"
+  // redisplay, so the raw token is shown to staff exactly once, right
+  // after generate/rotate, then forgotten (same trust model as
+  // Invitation.tokenHash). Revoking sets this back to NULL — a link
+  // that was NULLed by an explicit revoke never resolves again, even
+  // after PRIVATE_PROJECT_PROGRESS is restored (see the public
+  // resolver's own comment); generating a new one is a deliberate,
+  // separate staff action.
+  accessTokenHash String?   @unique @map("access_token_hash")
+  accessExpiresAt DateTime? @map("access_expires_at")
+  accessCreatedAt DateTime? @map("access_created_at")
+  // Set by an explicit revoke, cleared by generate/rotate (which also
+  // replace accessTokenHash itself). Kept as its own field, distinct
+  // from simply nulling accessTokenHash, purely so the public resolver
+  // and the dashboard can tell "revoked" apart from "never generated" —
+  // functionally either way the link stops resolving; this only
+  // affects which honest, generic message is shown.
+  accessRevokedAt DateTime? @map("access_revoked_at")
+
+  firstOpenedAt DateTime? @map("first_opened_at")
+  lastOpenedAt  DateTime? @map("last_opened_at")
+  openCount     Int       @default(0) @map("open_count")
+
+  createdById String?  @map("created_by_id") @db.Uuid
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  organization     Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  enquiry          ContactMessage? @relation(fields: [enquiryId], references: [id], onDelete: SetNull)
+  proposal         Proposal?       @relation(fields: [proposalId], references: [id], onDelete: SetNull)
+  portfolioProject Project?        @relation(fields: [portfolioProjectId], references: [id], onDelete: SetNull)
+  createdBy        User?           @relation("ProgressProjectCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+
+  milestones ProgressMilestone[]
+  updates    ProgressUpdate[]
+  snapshots  ProgressSnapshot[]
+
+  @@index([organizationId, lifecycle, updatedAt])
+  @@map("progress_projects")
+  @@schema("construct")
+}
+
+model ProgressMilestone {
+  id             String @id @default(uuid()) @db.Uuid
+  organizationId String @map("organization_id") @db.Uuid
+  projectId      String @map("project_id") @db.Uuid
+
+  title         String
+  description   String?
+  plannedDate   DateTime?               @map("planned_date")
+  status        ProgressMilestoneStatus @default(NOT_STARTED)
+  completedDate DateTime?               @map("completed_date")
+  sortOrder     Int                     @default(0) @map("sort_order")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  organization Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  project      ProgressProject  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  updates      ProgressUpdate[]
+
+  @@index([organizationId, projectId, sortOrder])
+  @@map("progress_milestones")
+  @@schema("construct")
+}
+
+model ProgressUpdate {
+  id             String @id @default(uuid()) @db.Uuid
+  organizationId String @map("organization_id") @db.Uuid
+  projectId      String @map("project_id") @db.Uuid
+
+  updateDate          DateTime @map("update_date")
+  title               String
+  workCompleted       String   @default("") @map("work_completed")
+  workInProgress      String   @default("") @map("work_in_progress")
+  nextPlannedActivity String   @default("") @map("next_planned_activity")
+  // Customer-facing, optional — an honest note about a delay/issue, not
+  // an internal note (internalNotes lives on ProgressProject only).
+  issueNote           String?  @map("issue_note")
+
+  milestoneId String? @map("milestone_id") @db.Uuid
+
+  status ProgressUpdateStatus @default(DRAFT)
+
+  createdById   String?   @map("created_by_id") @db.Uuid
+  publishedById String?   @map("published_by_id") @db.Uuid
+  publishedAt   DateTime? @map("published_at")
+  withdrawnById String?   @map("withdrawn_by_id") @db.Uuid
+  withdrawnAt   DateTime? @map("withdrawn_at")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  organization Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  project      ProgressProject    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  milestone    ProgressMilestone? @relation(fields: [milestoneId], references: [id], onDelete: SetNull)
+  createdBy    User?              @relation("ProgressUpdateCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  publishedBy  User?              @relation("ProgressUpdatePublishedBy", fields: [publishedById], references: [id], onDelete: SetNull)
+  withdrawnBy  User?              @relation("ProgressUpdateWithdrawnBy", fields: [withdrawnById], references: [id], onDelete: SetNull)
+  photos       ProgressPhoto[]
+
+  @@index([organizationId, projectId, status, updateDate])
+  @@map("progress_updates")
+  @@schema("construct")
+}
+
+// One photo on one update. Exactly one of storagePath/publicImageUrl is
+// set (raw-SQL CHECK in the migration — same "raw SQL for what the
+// schema DSL can't express" precedent as FollowUp's exactly-one-parent
+// constraint): storagePath means a PRIVATE_UPLOAD living in the private
+// construct-progress-media bucket, served only via a short-lived signed
+// URL issued after re-validating the viewer's access; publicImageUrl
+// means staff explicitly chose an ALREADY-public portfolio image — the
+// UI must make clear that one was already public, never imply it just
+// became private by being attached here.
+model ProgressPhoto {
+  id             String @id @default(uuid()) @db.Uuid
+  organizationId String @map("organization_id") @db.Uuid
+  updateId       String @map("update_id") @db.Uuid
+
+  storagePath    String? @map("storage_path")
+  publicImageUrl String? @map("public_image_url")
+
+  caption   String?
+  sortOrder Int     @default(0) @map("sort_order")
+
+  mimeType String? @map("mime_type")
+  fileSize Int?    @map("file_size")
+  width    Int?
+  height   Int?
+
+  createdById String?  @map("created_by_id") @db.Uuid
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  organization Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  update       ProgressUpdate @relation(fields: [updateId], references: [id], onDelete: Cascade)
+  createdBy    User?          @relation("ProgressPhotoCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, updateId, sortOrder])
+  @@map("progress_photos")
+  @@schema("construct")
+}
+
+// One immutable, self-contained snapshot per published/republished
+// version of the project summary + milestones — exactly the
+// ProposalRevision pattern (see its own schema comment). The public
+// page and the "what the customer currently sees" dashboard view both
+// read ONLY the latest snapshot's `snapshot` Json, never a live join —
+// so an Editor's unapproved edit to the working-copy ProgressProject or
+// a ProgressMilestone can never leak until an Owner/Admin explicitly
+// publishes again. Published ProgressUpdates are deliberately NOT
+// embedded here — they're individually published/withdrawn/editable in
+// place and read live (see construct-progress-public.service.ts) since
+// unlike the summary/milestones they don't need frozen point-in-time
+// snapshotting to satisfy the spec's publication model.
+model ProgressSnapshot {
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  projectId      String   @map("project_id") @db.Uuid
+  revisionNumber Int      @map("revision_number")
+  snapshot       Json
+  publishedAt    DateTime @default(now()) @map("published_at")
+  publishedById  String?  @map("published_by_id") @db.Uuid
+
+  organization Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  project      ProgressProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  publishedBy  User?           @relation("ProgressSnapshotPublishedBy", fields: [publishedById], references: [id], onDelete: SetNull)
+
+  @@unique([projectId, revisionNumber])
+  @@index([organizationId, projectId])
+  @@map("progress_snapshots")
   @@schema("construct")
 }
 

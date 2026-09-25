@@ -26,6 +26,23 @@ export function hasSupabasePublicEnvironment() {
   return Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL) && Boolean(process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY);
 }
 
+// Supabase's newer "secret key" naming (sb_secret_...), not the legacy
+// "service role key" — this project's .env already provisions it under
+// this name. Server-only, never exposed to the browser: this is what
+// lets construct-progress.service's private-photo storage operations
+// (upload/signed-URL-issuance/delete) run as a trusted, RLS-bypassing
+// client for code that has ALREADY done its own authorization check
+// (organization membership, role, entitlement, or a validated bearer
+// token) — see lib/supabase/service.ts and the storage bucket's own
+// provisioning-script comment for why no storage.objects RLS policy
+// exists for that bucket at all.
+export function getSupabaseServiceEnvironment() {
+  if (!process.env.SUPABASE_SECRET_KEY) {
+    throw new Error("Missing SUPABASE_SECRET_KEY.");
+  }
+  return { SUPABASE_SECRET_KEY: process.env.SUPABASE_SECRET_KEY };
+}
+
 export function getConstructDatabaseUrl() {
   const url = process.env.CONSTRUCT_DATABASE_URL;
 
