@@ -2,7 +2,7 @@ import { Activity, Building2, CreditCard, ExternalLink, Globe2, Radio } from "lu
 
 import { CancelSubscriptionButton } from "@/components/dashboard/billing/CancelSubscriptionButton";
 import { RazorpayCheckout } from "@/components/dashboard/billing/RazorpayCheckout";
-import { ConfirmActionButton } from "@/components/dashboard/settings/ConfirmActionButton";
+import { ConfirmActionButton } from "@/components/dashboard/shared/ConfirmActionButton";
 import { ProductAccessCard } from "@/components/dashboard/settings/ProductAccessCard";
 import { PublishChecklist } from "@/components/dashboard/settings/PublishChecklist";
 import { DismissOnEdit } from "@/components/dashboard/shared/DismissOnEdit";

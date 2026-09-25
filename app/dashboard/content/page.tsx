@@ -6,7 +6,7 @@ import { NameSlugFields } from "@/components/dashboard/content/NameSlugFields";
 import { DismissOnEdit } from "@/components/dashboard/shared/DismissOnEdit";
 import { StarRatingField } from "@/components/dashboard/content/StarRatingField";
 import { ImageUrlField, type PickableImage, type PickerFolder } from "@/components/dashboard/media/ImageUrlField";
-import { ConfirmActionButton } from "@/components/dashboard/settings/ConfirmActionButton";
+import { ConfirmActionButton } from "@/components/dashboard/shared/ConfirmActionButton";
 import { deleteConstructContentAction, saveConstructContentAction, toggleConstructContentAction } from "@/lib/actions/construct-content.actions";
 import { createConstructProjectTaxonomyAction, deleteConstructProjectTaxonomyAction } from "@/lib/actions/construct-project-taxonomy.actions";
 import {

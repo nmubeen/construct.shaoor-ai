@@ -2,6 +2,7 @@ import { FileText, Folder, FolderPlus, ImageIcon, Trash2 } from "lucide-react";
 import Image from "next/image";
 
 import { MediaUploadForm } from "@/components/dashboard/media/MediaUploadForm";
+import { ConfirmActionButton } from "@/components/dashboard/shared/ConfirmActionButton";
 import { deleteConstructMediaAction } from "@/lib/actions/construct-media.actions";
 import { createConstructMediaFolderAction, deleteConstructMediaFolderAction } from "@/lib/actions/construct-media-folder.actions";
 import { requireActiveConstructContext } from "@/lib/auth/construct-context";
@@ -58,14 +59,14 @@ function FolderRowView({ node, activeFolder, canEdit }: { node: FolderNode; acti
         {canEdit && (
           <form action={deleteConstructMediaFolderAction}>
             <input type="hidden" name="id" value={node.id} />
-            <button
-              type="submit"
+            <ConfirmActionButton
+              message={`Delete the empty folder "${node.name}"?`}
               disabled={!isEmpty}
               title={isEmpty ? "Delete this empty folder" : "Only empty folders can be deleted — move or remove its contents first"}
               className="rounded-md p-1 text-slate-400 hover:bg-red-50 hover:text-red-700 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-slate-400"
             >
               <Trash2 className="size-3.5" />
-            </button>
+            </ConfirmActionButton>
           </form>
         )}
       </summary>
@@ -132,7 +133,7 @@ export default async function MediaPage({ searchParams }: { searchParams: Promis
             <div className="relative grid aspect-[16/10] place-items-center bg-slate-100">
               {item.type === "IMAGE" ? <Image src={item.url} alt={item.altText || item.title || item.originalName} fill sizes="(min-width: 1280px) 30vw, (min-width: 640px) 50vw, 100vw" unoptimized className="object-cover" /> : <FileText className="size-12 text-slate-400" />}
             </div>
-            <div className="p-4"><div className="flex items-start justify-between gap-3"><div className="min-w-0"><h2 className="truncate font-bold text-slate-950">{item.title || item.originalName}</h2><p className="mt-1 truncate text-xs text-slate-500">{item.originalName}</p></div>{canDeleteMedia && <form action={deleteConstructMediaAction}><input type="hidden" name="id" value={item.id} /><button title="Delete media" className="rounded-lg border border-red-200 p-2 text-red-700"><Trash2 className="size-4" /></button></form>}</div>
+            <div className="p-4"><div className="flex items-start justify-between gap-3"><div className="min-w-0"><h2 className="truncate font-bold text-slate-950">{item.title || item.originalName}</h2><p className="mt-1 truncate text-xs text-slate-500">{item.originalName}</p></div>{canDeleteMedia && <form action={deleteConstructMediaAction}><input type="hidden" name="id" value={item.id} /><ConfirmActionButton message={`Delete "${item.title || item.originalName}"? Any page still using it will show a broken image/link.`} title="Delete media" className="rounded-lg border border-red-200 p-2 text-red-700"><Trash2 className="size-4" /></ConfirmActionButton></form>}</div>
               <p className="mt-3 text-xs text-slate-500">{item.folder || "library"} · {readableSize(item.fileSize)}{item.width && item.height ? ` · ${item.width}×${item.height}` : ""}</p>
               <a href={item.url} target="_blank" rel="noreferrer" className="mt-3 inline-block text-xs font-semibold text-(--color-secondary-text-icon) hover:underline">Open public URL</a>
             </div>

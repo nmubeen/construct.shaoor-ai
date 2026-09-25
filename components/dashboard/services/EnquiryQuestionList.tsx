@@ -4,7 +4,7 @@ import { ChevronDown, ChevronUp, GripVertical, Pencil } from "lucide-react";
 import Link from "next/link";
 import { useRef, useState, useTransition, type DragEvent } from "react";
 
-import { ConfirmActionButton } from "@/components/dashboard/settings/ConfirmActionButton";
+import { ConfirmActionButton } from "@/components/dashboard/shared/ConfirmActionButton";
 import { deleteEnquiryQuestionAction, reorderEnquiryQuestionsAction, toggleEnquiryQuestionAction } from "@/lib/actions/construct-enquiry-question.actions";
 import { QUESTION_TYPE_LABELS, type QuestionType } from "@/lib/enquiry/questions";
 
