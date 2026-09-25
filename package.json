@@ -10,7 +10,8 @@
     "build": "prisma generate && prisma generate --schema prisma/schema.postgresql.prisma && next build",
     "start": "next start",
     "lint": "eslint",
-    "seed": "tsx prisma/seed.ts"
+    "seed": "tsx prisma/seed.ts",
+    "razorpay:seed-plans": "tsx scripts/seed-razorpay-plans.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.2",

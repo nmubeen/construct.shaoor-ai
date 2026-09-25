@@ -1,9 +1,44 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Check } from "lucide-react";
 
 import { BrandLogo } from "@/components/brand/BrandLogo";
-import { getConstructControlPlans } from "@/lib/services/construct-plan-catalog.service";
+import { PricingPlanGrid, type PricingFamily } from "@/components/pricing/PricingPlanGrid";
+import { getConstructControlPlans, type ConstructControlPlan } from "@/lib/services/construct-plan-catalog.service";
+
+const FAMILY_SUFFIX = /_(MONTHLY|ANNUAL)$/;
+
+function familyDisplayName(key: string) {
+  return key.split("_").map((word) => word.charAt(0) + word.slice(1).toLowerCase()).join(" ");
+}
+
+// Groups e.g. STARTER_MONTHLY + STARTER_ANNUAL into one PricingFamily, keyed
+// by the code with that suffix stripped — see PricingPlanGrid's own comment
+// for why grouping lives here rather than in the catalog service itself
+// (only the pricing page needs it; the dashboard billing section and
+// signup still address individual plan codes directly).
+function groupIntoFamilies(plans: ConstructControlPlan[]): PricingFamily[] {
+  const families = new Map<string, PricingFamily>();
+  for (const plan of plans) {
+    const suffixMatch = plan.code.match(FAMILY_SUFFIX);
+    const key = suffixMatch ? plan.code.slice(0, -suffixMatch[0].length) : plan.code;
+    const family = families.get(key) ?? {
+      key,
+      displayName: familyDisplayName(key),
+      isTopTier: false,
+      sortOrder: plan.sortOrder,
+      monthly: null,
+      annual: null,
+      single: null,
+    };
+    family.isTopTier ||= plan.isTopTier;
+    family.sortOrder = Math.min(family.sortOrder, plan.sortOrder);
+    if (!suffixMatch) family.single = plan;
+    else if (plan.billingInterval === "ANNUAL") family.annual = plan;
+    else family.monthly = plan;
+    families.set(key, family);
+  }
+  return Array.from(families.values()).sort((a, b) => a.sortOrder - b.sortOrder);
+}
 
 // Shaoor-AI Construct's own SaaS pricing — a top-level, non-tenant route
 // (like /account, /dashboard), not part of the tenant (website) route
@@ -27,6 +62,7 @@ export default async function PricingPage() {
   const allPlans = await getConstructControlPlans();
   const plans = allPlans.filter((plan) => plan.isActive);
   const trialDays = allPlans.find((plan) => plan.code === "TRIAL")?.trialDays ?? null;
+  const families = groupIntoFamilies(plans);
 
   return (
     <main className="min-h-screen bg-[#f5f7f4] text-slate-950">
@@ -55,43 +91,9 @@ export default async function PricingPage() {
       </header>
 
       <section className="mx-auto max-w-7xl px-5 py-16 sm:px-8">
-        <div className="grid items-stretch gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {plans.map((plan) => (
-            <article
-              key={plan.code}
-              className={`relative flex flex-col rounded-lg border bg-white p-6 shadow-[0_8px_24px_rgba(9,65,54,.06)] ${plan.isTopTier ? "border-[#7D9D76] ring-2 ring-[#7D9D76]" : "border-slate-200"}`}
-            >
-              {plan.isTopTier && (
-                <div className="absolute -top-3 left-6 rounded-full bg-(image:--gradient-secondary-bg) px-3 py-1 text-[11px] font-bold uppercase tracking-[.08em] text-white">
-                  Most popular
-                </div>
-              )}
-              <h2 className="text-lg font-bold text-(--color-primary-text)">{plan.name}</h2>
-              <p className="mt-1 font-mono text-2xl font-bold">
-                {plan.priceMonthlyInr ? new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(plan.priceMonthlyInr) : "Free"}
-                {plan.priceMonthlyInr && <span className="text-xs font-normal text-slate-500">/{plan.billingInterval === "ANNUAL" ? "yr" : "mo"}</span>}
-              </p>
-              <p className="mt-1 text-xs text-slate-500">
-                {plan.priceMonthlyInr ? `Billed ${plan.billingInterval === "ANNUAL" ? "annually" : "monthly"}${trialDays ? `, after a ${trialDays}-day trial` : ""}` : "Free forever"}
-              </p>
-              <ul className="mt-6 flex flex-1 flex-col gap-2.5 text-sm">
-                {plan.featureLines.map((line) => (
-                  <li key={line} className="flex items-start gap-2">
-                    <Check className="mt-0.5 size-4 shrink-0 text-(--color-secondary-text-icon)" />
-                    <span>{line}</span>
-                  </li>
-                ))}
-              </ul>
-              <Link
-                href="/account/login"
-                className="mt-6 inline-flex items-center justify-center gap-2 rounded-md bg-(image:--gradient-button-bg) px-4 py-3 text-sm font-semibold text-white transition hover:brightness-110"
-              >
-                Start free trial <ArrowRight className="size-4" />
-              </Link>
-            </article>
-          ))}
-        </div>
-        {plans.length === 0 && (
+        {families.length > 0 ? (
+          <PricingPlanGrid families={families} trialDays={trialDays} />
+        ) : (
           <p className="text-center text-slate-500">Pricing is being finalized — check back shortly, or contact us directly.</p>
         )}
       </section>
