@@ -106,6 +106,14 @@ model Organization {
   // copy is not what this app itself reads.
   planCode    String             @default("TRIAL") @map("plan_code")
   trialEndsAt DateTime?          @map("trial_ends_at")
+  // IANA zone (e.g. "Asia/Kolkata"), used for every date/time boundary a
+  // human reads or types against — follow-up due dates and shortcuts,
+  // "today"/"overdue" cutoffs, list labels. Defaulted to India's zone
+  // (this product's primary market; matches priceCurrency's "INR"
+  // default on Proposal) rather than silently using the server's local
+  // time. Validated against Intl.supportedValuesOf("timeZone") server-side
+  // — see lib/followups/timezone.ts's isValidTimezone().
+  timezone    String             @default("Asia/Kolkata")
   createdAt   DateTime           @default(now()) @map("created_at")
   updatedAt   DateTime           @updatedAt @map("updated_at")
 
@@ -138,6 +146,7 @@ model Organization {
   proposalPortfolioItems  ProposalPortfolioItem[]
   proposalTestimonialItems ProposalTestimonialItem[]
   proposalResponses       ProposalResponse[]
+  followUps               FollowUp[]
 
   @@map("organizations")
   @@schema("construct")
@@ -236,6 +245,9 @@ model User {
   proposalsCreated   Proposal[]         @relation("ProposalCreatedBy")
   proposalsPublished Proposal[]         @relation("ProposalPublishedBy")
   proposalRevisionsPublished ProposalRevision[] @relation("ProposalRevisionPublishedBy")
+  followUpsAssigned  FollowUp[]         @relation("FollowUpAssignee")
+  followUpsCreated   FollowUp[]         @relation("FollowUpCreatedBy")
+  followUpsCompleted FollowUp[]         @relation("FollowUpCompletedBy")
 
   @@map("users")
   @@schema("construct")
@@ -799,6 +811,7 @@ model ContactMessage {
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   service      Service?     @relation(fields: [serviceId], references: [id], onDelete: SetNull)
   proposals    Proposal[]
+  followUps    FollowUp[]
 
   @@index([organizationId, status, createdAt])
   @@index([organizationId, serviceId])
@@ -1006,6 +1019,7 @@ model Proposal {
   testimonialItems   ProposalTestimonialItem[]
   revisions          ProposalRevision[]
   responses          ProposalResponse[]
+  followUps          FollowUp[]
 
   // Enforces "at most one open draft per enquiry" at the database level
   // (partial unique index — added via raw SQL in the migration, Prisma's
@@ -1132,5 +1146,91 @@ model AuditLog {
   @@index([organizationId, createdAt])
   @@index([organizationId, module])
   @@map("audit_logs")
+  @@schema("construct")
+}
+
+// --- Follow-up reminders -----------------------------------------------
+// An internal task attached to exactly one parent (an enquiry or a
+// proposal) reminding staff of the next action to take on it. Purely
+// in-app — no email/SMS/push/browser-push is ever sent (see the
+// Follow-ups dashboard's own help text and lib/actions/construct-followup.actions.ts).
+// "Overdue" is never stored: it's derived at read time from
+// status = OPEN and dueAt in the past, evaluated in the organization's
+// own timezone (Organization.timezone), never the server's local time —
+// see lib/followups/timezone.ts.
+//
+// Plan eligibility is inherited from the parent, not a new entitlement
+// (see lib/services/construct-followup.service.ts's
+// assertFollowUpSchedulingAllowed for the exact mapping):
+//   - An enquiry follow-up follows enquiries' own rule: no plan gating
+//     at all (enquiries themselves aren't entitlement-gated — see
+//     construct-message.actions.ts), only role.
+//   - A proposal follow-up follows PROJECT_PROPOSALS, the same
+//     entitlement proposal create/edit/publish already enforce — but
+//     only when *scheduling new due work* (create, or changing dueAt on
+//     an existing one). Completing or cancelling an existing follow-up
+//     is never entitlement-gated, so losing the entitlement can never
+//     strand a reminder no one is able to close out.
+enum FollowUpStatus {
+  OPEN
+  COMPLETED
+  CANCELLED
+
+  @@schema("construct")
+}
+
+model FollowUp {
+  id             String @id @default(uuid()) @db.Uuid
+  organizationId String @map("organization_id") @db.Uuid
+
+  // Exactly one of enquiryId/proposalId is set — enforced by a raw-SQL
+  // CHECK constraint in the migration (Prisma's schema DSL has no
+  // XOR/CHECK support, same "raw SQL for what the DSL can't express"
+  // precedent as the proposals migration's partial unique index) and
+  // re-checked in every server action regardless.
+  enquiryId  String? @map("enquiry_id") @db.Uuid
+  proposalId String? @map("proposal_id") @db.Uuid
+
+  title String
+  note  String?
+  dueAt DateTime @map("due_at")
+
+  // Nullable, and SetNull on the referenced user's removal — so a
+  // follow-up whose assignee is later removed from the workspace (or
+  // demoted to Viewer) survives rather than being deleted; the service
+  // layer surfaces assigneeId === null (or an assignee who's no longer
+  // ACTIVE/non-VIEWER) as "requires reassignment" instead of silently
+  // treating it as assigned. See getEligibleAssignees() and
+  // isAssigneeEligible() in construct-followup.service.ts.
+  assigneeId String? @map("assignee_id") @db.Uuid
+
+  status FollowUpStatus @default(OPEN)
+
+  // SetNull (not a hard requirement of "always has a creator") to match
+  // every other actor reference in this schema (Proposal.createdById,
+  // AuditLog.actorUserId) — a user row is never expected to be hard
+  // deleted in normal operation, but if it ever is, follow-up history
+  // must survive per this feature's "do not delete follow-up history"
+  // requirement.
+  createdById String?  @map("created_by_id") @db.Uuid
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  completedAt   DateTime? @map("completed_at")
+  completedById String?   @map("completed_by_id") @db.Uuid
+  outcomeNote   String?   @map("outcome_note")
+
+  organization Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  enquiry      ContactMessage? @relation(fields: [enquiryId], references: [id], onDelete: Cascade)
+  proposal     Proposal?       @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  assignee     User?           @relation("FollowUpAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
+  createdBy    User?           @relation("FollowUpCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  completedBy  User?           @relation("FollowUpCompletedBy", fields: [completedById], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, status, dueAt])
+  @@index([organizationId, enquiryId])
+  @@index([organizationId, proposalId])
+  @@index([organizationId, assigneeId, status, dueAt])
+  @@map("follow_ups")
   @@schema("construct")
 }

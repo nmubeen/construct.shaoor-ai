@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { Eye, FileText, MessageSquare } from "lucide-react";
 
+import { NextFollowUpBadge } from "@/components/followups/NextFollowUpBadge";
 import { requireActiveConstructContext } from "@/lib/auth/construct-context";
 import { getConstructPrisma } from "@/lib/construct-prisma";
+import { getNextOpenFollowUpsByProposalIds } from "@/lib/services/construct-followup.service";
 
 type FilterKey = "all" | "DRAFT" | "PUBLISHED" | "EXPIRED" | "REVOKED";
 
@@ -38,6 +40,8 @@ export default async function ProposalsPage({ searchParams }: { searchParams: Pr
     take: 100,
   });
 
+  const nextFollowUps = await getNextOpenFollowUpsByProposalIds(context.organizationId, proposals.map((p) => p.id));
+
   const withDerivedStatus = proposals.map((p) => ({
     ...p,
     displayStatus: p.status === "PUBLISHED" && p.expiresAt && p.expiresAt < new Date() ? "EXPIRED" : p.status,
@@ -66,7 +70,7 @@ export default async function ProposalsPage({ searchParams }: { searchParams: Pr
                 <tr key={p.id} className="hover:bg-slate-50">
                   <td className="px-4 py-3"><Link href={`/dashboard/proposals/${p.id}`} className="font-semibold text-(--color-secondary-text-icon) hover:underline">{p.reference}</Link><p className="mt-0.5 max-w-xs truncate text-xs text-slate-500">{p.title}</p></td>
                   <td className="px-4 py-3 text-slate-700">{p.enquiry.name}</td>
-                  <td className="px-4 py-3"><span className={`rounded-full px-2 py-0.5 text-xs font-bold uppercase ${STATUS_STYLE[p.displayStatus]}`}>{p.displayStatus}</span></td>
+                  <td className="px-4 py-3"><div className="flex flex-wrap items-center gap-1.5"><span className={`rounded-full px-2 py-0.5 text-xs font-bold uppercase ${STATUS_STYLE[p.displayStatus]}`}>{p.displayStatus}</span><NextFollowUpBadge dueAt={nextFollowUps.get(p.id)?.dueAt ?? null} timezone={context.organization.timezone} /></div></td>
                   <td className="px-4 py-3 text-xs text-slate-500">{p.updatedAt.toLocaleDateString()}</td>
                   <td className="px-4 py-3"><div className="flex items-center gap-3 text-xs text-slate-500">{p.openCount > 0 && <span className="flex items-center gap-1" title={`Opened ${p.openCount} time(s)${p.lastOpenedAt ? `, last ${p.lastOpenedAt.toLocaleString()}` : ""}`}><Eye className="size-3.5" />{p.openCount}</span>}{p._count.responses > 0 && <span className="flex items-center gap-1 font-semibold text-(--color-secondary-text-icon)" title={`${p._count.responses} customer response(s)`}><MessageSquare className="size-3.5" />{p._count.responses}</span>}</div></td>
                 </tr>

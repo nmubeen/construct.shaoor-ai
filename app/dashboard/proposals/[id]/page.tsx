@@ -6,6 +6,9 @@ import { ProposalEditorForm } from "@/components/proposals/ProposalEditorForm";
 import { ProposalItemList } from "@/components/proposals/ProposalItemList";
 import { ProposalShareActions } from "@/components/proposals/ProposalShareActions";
 import { ConfirmActionButton } from "@/components/dashboard/shared/ConfirmActionButton";
+import { FollowUpManager } from "@/components/followups/FollowUpManager";
+import { formatZonedDateTime } from "@/lib/followups/timezone";
+import { getEligibleAssignees, getFollowUpsForParent } from "@/lib/services/construct-followup.service";
 import {
   addConstructProposalPortfolioAction,
   addConstructProposalTestimonialAction,
@@ -52,9 +55,16 @@ export default async function ProposalEditorPage({ params, searchParams }: { par
   const isEntitled = Boolean(entitlements?.entitlements.find((e) => e.featureCode === "PROJECT_PROPOSALS")?.booleanValue);
   const readOnly = !canEdit || !isEntitled;
 
-  const [candidateProjects, candidateTestimonials] = await Promise.all([
+  const [candidateProjects, candidateTestimonials, followUps, enquiryFollowUps, assignees] = await Promise.all([
     prisma.project.findMany({ where: { organizationId: context.organizationId, isActive: true, isSample: false, id: { notIn: proposal.portfolioItems.map((i) => i.projectId) } }, orderBy: { updatedAt: "desc" }, select: { id: true, title: true } }),
     prisma.testimonial.findMany({ where: { organizationId: context.organizationId, isActive: true, id: { notIn: proposal.testimonialItems.map((i) => i.testimonialId) } }, orderBy: { updatedAt: "desc" }, select: { id: true, clientName: true } }),
+    getFollowUpsForParent(context.organizationId, { proposalId: id }),
+    // Contextual only — read-only, never editable from here, so there's
+    // no way this screen can accidentally create a duplicate of a
+    // follow-up that belongs to the enquiry. Clearly labelled "From the
+    // enquiry" in the section below to distinguish its source.
+    getFollowUpsForParent(context.organizationId, { enquiryId: proposal.enquiryId }),
+    getEligibleAssignees(context.organizationId),
   ]);
 
   const publicUrl = `${appUrl()}/proposals/${proposal.token}`;
@@ -183,6 +193,36 @@ export default async function ProposalEditorPage({ params, searchParams }: { par
               <p className="mt-3 text-xs text-slate-500">Preferred contact: {proposal.enquiry.preferredContactMethod || "Not specified"}</p>
             </section>
           )}
+
+          <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+            <h2 className="mb-1 font-bold text-(--color-primary-text)">Follow-ups</h2>
+            <p className="mb-3 text-xs text-slate-400">Internal reminders only — nothing here is sent to the customer automatically.</p>
+            <FollowUpManager
+              parentType="PROPOSAL"
+              parentId={proposal.id}
+              timezone={context.organization.timezone}
+              canEdit={canEdit}
+              schedulingAllowed={isEntitled}
+              schedulingDisabledReason="Personalised proposals are not included in the current plan — existing follow-ups can still be completed or cancelled, but scheduling new ones is disabled until the plan is upgraded."
+              currentUserId={context.userId}
+              assignees={assignees}
+              followUps={followUps}
+            />
+            {enquiryFollowUps.length > 0 && (
+              <div className="mt-4 border-t border-slate-200 pt-4">
+                <p className="mb-2 text-xs font-bold uppercase text-slate-400">From the enquiry</p>
+                <ul className="space-y-2">
+                  {enquiryFollowUps.map((f) => (
+                    <li key={f.id} className="rounded-md bg-slate-50 p-2.5 text-xs">
+                      <p className="font-semibold text-slate-700">{f.title}</p>
+                      <p className="mt-0.5 text-slate-500">{f.status === "OPEN" ? `Due ${formatZonedDateTime(f.dueAt, context.organization.timezone)}` : f.status.toLowerCase()}{f.assigneeName ? ` · ${f.assigneeName}` : ""}</p>
+                    </li>
+                  ))}
+                </ul>
+                <Link href={`/dashboard/messages/${proposal.enquiryId}`} className="mt-2 inline-block text-xs font-semibold text-(--color-secondary-text-icon) hover:underline">Manage on the enquiry →</Link>
+              </div>
+            )}
+          </section>
 
           <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
             <h2 className="mb-3 font-bold text-(--color-primary-text)">Activity</h2>

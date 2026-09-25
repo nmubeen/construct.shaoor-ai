@@ -1,4 +1,4 @@
-import { BookOpen, Building2, FileText, FolderKanban, Gauge, ImageIcon, LayoutTemplate, ListChecks, LogOut, Mail, Search, Settings, Users, Wrench } from "lucide-react";
+import { Bell, BookOpen, Building2, FileText, FolderKanban, Gauge, ImageIcon, LayoutTemplate, ListChecks, LogOut, Mail, Search, Settings, Users, Wrench } from "lucide-react";
 import { BrandLogo } from "@/components/brand/BrandLogo";
 import Link from "next/link";
 
@@ -15,11 +15,12 @@ const navigation = [
   { href: "/dashboard/team", label: "Team", icon: Users, available: true, sections: ["Invite a team member", "Members", "Pending invitations"] },
   { href: "/dashboard/messages", label: "Enquiries", icon: Mail, available: true, sections: ["Message list", "Message detail"] },
   { href: "/dashboard/proposals", label: "Proposals", icon: FileText, available: true, sections: ["Prepare from an enquiry", "Draft editor", "Approve & publish", "Customer responses"] },
+  { href: "/dashboard/followups", label: "Follow-ups", icon: Bell, available: true, sections: ["Overdue & due today", "My follow-ups / all follow-ups", "Complete, reschedule or cancel"] },
   { href: "/dashboard/seo", label: "SEO", icon: Search, available: true, sections: ["Global settings", "Page metadata"] },
   { href: "/dashboard/settings", label: "Settings", icon: Settings, available: true, sections: ["Workspace identity", "Website theme", "Publication", "Plan usage", "Billing", "Custom domains", "Recent activity"] },
 ] as const;
 
-export function ConstructDashboardSidebar({ organizationName, role, organizationStatus }: { organizationName: string; role: string; organizationStatus: string }) {
+export function ConstructDashboardSidebar({ organizationName, role, organizationStatus, overdueFollowUps }: { organizationName: string; role: string; organizationStatus: string; overdueFollowUps?: number }) {
   // PrimaryBackgroundColor (--gradient-primary-bg).
   return (
     <aside className="flex w-full flex-col border-b border-white/10 bg-(image:--gradient-primary-bg) text-white shadow-[12px_0_35px_rgba(9,65,54,.14)] lg:fixed lg:inset-y-0 lg:w-72 lg:border-r">
@@ -35,7 +36,7 @@ export function ConstructDashboardSidebar({ organizationName, role, organization
       <nav className="grid grid-cols-2 gap-0.75 p-3 sm:grid-cols-4 lg:flex lg:flex-1 lg:flex-col">
         {navigation.map(({ href, label, icon: Icon, available, sections }) => available ? (
           <div key={href} className="group relative">
-            <Link href={href} className="flex items-center gap-3 rounded-md px-3 py-[7.5px] text-sm font-medium text-white/80 transition hover:bg-[#7D9D76]/30 hover:text-white"><Icon className="size-4" />{label}</Link>
+            <Link href={href} className="flex items-center gap-3 rounded-md px-3 py-[7.5px] text-sm font-medium text-white/80 transition hover:bg-[#7D9D76]/30 hover:text-white"><Icon className="size-4" />{label}{href === "/dashboard/followups" && Boolean(overdueFollowUps) && <span className="ml-auto rounded-full bg-red-500 px-1.5 py-0.5 text-[10px] font-bold text-white">{overdueFollowUps}</span>}</Link>
             {/* Pure CSS bubble (group-hover), no client JS needed — hidden
                 below lg since the sidebar isn't a fixed side rail there,
                 and hover has no real meaning on touch anyway. */}

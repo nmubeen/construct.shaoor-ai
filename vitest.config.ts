@@ -18,6 +18,12 @@ export default defineConfig({
     environment: "node",
     include: ["tests/**/*.test.ts"],
     testTimeout: 30000,
+    // Every test file opens its own PrismaClient against the same live
+    // Supabase pooler (see fixtures.ts's own comment) — with several
+    // suites' beforeAll hooks racing for pooled connections when the
+    // whole suite runs together, the default 10s hook timeout can trip
+    // even though no individual query is slow. Match testTimeout.
+    hookTimeout: 30000,
     setupFiles: ["tests/setup-env.ts"],
   },
   resolve: {

@@ -8,6 +8,7 @@ import { z } from "zod";
 import { requireActiveConstructContext } from "@/lib/auth/construct-context";
 import { getConstructPrisma } from "@/lib/construct-prisma";
 import { enforceConstructBooleanEntitlement } from "@/lib/control/construct-subscription.service";
+import { isValidTimezone } from "@/lib/followups/timezone";
 import { isValidHexColor } from "@/lib/theme";
 
 const hostnameSchema = z.string().trim().toLowerCase().max(253).transform(value => value.replace(/\.$/, "")).refine(value => /^(?=.{1,253}$)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/.test(value), "Enter a valid hostname without https:// or a path.");
@@ -16,9 +17,11 @@ function requireAdmin(role: string) { if (role !== "OWNER" && role !== "ADMIN") 
 export async function updateConstructWorkspaceAction(formData: FormData) {
   const context = await requireActiveConstructContext(); requireAdmin(context.role);
   const parsed = z.string().trim().min(2).max(100).safeParse(formData.get("name")); if (!parsed.success) redirect("/dashboard/settings?error=Workspace name must be between 2 and 100 characters.");
+  const timezone = String(formData.get("timezone") ?? "").trim();
+  if (!isValidTimezone(timezone)) redirect("/dashboard/settings?error=Choose a valid timezone.");
   const prisma = getConstructPrisma(); await prisma.$transaction([
-    prisma.organization.update({ where: { id: context.organizationId }, data: { name: parsed.data } }),
-    prisma.auditLog.create({ data: { organizationId: context.organizationId, actorUserId: context.userId, module: "settings", action: "workspace_update", recordId: context.organizationId, title: "Workspace identity updated", details: { from: context.organization.name, to: parsed.data } } }),
+    prisma.organization.update({ where: { id: context.organizationId }, data: { name: parsed.data, timezone } }),
+    prisma.auditLog.create({ data: { organizationId: context.organizationId, actorUserId: context.userId, module: "settings", action: "workspace_update", recordId: context.organizationId, title: "Workspace identity updated", details: { name: { from: context.organization.name, to: parsed.data }, timezone: { from: context.organization.timezone, to: timezone } } } }),
   ]); revalidatePath("/dashboard", "layout"); redirect("/dashboard/settings?saved=workspace");
 }
 

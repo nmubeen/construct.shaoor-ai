@@ -1,4 +1,8 @@
+import Link from "next/link";
 import {
+  AlertTriangle,
+  Bell,
+  CalendarClock,
   ExternalLink,
   FolderKanban,
   ImageIcon,
@@ -8,12 +12,14 @@ import {
 
 import { requireActiveConstructContext } from "@/lib/auth/construct-context";
 import { getConstructPrisma } from "@/lib/construct-prisma";
+import { formatZonedDateTime } from "@/lib/followups/timezone";
+import { getFollowUpOverview } from "@/lib/services/construct-followup.service";
 
 export default async function ConstructDashboardPage() {
   const context = await requireActiveConstructContext();
   const prisma = getConstructPrisma();
   const organizationId = context.organizationId;
-  const [projects, services, media, messages, publication, primaryDomain] =
+  const [projects, services, media, messages, publication, primaryDomain, followUpOverview] =
     await Promise.all([
       prisma.project.count({ where: { organizationId } }),
       prisma.service.count({ where: { organizationId } }),
@@ -21,6 +27,7 @@ export default async function ConstructDashboardPage() {
       prisma.contactMessage.count({ where: { organizationId, status: "NEW" } }),
       prisma.sitePublication.findUnique({ where: { organizationId } }),
       prisma.domain.findFirst({ where: { organizationId, isPrimary: true } }),
+      getFollowUpOverview(organizationId, context.userId, context.organization.timezone),
     ]);
   const cards = [
     { label: "Projects", value: projects, icon: FolderKanban },
@@ -56,6 +63,27 @@ export default async function ConstructDashboardPage() {
           </span>
         </div>
       </header>
+      <section className="mt-6 rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+          <div className="flex items-center gap-2"><Bell className="size-5 text-(--color-secondary-text-icon)" /><h2 className="font-bold text-(--color-primary-text)">Follow-ups</h2></div>
+          <Link href="/dashboard/followups" className="text-xs font-semibold text-(--color-secondary-text-icon) hover:underline">Open Follow-ups →</Link>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-3">
+          <div className="flex items-center gap-3 rounded-md bg-red-50 p-3"><AlertTriangle className="size-5 text-red-700" /><div><p className="text-xl font-bold text-red-700">{followUpOverview.overdueCount}</p><p className="text-xs text-red-700/80">Overdue</p></div></div>
+          <div className="flex items-center gap-3 rounded-md bg-[#eef3ec] p-3"><CalendarClock className="size-5 text-(--color-primary-text)" /><div><p className="text-xl font-bold text-(--color-primary-text)">{followUpOverview.dueTodayCount}</p><p className="text-xs text-(--color-primary-text)/80">Due today</p></div></div>
+          <div className="sm:col-span-1">
+            <p className="mb-1 text-xs font-bold uppercase text-slate-400">Your next follow-ups</p>
+            {followUpOverview.myNext.length === 0 ? <p className="text-xs text-slate-500">Nothing assigned to you right now.</p> : (
+              <ul className="space-y-1">
+                {followUpOverview.myNext.slice(0, 3).map((f) => (
+                  <li key={f.id} className="truncate text-xs text-slate-600"><span className="font-semibold text-slate-800">{f.title}</span> — {formatZonedDateTime(f.dueAt, context.organization.timezone)}</li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
+      </section>
+
       <section className="grid gap-4 py-6 sm:grid-cols-2 xl:grid-cols-4">
         {cards.map(({ label, value, icon: Icon }) => (
           <article

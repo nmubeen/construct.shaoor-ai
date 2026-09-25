@@ -3,6 +3,7 @@ import { ArrowLeft, FileText, Mail, Phone, Sparkles } from "lucide-react";
 import { notFound } from "next/navigation";
 
 import { DismissOnEdit } from "@/components/dashboard/shared/DismissOnEdit";
+import { FollowUpManager } from "@/components/followups/FollowUpManager";
 
 import { createConstructProposalFromEnquiryAction } from "@/lib/actions/construct-proposal.actions";
 import { updateConstructMessageStatusAction } from "@/lib/actions/construct-message.actions";
@@ -10,6 +11,7 @@ import { requireActiveConstructContext } from "@/lib/auth/construct-context";
 import { getConstructPrisma } from "@/lib/construct-prisma";
 import { getConstructEntitlements } from "@/lib/control/construct-subscription.service";
 import { formatAnswer, parseStoredAnswers } from "@/lib/enquiry/questions";
+import { getEligibleAssignees, getFollowUpsForParent } from "@/lib/services/construct-followup.service";
 
 const PROPOSAL_STATUS_STYLE: Record<string, string> = {
   DRAFT: "bg-slate-100 text-slate-600",
@@ -21,9 +23,11 @@ export default async function MessageDetailPage({ params, searchParams }: { para
   const context = await requireActiveConstructContext(); const { id } = await params; const query = await searchParams;
   const prisma = getConstructPrisma();
   const message = await prisma.contactMessage.findFirst({ where: { id, organizationId: context.organizationId } }); if (!message) notFound(); const answers = parseStoredAnswers(message.answers); const canUpdate = context.role !== "VIEWER";
-  const [proposals, entitlements] = await Promise.all([
+  const [proposals, entitlements, followUps, assignees] = await Promise.all([
     prisma.proposal.findMany({ where: { organizationId: context.organizationId, enquiryId: id }, orderBy: { createdAt: "desc" }, select: { id: true, reference: true, title: true, status: true, createdAt: true } }),
     getConstructEntitlements(context.organizationId),
+    getFollowUpsForParent(context.organizationId, { enquiryId: id }),
+    getEligibleAssignees(context.organizationId),
   ]);
   const canPrepareProposal = canUpdate && Boolean(entitlements?.entitlements.find((e) => e.featureCode === "PROJECT_PROPOSALS")?.booleanValue);
   // Quotes the original enquiry into the reply's body so the answers are
@@ -40,6 +44,22 @@ export default async function MessageDetailPage({ params, searchParams }: { para
       <div className="grid gap-6 p-5 lg:grid-cols-[1fr_280px]"><div className="space-y-8">
         {answers.length > 0 && <section><h2 className="text-xs font-bold uppercase tracking-wider text-slate-500">Requirement details</h2><dl className="mt-3 divide-y rounded-md border border-slate-200">{answers.map((item, index) => <div key={`${item.questionId}-${index}`} className="p-3"><dt className="text-xs font-semibold text-slate-500">{item.question}</dt><dd className="mt-1 whitespace-pre-wrap text-sm text-slate-800">{formatAnswer(item.answer)}</dd></div>)}</dl></section>}
         {(message.message.trim() || answers.length === 0) && <section><h2 className="text-xs font-bold uppercase tracking-wider text-slate-500">{message.serviceId || message.projectInterest ? "Additional requirements" : "Message"}</h2><p className="mt-3 whitespace-pre-wrap text-sm leading-7 text-slate-700">{message.message.trim() || "None provided."}</p></section>}
+        <section>
+          <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500">Follow-ups</h2>
+          <p className="mt-1 text-xs text-slate-400">Internal reminders only — nothing here is sent to the customer automatically.</p>
+          <div className="mt-3">
+            <FollowUpManager
+              parentType="ENQUIRY"
+              parentId={message.id}
+              timezone={context.organization.timezone}
+              canEdit={canUpdate}
+              schedulingAllowed
+              currentUserId={context.userId}
+              assignees={assignees}
+              followUps={followUps}
+            />
+          </div>
+        </section>
       </div><aside className="space-y-4 rounded-md bg-slate-50 p-4"><div><p className="text-xs font-bold uppercase text-slate-400">Email</p><a href={`mailto:${message.email}?subject=${encodeURIComponent(`Re: ${message.subject || "Your enquiry"}`)}&body=${encodeURIComponent(mailtoBody)}`} className="mt-1 inline-flex items-center gap-2 break-all text-sm font-semibold text-(--color-secondary-text-icon)"><Mail className="size-4"/>{message.email}</a></div>{message.phone && <div><p className="text-xs font-bold uppercase text-slate-400">Phone</p><a href={`tel:${message.phone}`} className="mt-1 inline-flex items-center gap-2 text-sm font-semibold text-(--color-secondary-text-icon)"><Phone className="size-4"/>{message.phone}</a></div>}{message.projectInterest && <div><p className="text-xs font-bold uppercase text-slate-400">Service</p><p className="mt-1 text-sm">{message.projectInterest}</p>{message.subService && <p className="text-sm text-slate-600">{message.subService}</p>}</div>}{message.projectLocation && <div><p className="text-xs font-bold uppercase text-slate-400">Project / site location</p><p className="mt-1 text-sm">{message.projectLocation}</p></div>}{message.preferredContactMethod && <div><p className="text-xs font-bold uppercase text-slate-400">Preferred contact</p><p className="mt-1 text-sm">{message.preferredContactMethod}</p></div>}<div><p className="text-xs font-bold uppercase text-slate-400">Consent recorded</p><p className="mt-1 text-sm">{message.consentAt ? message.consentAt.toLocaleString() : "Not recorded"}</p></div>
         <div className="border-t border-slate-200 pt-4">
           <p className="text-xs font-bold uppercase text-slate-400">Proposal</p>
