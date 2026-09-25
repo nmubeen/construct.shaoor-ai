@@ -174,7 +174,7 @@ const SAMPLE_IMAGE_FILE_NAME = "sample-service-image.png";
 // client here couldn't be regenerated (dev server holds the query engine
 // binary locked on Windows) — switch to typed prisma.mediaFolder calls
 // once a client regen picks it up. Get-or-create, top-level, by name.
-async function ensureServicesFolder(organizationId: string): Promise<string> {
+export async function ensureServicesFolder(organizationId: string): Promise<string> {
   const prisma = getConstructPrisma();
   const existing = await prisma.$queryRaw<{ id: string }[]>`
     SELECT id FROM construct.media_folders WHERE organization_id = ${organizationId}::uuid AND path = 'services'
@@ -189,13 +189,14 @@ async function ensureServicesFolder(organizationId: string): Promise<string> {
   return created[0].id;
 }
 
-// One shared "sample image" for all default services, instead of a
-// generated image per service. Created on first use and reused by name
-// afterwards, so re-running the seed (or the remaining steps after a
-// failure) never uploads a second copy. Replacing a service's image in
-// the dashboard just points that service at something else; the shared
-// file stays for the others.
-async function getOrCreateSampleImageUrl(organizationId: string, folderId: string): Promise<string> {
+// One shared "sample image" for all default services (and, via
+// construct-project-seed.service.ts, the 2 sample projects too), instead
+// of a generated image per record. Created on first use and reused by
+// name afterwards, so re-running either seeder never uploads a second
+// copy. Replacing a service's or project's image in the dashboard just
+// points that record at something else; the shared file stays for the
+// others.
+export async function getOrCreateSampleImageUrl(organizationId: string, folderId: string): Promise<string> {
   const prisma = getConstructPrisma();
   const existing = await prisma.media.findFirst({
     where: { organizationId, originalName: SAMPLE_IMAGE_FILE_NAME },
@@ -302,6 +303,7 @@ export async function seedConstructDefaultServiceAtIndex(organizationId: string,
             imageUrl,
             displayOrder: index,
             isActive: true,
+            isSample: true,
             seoTitle: seed.seoTitle,
             seoDescription: seed.seoDescription,
             seoKeywords: seed.seoKeywords,

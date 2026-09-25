@@ -415,6 +415,13 @@ model Project {
   // all, so it can't sensibly stay featured; the toggle action clears
   // featured whenever this goes false.
   isActive       Boolean  @default(true) @map("is_active")
+  // True only for the 2 starter projects created by the default-content
+  // seeder (org creation, or a re-seed of an emptied list) — never set by
+  // the normal project form. Drives the "this is sample content" dashboard
+  // banner; saveConstructProjectAction clears it on the first real edit,
+  // so the banner fades out per-org as samples get customized or deleted
+  // rather than needing its own dismiss state.
+  isSample       Boolean  @default(false) @map("is_sample")
   seoTitle       String?  @map("seo_title")
   seoDescription String?  @map("seo_description")
   seoKeywords    String?  @map("seo_keywords")
@@ -596,6 +603,10 @@ model Service {
   icon             String?
   displayOrder     Int      @default(0) @map("display_order")
   isActive         Boolean  @default(true) @map("is_active")
+  // Same sample-content flag as Project.isSample — see that field's
+  // comment. Set true only by the default-services seeder, cleared by
+  // saveConstructServiceAction on the first real edit.
+  isSample         Boolean  @default(false) @map("is_sample")
   seoTitle         String?  @map("seo_title")
   seoDescription   String?  @map("seo_description")
   seoKeywords      String?  @map("seo_keywords")

@@ -49,7 +49,10 @@ export async function saveConstructProjectAction(_prevState: SaveProjectState, f
     await prisma.$transaction(async tx => {
       let projectId = id;
       if (id) {
-        const updated = await tx.project.updateMany({ where: { id, organizationId: context.organizationId }, data: { ...data, featured: displayFeatured === "on" } });
+        // Clears isSample unconditionally — same reasoning as
+        // saveConstructServiceAction: a real edit is the owner making this
+        // sample their own.
+        const updated = await tx.project.updateMany({ where: { id, organizationId: context.organizationId }, data: { ...data, featured: displayFeatured === "on", isSample: false } });
         if (updated.count !== 1) throw new Error("PROJECT_NOT_FOUND");
         await tx.projectHighlight.deleteMany({ where: { projectId: id, organizationId: context.organizationId } });
         await tx.projectGalleryItem.deleteMany({ where: { projectId: id, organizationId: context.organizationId } });

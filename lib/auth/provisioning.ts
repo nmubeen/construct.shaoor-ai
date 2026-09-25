@@ -36,6 +36,7 @@ import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { getConstructPrisma } from "@/lib/construct-prisma";
 import { syncSubscriptionToControlPlane } from "@/lib/control-sync";
 import { getConstructTopTierTrial } from "@/lib/services/construct-plan-catalog.service";
+import { seedConstructDefaultContentForNewOrganization } from "@/lib/services/construct-sample-content-seed.service";
 import { logAuthDiagnostic } from "./diagnostics";
 
 // Falls back to this only if control.plans has no plan currently flagged
@@ -182,6 +183,20 @@ export async function createConstructOrganizationForCurrentUser(
 
     // Best-effort control-plane mirror — must never block sign-up.
     await syncSubscriptionToControlPlane(organizationId, "Self-service Construct OTP sign-up");
+
+    // Best-effort starter content (default services + sample projects) —
+    // same tolerance as the control-plane sync above: a brand-new owner
+    // must land in their dashboard even if this fails or times out. See
+    // construct-sample-content-seed.service.ts; anything it doesn't finish
+    // can always be retried from the empty-state "Seed default services"
+    // button.
+    try {
+      await seedConstructDefaultContentForNewOrganization(organizationId);
+    } catch (error) {
+      // Not logAuthDiagnostic("account_provisioning_failed") — the org
+      // itself provisioned fine; only its optional starter content didn't.
+      console.error("Construct default content seeding failed:", error);
+    }
 
     return { ok: true };
   } catch (error) {

@@ -79,7 +79,10 @@ export async function saveConstructServiceAction(_prevState: SaveServiceState, f
     await prisma.$transaction(async (tx) => {
       let serviceId = id;
       if (id) {
-        const updated = await tx.service.updateMany({ where: { id, organizationId: context.organizationId }, data: parsed.data });
+        // Clears isSample unconditionally: a real edit through this form is
+        // exactly the "make it your own" action the sample banner invites,
+        // regardless of whether the row was ever a sample.
+        const updated = await tx.service.updateMany({ where: { id, organizationId: context.organizationId }, data: { ...parsed.data, isSample: false } });
         if (updated.count !== 1) throw new Error("SERVICE_NOT_FOUND");
         await tx.auditLog.create({ data: { organizationId: context.organizationId, actorUserId: context.userId, module: "services", action: "update", recordId: id, title: `Service updated: ${parsed.data.title}` } });
       } else {

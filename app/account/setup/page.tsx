@@ -12,6 +12,16 @@ import { getOptionalConstructContext } from "@/lib/auth/construct-context";
 // after a first-ever verifyOtp with no organization yet (see
 // lib/auth/actions.ts's submitAuth()) or by hitting a protected route
 // directly before ever completing this step (lib/auth/construct-context.ts).
+
+// completeConstructSetupAction (bound to the form below) now seeds 15
+// default services and 2 sample projects synchronously before it returns
+// (see createConstructOrganizationForCurrentUser in lib/auth/provisioning.ts)
+// — a Server Action inherits the maxDuration of the route it's invoked
+// from, and the platform's default (well under a minute) was cutting that
+// off mid-seed under slow conditions, which would fail this whole request
+// even though the workspace itself had already been created successfully.
+export const maxDuration = 60;
+
 export default async function ConstructSetupPage({
   searchParams,
 }: {
