@@ -6,7 +6,7 @@ import { constructSignOutAction } from "@/lib/auth/actions";
 
 const navigation = [
   { href: "/dashboard", label: "Overview", icon: Gauge, available: true, sections: ["Quick stats", "CMS migration status", "Website address & preview"] },
-  { href: "/dashboard/guide", label: "Setup guide", icon: ListChecks, available: true, sections: ["Company info & branding", "Homepage & company story", "Services & projects", "Enquiry form", "Team, search & domain", "Publish"] },
+  { href: "/dashboard/guide", label: "Setup & Usage Guide", icon: ListChecks, available: true, sections: ["Setup: company info, homepage, services, enquiry form, team & domain, publish", "Ongoing: Media, Team invites, Enquiries, Proposals, Follow-ups, Project Progress, Plans"] },
   { href: "/dashboard/site", label: "Website", icon: LayoutTemplate, available: true, sections: ["Company identity", "Contact and address", "Homepage hero", "Call to action", "About, mission and vision", "Social profiles"] },
   { href: "/dashboard/projects", label: "Projects", icon: FolderKanban, available: true, sections: ["Project list", "Create / edit project"] },
   { href: "/dashboard/services", label: "Services", icon: Wrench, available: true, sections: ["Service list", "Create / edit service", "Seed default services"] },
