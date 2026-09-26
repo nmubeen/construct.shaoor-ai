@@ -1,4 +1,5 @@
 import { BrandLogo } from "@/components/brand/BrandLogo";
+import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -20,75 +21,99 @@ export function ConstructPortalHome() {
   // PrimaryBackgroundColor (--gradient-primary-bg) — re-pointing the
   // variable retints this header along with every other one.
   return (
-    <main className="min-h-screen overflow-hidden bg-(image:--gradient-primary-bg) text-white">
-      <div className="absolute inset-x-0 top-0 h-160 bg-[radial-gradient(circle_at_20%_20%,rgba(3,117,208,.38),transparent_34%),radial-gradient(circle_at_82%_8%,rgba(255,255,255,.14),transparent_38%)]" />
-      <header className="relative z-10 mx-auto flex max-w-7xl items-center justify-between px-5 py-6 sm:px-8">
-        <Link href="/" className="flex items-center gap-3">
-          <BrandLogo />
-          <span>
-            {/* PrimaryBackgroundColor backgrounds show the wordmark in white. */}
-            <span className="block text-lg font-bold leading-tight text-white">
-              Shaoor-AI Construct
-            </span>
-            <span className="block text-[10px] font-bold uppercase tracking-[.24em] text-(--color-secondary-text-icon)">
-              by Shaoor AI Tech
-            </span>
-          </span>
-        </Link>
-        <div className="flex items-center gap-5">
-          <Link href="/pricing" className="text-sm font-semibold text-slate-200 hover:text-white">
-            Pricing
-          </Link>
-          {/* ButtonBackgroundColor (--gradient-button-bg). */}
-          <Link
-            href="/account/login"
-            className="rounded-md bg-(image:--gradient-button-bg) px-4 py-2.5 text-sm font-semibold text-white transition hover:brightness-110"
-          >
-            Customer sign in
-          </Link>
+    <main className="relative min-h-screen overflow-hidden bg-(image:--gradient-primary-bg) text-white">
+      {/* Wraps the header + hero section (badge/heading/copy + the Start a
+          Trial card) only — NOT the light "capabilities" section below —
+          so the absolutely-positioned watermark layer inside it (inset-0)
+          automatically matches this block's actual rendered height,
+          whatever that turns out to be at a given viewport width/text
+          wrap, instead of a guessed fixed pixel height that could leave a
+          gap above the light section or cut off mid-card. */}
+      <div className="relative">
+        {/* Full-bleed watermark behind the header and hero copy — low
+            opacity photo blended with a dark gradient on top so white
+            text keeps reading clearly over it. */}
+        <div className="absolute inset-0 overflow-hidden">
+          <Image
+            src="/images/Hero/hero.png"
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover opacity-55"
+          />
+          <div className="absolute inset-0 bg-(image:--gradient-primary-bg) opacity-45" />
         </div>
-      </header>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(3,117,208,.38),transparent_34%),radial-gradient(circle_at_82%_8%,rgba(255,255,255,.14),transparent_38%)]" />
 
-      <section className="relative z-10 mx-auto max-w-7xl px-5 pb-20 pt-14 sm:px-8 lg:pb-28 lg:pt-24">
-        <div className="max-w-4xl">
-          {/* SecondaryBackgroundColor (--gradient-secondary-bg) — re-pointing
-              the variable retints this badge and the Start a Trial box below. */}
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-(image:--gradient-secondary-bg) px-4 py-2 text-xs font-bold uppercase tracking-[.18em] text-white">
-            <Sparkles className="size-4" />
-            Construction websites, ready to manage
-          </div>
-          <h1 className="mt-7 text-5xl font-black leading-[1.03] tracking-tight sm:text-6xl lg:text-7xl">
-            A professional website and CMS built for construction companies.
-          </h1>
-          <p className="mt-7 max-w-2xl text-lg leading-8 text-slate-300">
-            Create a trial workspace with your own company address and start
-            managing your website right away.
-          </p>
-        </div>
-
-        <div className="mt-12 max-w-xl">
-          <article className="group rounded-lg border border-white/30 bg-(image:--gradient-secondary-bg) p-7 shadow-2xl sm:p-9">
-            <div className="flex size-13 items-center justify-center rounded-md bg-white/12 text-white">
-              <Building2 className="size-6" />
-            </div>
-            <p className="mt-7 text-xs font-bold uppercase tracking-[.2em] text-white/80">
-              Create your own workspace
-            </p>
-            <h2 className="mt-2 text-3xl font-bold">Start a Trial</h2>
-            <p className="mt-4 leading-7 text-slate-100">
-              Sign in, create your organization, and prepare a private website
-              workspace controlled by the Trial plan.
-            </p>
+        <header className="relative z-10 mx-auto flex max-w-7xl items-center justify-between px-5 py-6 sm:px-8">
+          <Link href="/" className="flex items-center gap-3">
+            <BrandLogo />
+            <span>
+              {/* PrimaryBackgroundColor backgrounds show the wordmark in white. */}
+              <span className="block text-lg font-bold leading-tight text-white">
+                Shaoor-AI Construct
+              </span>
+              <span className="block text-[10px] font-bold uppercase tracking-[.24em] text-(--color-secondary-text-icon)">
+                by Shaoor-AI Tech Consultants
+              </span>
+            </span>
+          </Link>
+          <div className="flex items-center gap-5">
+            <Link href="/pricing" className="text-sm font-semibold text-slate-200 hover:text-white">
+              Pricing
+            </Link>
             {/* ButtonBackgroundColor (--gradient-button-bg). */}
             <Link
               href="/account/login"
-              className="mt-8 inline-flex items-center gap-2 rounded-md bg-(image:--gradient-button-bg) px-5 py-3 font-bold text-white transition hover:brightness-110"
+              className="rounded-md bg-(image:--gradient-button-bg) px-4 py-2.5 text-sm font-semibold text-white transition hover:brightness-110"
             >
-              Start trial setup <ArrowRight className="size-4" />
+              Customer sign in
             </Link>
-          </article>
-        </div>
-      </section>
+          </div>
+        </header>
+
+        <section className="relative z-10 mx-auto max-w-7xl px-5 pb-20 pt-14 sm:px-8 lg:pb-28 lg:pt-24">
+          <div className="max-w-4xl">
+            {/* SecondaryBackgroundColor (--gradient-secondary-bg) — re-pointing
+                the variable retints this badge and the Start a Trial box below. */}
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-(image:--gradient-secondary-bg) px-4 py-2 text-xs font-bold uppercase tracking-[.18em] text-white">
+              <Sparkles className="size-4" />
+              Construction websites, ready to manage
+            </div>
+            <h1 className="mt-7 text-5xl font-black leading-[1.03] tracking-tight sm:text-6xl lg:text-7xl">
+              A professional website and CMS built for construction companies.
+            </h1>
+            <p className="mt-7 max-w-2xl text-lg leading-8 text-slate-300">
+              Create a trial workspace with your own company address and start
+              managing your website right away.
+            </p>
+          </div>
+
+          <div className="mt-12 max-w-xl">
+            <article className="group rounded-lg border border-white/30 bg-(image:--gradient-secondary-bg) p-7 shadow-2xl sm:p-9">
+              <div className="flex size-13 items-center justify-center rounded-md bg-white/12 text-white">
+                <Building2 className="size-6" />
+              </div>
+              <p className="mt-7 text-xs font-bold uppercase tracking-[.2em] text-white/80">
+                Create your own workspace
+              </p>
+              <h2 className="mt-2 text-3xl font-bold">Start a Trial</h2>
+              <p className="mt-4 leading-7 text-slate-100">
+                Sign in, create your organization, and prepare a private website
+                workspace controlled by the Trial plan.
+              </p>
+              {/* ButtonBackgroundColor (--gradient-button-bg). */}
+              <Link
+                href="/account/login"
+                className="mt-8 inline-flex items-center gap-2 rounded-md bg-(image:--gradient-button-bg) px-5 py-3 font-bold text-white transition hover:brightness-110"
+              >
+                Start trial setup <ArrowRight className="size-4" />
+              </Link>
+            </article>
+          </div>
+        </section>
+      </div>
 
       <section className="relative z-10 border-t border-white/10 bg-[#f5f7f4] text-slate-950">
         <div className="mx-auto grid max-w-7xl gap-12 px-5 py-20 sm:px-8 lg:grid-cols-[.85fr_1.15fr] lg:py-24">

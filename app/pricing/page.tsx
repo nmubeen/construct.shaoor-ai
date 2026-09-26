@@ -73,7 +73,7 @@ export default async function PricingPage() {
             <BrandLogo />
             <span>
               <span className="block text-lg font-bold leading-tight text-white">Shaoor-AI Construct</span>
-              <span className="block text-[10px] font-bold uppercase tracking-[.24em] text-(--color-secondary-text-icon)">by Shaoor AI Tech</span>
+              <span className="block text-[10px] font-bold uppercase tracking-[.24em] text-(--color-secondary-text-icon)">by Shaoor-AI Tech Consultants</span>
             </span>
           </Link>
           <div className="flex items-center gap-3">
