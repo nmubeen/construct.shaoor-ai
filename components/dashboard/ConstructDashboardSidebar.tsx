@@ -28,8 +28,8 @@ export function ConstructDashboardSidebar({ organizationName, role, organization
       <div className="flex items-center gap-3 border-b border-white/10 px-5 py-5">
         <BrandLogo />
         <div className="min-w-0">
-          <p className="truncate font-bold text-white">Shaoor-AI Construct</p>
-          <p className="truncate text-xs text-(--color-secondary-text-icon)">{organizationName}</p>
+          <p className="truncate text-[11px] font-medium uppercase tracking-wide text-(--color-secondary-text-icon)">Shaoor-AI Construct</p>
+          <p className="truncate text-lg font-bold leading-tight text-white" title={organizationName}>{organizationName}</p>
         </div>
       </div>
       {/* Item padding and gap both cut by 25% (py-2.5/gap-1 -> py-[7.5px]/gap-[3px])
